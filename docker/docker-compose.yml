@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  site-generation:
+    build: ../../site-generation
+    expose:
+      - "40400"
+    restart: always
+    networks:
+      - shared-network
+
+  elias-db:
+    image: mongo:7
+    ports:
+      - "${POSTGRES_DB}:5432"
+    env_file:
+      - /opt/introlab/alex-melnyk/site-generation/docker/db.env
+    restart: always
+    volumes:
+      - mongo-db-elias:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval \"db.adminCommand('ping')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  mongo-db-elias:
