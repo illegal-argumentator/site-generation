@@ -15,8 +15,6 @@ services:
     image: mongo:7
     ports:
       - "${POSTGRES_PORT}:5432"
-    env_file:
-      - /opt/introlab/alex-melnyk/site-generation/docker/db.env
     restart: always
     volumes:
       - mongo-db-elias:/data/db
