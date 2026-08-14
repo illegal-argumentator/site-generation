@@ -5,7 +5,6 @@ import com.elias.site_generation.adapter.user.out.persistence.PostgresUser;
 import com.elias.site_generation.domain.site.Status;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @Entity
