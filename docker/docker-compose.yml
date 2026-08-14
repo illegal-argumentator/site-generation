@@ -8,11 +8,13 @@ services:
     restart: always
     networks:
       - shared-network
+    depends_on:
+      - elias-db
 
   elias-db:
     image: mongo:7
     ports:
-      - "${POSTGRES_DB}:5432"
+      - "${POSTGRES_PORT}:5432"
     env_file:
       - /opt/introlab/alex-melnyk/site-generation/docker/db.env
     restart: always
