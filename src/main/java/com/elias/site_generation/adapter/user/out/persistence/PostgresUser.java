@@ -20,7 +20,7 @@ public class PostgresUser {
     private String id;
 
     @OneToMany(
-            mappedBy = "user",
+            mappedBy = "owner",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
