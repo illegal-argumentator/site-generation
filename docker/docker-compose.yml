@@ -11,17 +11,15 @@ services:
 
   postgres-elias-db:
     image: postgres:9
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: always
     volumes:
-      - mongo-db-elias:/data/db
-    healthcheck:
-      test: ["CMD-SHELL", "mongosh --eval \"db.adminCommand('ping')\""]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+      - postgres-db-elias:/data/db
 
 volumes:
-  mongo-db-elias:
+  postgres-db-elias:
