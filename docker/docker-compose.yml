@@ -9,7 +9,7 @@ services:
     depends_on:
       - elias-db
 
-  elias-db:
+  postgres-elias-db:
     image: mongo:7
     ports:
       - "${POSTGRES_PORT}:5432"
