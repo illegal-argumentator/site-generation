@@ -7,7 +7,7 @@ services:
       - "40400"
     restart: always
     depends_on:
-      - elias-db
+      - postgres-elias-db
 
   postgres-elias-db:
     image: mongo:7
