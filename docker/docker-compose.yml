@@ -10,7 +10,7 @@ services:
       - postgres-elias-db
 
   postgres-elias-db:
-    image: mongo:7
+    image: postgres:9
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: always
