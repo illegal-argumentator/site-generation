@@ -6,8 +6,6 @@ services:
     expose:
       - "40400"
     restart: always
-    networks:
-      - shared-network
     depends_on:
       - elias-db
 
