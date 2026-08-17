@@ -4,7 +4,7 @@ services:
   site-generation:
     build: ../../site-generation
     expose:
-      - "40400"
+      - "40400:8080"
     restart: always
     depends_on:
       - postgres-elias-db
