@@ -7,7 +7,7 @@ services:
       - "40400"
     restart: always
     depends_on:
-      - postgres-elias-db
+      - elias-volume
 
   postgres-elias-db:
     image: postgres:9
@@ -19,7 +19,7 @@ services:
       - "${POSTGRES_PORT}:5432"
     restart: always
     volumes:
-      - postgres-db-elias:/data/db
+      - elias-volume:/var/lib/postgresql/data
 
   ollama-ai:
     image: ollama/ollama:latest
@@ -27,7 +27,7 @@ services:
     ports:
       - "${OLLAMA_PORT}:11434"
     volumes:
-      - data_classification_volume:/root/.ollama
+      - elias-volume:/root/.ollama
 
 volumes:
-  postgres-db-elias:
+  elias-volume:
