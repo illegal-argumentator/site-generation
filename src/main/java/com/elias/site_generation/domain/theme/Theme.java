@@ -4,8 +4,13 @@ import java.time.Instant;
 
 public record Theme(
         String id,
-        String name,
+        byte[] data,
         Instant createdAt,
         Instant updatedAt
 ) {
+
+    public static Theme from(byte[] data) {
+        return new Theme(null, data, null, null);
+    }
+
 }

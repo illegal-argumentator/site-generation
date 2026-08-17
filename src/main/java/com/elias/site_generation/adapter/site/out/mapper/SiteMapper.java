@@ -12,6 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface SiteMapper {
 
     PostgresSite toEntity(Site site);
+    Site toSite(PostgresSite entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(@MappingTarget PostgresSite entity, Site site);

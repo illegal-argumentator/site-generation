@@ -16,8 +16,6 @@ public class PostgresTheme {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
-
     @CreatedDate
     private Instant createdAt;
 

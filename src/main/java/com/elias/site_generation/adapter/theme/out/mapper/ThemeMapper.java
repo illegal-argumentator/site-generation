@@ -9,5 +9,6 @@ import org.mapstruct.Mapper;
 public interface ThemeMapper {
 
     Theme toTheme(PostgresTheme entity);
+    PostgresTheme toEntity(Theme theme);
 
 }

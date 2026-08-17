@@ -25,25 +25,27 @@ class SiteService implements SiteUseCase {
     @Override
     public void create(String themeId, Site site) {
         Theme theme = themeQueryPort.getById(themeId);
-        Long newSiteId = saveNewSite(site, theme);
+        site.setTheme(theme);
 
-        String newSiteThemeId = siteThemeGenerationPort.generate(site, theme);
+        Site newSite = saveNewSite(site, theme);
+
+        String newSiteThemeId = siteThemeGenerationPort.generate(newSite);
         log.info("Generated new site theme {}.", newSiteThemeId);
 
         siteDeploymentPort.deploy(newSiteThemeId);
         log.info("New site theme {} successfully deployed.", newSiteThemeId);
 
-        siteCommandPort.update(newSiteId, Site.builder().status(Status.CREATED).build());
+        siteCommandPort.update(newSite.getId(), Site.builder().status(Status.CREATED).build());
         log.info("Site creation flow finished.");
     }
 
-    private Long saveNewSite(Site site, Theme theme) {
+    private Site saveNewSite(Site site, Theme theme) {
         site.setTheme(theme);
         site.setStatus(Status.PENDING);
 
-        Long id = siteCommandPort.save(site);
-        log.info("Saved new site {} with status {}.", id, site.getStatus());
-        return id;
+        Site newSite = siteCommandPort.save(site);
+        log.info("Saved new site {} with status {}.", newSite.getId(), site.getStatus());
+        return newSite;
     }
 
 }
