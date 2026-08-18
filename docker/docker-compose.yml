@@ -6,6 +6,8 @@ services:
     ports:
       - "40400:8080"
     restart: always
+    environment:
+      CHAT_GPT_API_KEY: ${CHAT_GPT_API_KEY}
     depends_on:
       - postgres-elias-db
       - ollama-ai
