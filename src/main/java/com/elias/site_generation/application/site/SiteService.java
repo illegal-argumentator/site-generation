@@ -2,7 +2,8 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.Status;
-import com.elias.site_generation.domain.theme.Theme;
+import com.elias.site_generation.domain.theme.TemplateType;
+import com.elias.site_generation.domain.theme.exception.ThemeNotFoundException;
 import com.elias.site_generation.port.SiteDeploymentPort;
 import com.elias.site_generation.port.SiteThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
@@ -23,29 +24,29 @@ class SiteService implements SiteUseCase {
     private final SiteDeploymentPort siteDeploymentPort;
 
     @Override
-    public void create(String themeId, Site site) {
-        Theme theme = themeQueryPort.getById(themeId);
-        site.setTheme(theme);
+    public void create(TemplateType type, Site site) {
+        throwIfTemplateNotExists(type);
 
-        Site newSite = saveNewSite(site, theme);
+        Site newSite = savePendingSite(type, site);
+        String themeId = siteThemeGenerationPort.generate(newSite);
 
-        String newSiteThemeId = siteThemeGenerationPort.generate(newSite);
-        log.info("Generated new site theme {}.", newSiteThemeId);
-
-        siteDeploymentPort.deploy(newSiteThemeId);
-        log.info("New site theme {} successfully deployed.", newSiteThemeId);
-
-        siteCommandPort.update(newSite.getId(), Site.builder().status(Status.CREATED).build());
-        log.info("Site creation flow finished.");
+        completeSite(themeId, newSite.getId());
+//        siteDeploymentPort.deploy(themeId);
     }
 
-    private Site saveNewSite(Site site, Theme theme) {
-        site.setTheme(theme);
+    private Site savePendingSite(TemplateType type, Site site) {
         site.setStatus(Status.PENDING);
-
-        Site newSite = siteCommandPort.save(site);
-        log.info("Saved new site {} with status {}.", newSite.getId(), site.getStatus());
-        return newSite;
+        site.setType(type);
+        return siteCommandPort.save(site);
     }
 
+    private void completeSite(String themeId, Long siteId) {
+        siteCommandPort.update(siteId, Site.builder().status(Status.CREATED).themeId(themeId).build());
+    }
+
+    private void throwIfTemplateNotExists(TemplateType type) {
+        if (!themeQueryPort.exists(type)) {
+            throw new ThemeNotFoundException("Theme not found by type: %s.".formatted(type));
+        }
+    }
 }
