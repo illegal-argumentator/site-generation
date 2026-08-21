@@ -1,6 +1,6 @@
-package com.elias.site_generation.adapter.theme.out;
+package com.elias.site_generation.adapter.theme.out.generation;
 
-import com.elias.site_generation.adapter.theme.out.strategy.TemplateGenerationStrategy;
+import com.elias.site_generation.adapter.theme.out.generation.strategy.TemplateGenerationStrategy;
 import com.elias.site_generation.domain.theme.TemplateType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

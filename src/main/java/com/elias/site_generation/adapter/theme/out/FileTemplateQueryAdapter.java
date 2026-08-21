@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.theme.out;
 
-import com.elias.site_generation.adapter.file.out.FilePort;
+import com.elias.site_generation.adapter.site.out.FileManagerPort;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.port.theme.TemplateQueryPort;
 import com.elias.site_generation.shared.file.FilePath;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 public class FileTemplateQueryAdapter implements TemplateQueryPort {
 
     private final FilePathProps props;
-    private final FilePort filePort;
+    private final FileManagerPort fileManagerPort;
 
     @Override
     public boolean exists(TemplateType type) {
         FilePath filePath = FilePath.from(type.getName().concat(FileUtils.ZIP_FORMAT), props.getTemplates());
-        return filePort.exists(filePath);
+        return fileManagerPort.exists(filePath);
     }
 
 }

@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.file.out;
 
 import com.elias.site_generation.adapter.file.out.exception.FileReadException;
 import com.elias.site_generation.adapter.file.out.exception.FileWriteException;
+import com.elias.site_generation.adapter.site.out.FileManagerPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.nio.file.Paths;
 
 @Slf4j
 @Service
-class FileAdapter implements FilePort {
+class FileManagerAdapter implements FileManagerPort {
 
     @Override
     public void write(FilePath filePath, byte[] file) {

@@ -5,8 +5,9 @@ import com.elias.site_generation.domain.site.Status;
 import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
 import com.elias.site_generation.domain.site.exception.SiteCreationException;
 import com.elias.site_generation.domain.theme.TemplateType;
+import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
-import com.elias.site_generation.port.SiteDeploymentPort;
+import com.elias.site_generation.port.theme.ThemeDeploymentPort;
 import com.elias.site_generation.port.SiteThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteUseCase;
@@ -27,7 +28,7 @@ class SiteService implements SiteUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final SiteThemeGenerationPort siteThemeGenerationPort;
-    private final SiteDeploymentPort siteDeploymentPort;
+    private final ThemeDeploymentPort themeDeploymentPort;
 
     private final ApplicationEventPublisher publisher;
 
@@ -37,9 +38,10 @@ class SiteService implements SiteUseCase {
         throwIfTemplateNotExists(type);
 
         Site newSite = save(type, site);
-        String themeId = generate(newSite);
-        deploy(themeId);
-        complete(themeId, newSite.getId());
+        Theme theme = generate(newSite);
+
+        deploy(newSite.getId(), theme);
+        complete(theme.id(), newSite.getId());
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
@@ -54,8 +56,8 @@ class SiteService implements SiteUseCase {
         return siteCommandPort.save(site);
     }
 
-    private String generate(Site site) {
-        ResponseBody<String> body = siteThemeGenerationPort.generate(site);
+    private Theme generate(Site site) {
+        ResponseBody<Theme> body = siteThemeGenerationPort.generate(site);
 
         if (!body.isSuccessful()) {
             publisher.publishEvent(new SiteCreationFailedEvent(site.getId(), body.message()));
@@ -70,7 +72,14 @@ class SiteService implements SiteUseCase {
         siteCommandPort.update(siteId, Site.builder().status(Status.CREATED).themeId(themeId).build());
     }
 
-    private void deploy(String themeId) {
+    private void deploy(long siteId, Theme theme) {
+        ResponseBody<Object> body = themeDeploymentPort.deploy(theme);
 
+        if (!body.isSuccessful()) {
+            publisher.publishEvent(new SiteCreationFailedEvent(siteId, body.message()));
+            throw new SiteCreationException("Failed site creation on theme deployment step.");
+        }
+
+        log.info("Finished deploying theme.");
     }
 }

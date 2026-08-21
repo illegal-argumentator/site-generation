@@ -1,8 +1,8 @@
-package com.elias.site_generation.adapter.theme.out.strategy;
+package com.elias.site_generation.adapter.theme.out.generation.strategy;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
-import com.elias.site_generation.adapter.file.out.ZipFilePort;
+import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
