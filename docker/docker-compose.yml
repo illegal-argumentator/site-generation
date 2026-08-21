@@ -10,6 +10,9 @@ services:
       CHAT_GPT_API_KEY: ${CHAT_GPT_API_KEY}
     depends_on:
       - postgres-elias-db
+    volumes:
+      - /opt/dataox/site-generation/templates:/app/templates
+      - /opt/dataox/site-generation/themes:/app/themes
 
   postgres-elias-db:
     image: postgres:9
