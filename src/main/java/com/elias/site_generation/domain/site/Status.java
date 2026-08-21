@@ -3,6 +3,13 @@ package com.elias.site_generation.domain.site;
 public enum Status {
 
     PENDING,
+
+    DOMAIN_CREATION_FAILED,
+    DB_CREATION_FAILED,
+    WEBSITE_INSTALLATION_FAILED,
+    WEBSITE_CONFIGURATION_FAILED,
+    THEME_INSTALLATION_FAILED,
+
     CREATED,
     FAILED
 

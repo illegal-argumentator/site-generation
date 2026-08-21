@@ -23,6 +23,6 @@ public class SiteCreationFailedEventListener {
     }
 
     private Site buildBodyForFailed(SiteCreationFailedEvent event) {
-        return Site.builder().status(Status.FAILED).failReason(event.reason()).build();
+        return Site.builder().status(event.status()).failReason(event.reason()).build();
     }
 }

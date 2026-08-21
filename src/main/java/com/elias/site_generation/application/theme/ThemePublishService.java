@@ -1,11 +1,14 @@
 package com.elias.site_generation.application.theme;
 
+import com.elias.site_generation.domain.site.Status;
 import com.elias.site_generation.domain.theme.Theme;
+import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
 import com.elias.site_generation.port.theme.ThemePublishUseCase;
 import com.elias.site_generation.port.website.WebsiteThemePort;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
+import com.elias.site_generation.shared.utils.FuncUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,21 +22,27 @@ class ThemePublishService implements ThemePublishUseCase {
     private final HostingPort hostingPort;
     private final WebsiteThemePort websiteThemePort;
 
+    // TODO connect to server via ssh because we cannot use curl/bash inside the docker
+
     @Override
     public void publish(long siteId, Theme theme) {
-        hostingPort.createDomain();
+        FuncUtils.runOrThrow(hostingPort::createDomain, new ThemePublishingException(siteId, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
         log.info("Selected domain for site: {}.", siteId);
 
-        hostingPort.createDb();
+        FuncUtils.runOrThrow(hostingPort::createDb, new ThemePublishingException(siteId, "Failed to create db.", Status.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", siteId);
 
-        websiteThemePort.installWebsite();
+        FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(siteId, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
         log.info("Installed WordPress for site: {}.", siteId);
 
-        websiteThemePort.createConfig();
+        FuncUtils.runOrThrow(websiteThemePort::createConfig, new ThemePublishingException(siteId, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
         log.info("Configured WordPress for site: {}.", siteId);
 
-        websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes()));
+
+        FuncUtils.runOrThrow(
+                () -> websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes())),
+                new ThemePublishingException(siteId, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED)
+        );
         log.info("Installed theme for site: {}.", siteId);
     }
 }
