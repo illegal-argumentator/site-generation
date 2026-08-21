@@ -40,7 +40,6 @@ class FileAdapter implements FilePort {
 
     @Override
     public boolean exists(FilePath filePath) {
-        System.out.println(getPath(filePath.filename(), filePath.directory()));
         return Files.exists(getPath(filePath.filename(), filePath.directory()));
     }
 
