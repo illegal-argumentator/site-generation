@@ -25,6 +25,7 @@ public class PostgresSite {
 
     private String content;
     private String language;
+    private String failReason;
 
     private TemplateType type;
     private String themeId;

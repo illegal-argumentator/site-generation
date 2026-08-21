@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TemplateType {
 
-    GAMBLING_CASINO("gambling-casino");
+    LUCKY_CASINO("lucky-casino");
 
     private final String name;
 }

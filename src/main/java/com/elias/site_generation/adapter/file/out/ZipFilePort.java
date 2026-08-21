@@ -4,8 +4,8 @@ import java.util.Map;
 
 public interface ZipFilePort {
 
-    byte[] update(byte[] source, Map<String, byte[]> files);
+    byte[] update(byte[] target, Map<String, byte[]> files);
 
-    Map<String, byte[]> extract(byte[] source);
+    byte[] extract(String filename, byte[] source);
 
 }

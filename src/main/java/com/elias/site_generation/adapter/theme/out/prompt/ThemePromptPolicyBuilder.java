@@ -35,15 +35,7 @@ public final class ThemePromptPolicyBuilder {
             """;
 
     private static final String REQUEST_TEMPLATE = """
-            Client request:
-            
-            %s
-            
             Target language:
-            
-            %s
-            
-            Current file:
             
             %s
             
@@ -52,56 +44,86 @@ public final class ThemePromptPolicyBuilder {
             %s
             """;
 
-    private static final String CSS_CHANGE_TEMPLATE = """
-            Modify ONLY the CSS.
-            
-            Rules:
-            
-            - Keep all selectors.
-            - Do not rename classes.
-            - Do not remove responsive rules.
-            - Keep layout intact.
-            - Only change colors, typography, spacing, shadows, borders, animations when needed.
-            - Return only CSS.
-            """;
-
     private static final String HTML_CHANGE_TEMPLATE = """
-            Modify ONLY the content and styling-related markup.
+                Modify ONLY the visible text content of the existing HTML. Do not touch
+                  anything else.
             
-            Rules:
+                  Rules:
             
-            - Preserve the existing DOM hierarchy.
-            - Preserve classes.
-            - Preserve IDs.
-            - Preserve data-* attributes.
-            - Preserve JavaScript hooks.
-            - Translate all visible text into %s.
-            - Adapt the content according to the client request.
-            - Do not explain.
-            - Return only HTML.
+                  - The provided HTML file already contains its complete structure and
+                    the complete styling.
+                  - Treat the HTML structure, all tags, attributes, classes, and IDs as
+                    the source of truth. Your only job is to replace text content.
+            
+                  DO NOT:
+            
+                  - add, remove, reorder, or restructure any HTML elements
+                  - change any tag names
+                  - add, remove, or modify any classes
+                  - add, remove, or modify any IDs
+                  - add, remove, or modify any data-* attributes
+                  - add a new <style> element
+                  - modify, remove, rewrite, or duplicate the existing <style> element
+                  - generate or change any CSS
+                  - use inline styles
+                  - change href, src, or other functional attribute values
+                  - change the number of elements (e.g. do not add or remove game cards,
+                    FAQ items, feature cards, nav links, footer columns, etc.) — every
+                    element keeps its place, only its text changes
+            
+                  You MAY change:
+            
+                  - the text inside headings, paragraphs, spans, buttons, links, labels
+                  - placeholder text in inputs
+                  - alt text on images
+                  - aria-label values, if present, so they stay accurate to the new text
+                  - numeric/stat values shown as text (e.g. jackpot amounts, RTP
+                    percentages, stats, countdown labels), as long as they stay
+                    plausible for a casino/slots website and consistent with the
+                    element they're in
+            
+                  Content rules:
+            
+                  - Before returning, scan every text node and attribute listed above.
+                    If any of them is still in a language other than %s, translate it.
+                    Do not leave any original-language text in the output.
+                  - Generate completely new, randomized casino/slots-themed copy for
+                    every text element: brand name, headlines, taglines, feature
+                    descriptions, game names, game tags/categories, stats, jackpot
+                    copy, FAQ questions and answers, CTA copy, footer text, etc.
+                  - Match the tone and length roughly to what's already there — a
+                    headline stays headline-length, a short button label stays short,
+                    a paragraph stays a similar length — so the existing layout doesn't
+                    break or overflow.
+                  - Keep the copy premium, professional, and plausible for a real
+                    online casino/slots brand. Avoid generic filler like "Lorem ipsum"
+                    or placeholder-sounding text.
+                  - Do not reuse the exact brand name, game names, or copy from the
+                    original HTML — invent new ones.
+            
+                  Important:
+            
+                  - The HTML structure, tags, classes, and IDs must remain completely
+                    unchanged.
+                  - Only text content and the text-bearing attributes listed above may
+                    change.
+                  - Do not explain.
+                  - Return only HTML.
+            
+                  Existing HTML (structure, styles, and current content):
+            
+                  %s
             """;
-
-    public static String buildCssChangePrompt(Rules rules) {
-        return buildMainRule(rules).concat(CSS_CHANGE_TEMPLATE);
-    }
 
     public static String buildHtmlChangePrompt(Rules rules) {
-        return buildMainRule(rules).concat(HTML_CHANGE_TEMPLATE.formatted(rules.language));
+        return buildMainRule(rules).concat(HTML_CHANGE_TEMPLATE.formatted(rules.language, rules.content));
     }
 
     private static String buildMainRule(Rules rules) {
-        return MAIN_RULE
-                .concat("\n")
-                .concat(REQUEST_TEMPLATE.formatted(rules.request, rules.language, rules.filename, rules.content))
-                .concat("\n");
+        return MAIN_RULE.concat("\n").concat(REQUEST_TEMPLATE.formatted(rules.language, rules.content)).concat("\n");
     }
 
-    public record Rules(
-            String request,
-            String language,
-            String filename,
-            String content
-    ) {
+    public record Rules(String language, String content) {
 
     }
 }

@@ -18,6 +18,8 @@ public class Site {
     private String language;
     private String content;
 
+    private String failReason;
+
     private TemplateType type;
     private String themeId;
 
