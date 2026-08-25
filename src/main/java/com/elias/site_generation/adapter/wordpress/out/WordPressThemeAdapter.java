@@ -80,15 +80,20 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private void executeWpCommand(String... arguments) {
         var command = new StringBuilder()
                 .append("sudo -n -u ")
-                .append(props.getUsername())
+                .append(escapeShellArgument(props.getUsername()))
                 .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
-                .append(wordpressPath);
+                .append(escapeShellArgument(wordpressPath));
 
         for (String argument : arguments) {
-            command.append(" ").append(argument);
+            command.append(" ")
+                    .append(escapeShellArgument(argument));
         }
 
         remoteCommandPort.execute(command.toString());
+    }
+
+    private String escapeShellArgument(String argument) {
+        return "'" + argument.replace("'", "'\"'\"'") + "'";
     }
 }
