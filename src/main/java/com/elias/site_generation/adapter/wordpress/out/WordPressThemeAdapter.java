@@ -21,20 +21,23 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
+    public void downloadWebsite() {
+        executeWpCommand(
+                "core",
+                "download"
+        );
+    }
+
+    @Override
     public void installWebsite() {
-        remoteCommandPort.execute(
-                String.format(
-                        "sudo -u %s -H /usr/local/bin/wp --path=%s core install " +
-                                "--url=https://%s " +
-                                "--title='My Site' " +
-                                "--admin_user=admin " +
-                                "--admin_password='Admin123!' " +
-                                "--admin_email=admin@%s",
-                        props.getUsername(),
-                        wordpressPath,
-                        hostname,
-                        hostname
-                )
+        executeWpCommand(
+                "core",
+                "install",
+                "--url=https://" + hostname,
+                "--title=My Site",
+                "--admin_user=admin",
+                "--admin_password=Admin123!",
+                "--admin_email=admin@" + hostname
         );
     }
 
@@ -70,7 +73,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
 
     private void executeWpCommand(String... arguments) {
         var command = new StringBuilder()
-                .append("sudo -u ")
+                .append("sudo -n -u ")
                 .append(props.getUsername())
                 .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
