@@ -46,19 +46,19 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(siteId, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
         log.info("Installed WordPress for site: {}.", siteId);
 
-        FuncUtils.runOrThrow(() -> installTheme(siteId, theme), new ThemePublishingException(siteId, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
+        FuncUtils.runOrThrow(() -> installTheme(theme), new ThemePublishingException(siteId, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
         log.info("Installed theme for site: {}.", siteId);
     }
 
-    private void installTheme(long siteId, Theme theme) {
+    private void installTheme(Theme theme) {
         String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
         String tempPath = getDomainTempThemePath(theme.id());
 
         System.out.println(tempPath);
         System.out.println(localFilepath);
-        remoteCommandPort.upload(tempPath, localFilepath);
+        remoteCommandPort.upload(localFilepath, tempPath);
         System.out.println("created temp file");
-        websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes()));
+        websiteThemePort.installTheme(tempPath);
         System.out.println("installed theme");
         remoteCommandPort.delete(tempPath);
         System.out.println("deleted theme");
