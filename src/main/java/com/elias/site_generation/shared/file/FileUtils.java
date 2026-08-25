@@ -9,9 +9,11 @@ import java.nio.file.Paths;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtils {
 
+    private static final String SLASH = "/";
+
     public static final String USER_DIR = "user.dir";
     public static final String ZIP_FORMAT = ".zip";
-    public static final String TEMP_PATH = "/tmp/";
+    public static final String TEMP_PATH = "/tmp";
 
     public static String buildOriginalFilename(String name, String contentType) {
         if (name == null || contentType == null) {
@@ -28,7 +30,7 @@ public final class FileUtils {
     }
 
     public static String getTempPath(String folder, String filename) {
-        return TEMP_PATH + folder + filename;
+        return TEMP_PATH + SLASH + folder + SLASH + filename;
     }
 
     private static Path getAbsolutePath(String directory) {

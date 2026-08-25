@@ -52,7 +52,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void installTheme(long siteId, Theme theme) {
         String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
-        String tempPath = getDomainTempThemePath(siteId);
+        String tempPath = getDomainTempThemePath(theme.id());
 
         System.out.println(tempPath);
         System.out.println(localFilepath);
@@ -64,8 +64,8 @@ class ThemePublishService implements ThemePublishUseCase {
         System.out.println("deleted theme");
     }
 
-    private String getDomainTempThemePath(long siteId) {
-        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(siteId), FileUtils.ZIP_FORMAT);
+    private String getDomainTempThemePath(String themeId) {
+        String originalFilename = FileUtils.buildOriginalFilename(themeId, FileUtils.ZIP_FORMAT);
         return FileUtils.getTempPath(fileTemp, originalFilename);
     }
 }
