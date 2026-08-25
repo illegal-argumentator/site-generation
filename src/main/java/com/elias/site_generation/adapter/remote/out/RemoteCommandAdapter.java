@@ -22,9 +22,9 @@ class RemoteCommandAdapter implements RemoteCommandPort {
 
     @Override
     public String execute(String command) {
-        try (client) {
-            client.start();
+        client.start();
 
+        try (client) {
             try (session) {
                 try (var channel = session.createExecChannel(command)) {
 
