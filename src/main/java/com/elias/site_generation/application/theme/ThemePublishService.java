@@ -4,6 +4,7 @@ import com.elias.site_generation.domain.site.Status;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
+import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.theme.ThemePublishUseCase;
 import com.elias.site_generation.port.website.WebsiteThemePort;
 import com.elias.site_generation.shared.file.FileUtils;
@@ -11,6 +12,7 @@ import com.elias.site_generation.shared.props.FilePathProps;
 import com.elias.site_generation.shared.utils.FuncUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,9 +20,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ThemePublishService implements ThemePublishUseCase {
 
+    @Value("${file.path.temp}")
+    private String fileTemp;
+
     private final FilePathProps pathProps;
+
     private final HostingPort hostingPort;
     private final WebsiteThemePort websiteThemePort;
+    private final RemoteCommandPort remoteCommandPort;
 
     @Override
     public void publish(long siteId, Theme theme) {
@@ -39,10 +46,21 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(siteId, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
         log.info("Installed WordPress for site: {}.", siteId);
 
-        FuncUtils.runOrThrow(
-                () -> websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes())),
-                new ThemePublishingException(siteId, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED)
-        );
+        FuncUtils.runOrThrow(() -> installTheme(siteId, theme), new ThemePublishingException(siteId, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
         log.info("Installed theme for site: {}.", siteId);
+    }
+
+    private void installTheme(long siteId, Theme theme) {
+        String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
+        String tempPath = getDomainTempThemePath(siteId);
+
+        remoteCommandPort.upload(tempPath, localFilepath);
+        websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes()));
+        remoteCommandPort.delete(tempPath);
+    }
+
+    private String getDomainTempThemePath(long siteId) {
+        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(siteId), FileUtils.ZIP_FORMAT);
+        return FileUtils.getTempPath(fileTemp, originalFilename);
     }
 }

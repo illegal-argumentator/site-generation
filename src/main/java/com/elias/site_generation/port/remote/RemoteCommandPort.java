@@ -2,6 +2,10 @@ package com.elias.site_generation.port.remote;
 
 public interface RemoteCommandPort {
 
-    String execute(String command);
+    void upload(String localPath, String remotePath);
+
+    void delete(String remotePath);
+
+    void execute(String command);
 
 }

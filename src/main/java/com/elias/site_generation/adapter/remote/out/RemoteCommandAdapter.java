@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.sftp.client.SftpClient;
+import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +23,26 @@ class RemoteCommandAdapter implements RemoteCommandPort {
     private final SshRemoteClient client;
 
     @Override
-    public String execute(String command) {
+    public void upload(String localPath, String remotePath) {
+        try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(client.connect())) {
+            sftp.put(Paths.get(localPath), remotePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file: " + localPath, e);
+        }
+    }
+
+    @Override
+    public void delete(String remotePath) {
+        try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(client.connect())) {
+            sftp.remove(remotePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete remote file: " + remotePath, e);
+        }
+    }
+
+
+    @Override
+    public void execute(String command) {
         try (ClientSession session = client.connect()) {
             ChannelExec channel = session.createExecChannel(command);
 
@@ -33,13 +54,9 @@ class RemoteCommandAdapter implements RemoteCommandPort {
             channel.open().verify();
             channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), TimeUnit.SECONDS.toMillis(30));
 
-            System.out.println(channel.getErr());
-            System.out.println(channel.getExitStatus());
             if (channel.getExitStatus() != 0) {
                 throw new IllegalStateException("Remote command failed: " + error);
             }
-
-            return output.toString(StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
