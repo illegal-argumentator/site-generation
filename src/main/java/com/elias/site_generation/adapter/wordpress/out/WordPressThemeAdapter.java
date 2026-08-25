@@ -1,13 +1,11 @@
 package com.elias.site_generation.adapter.wordpress.out;
 
-import com.elias.site_generation.infrastructure.executor.ProcessExecutor;
+import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.website.WebsiteThemePort;
 import com.elias.site_generation.shared.props.HestiaProps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -20,72 +18,68 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private String hostname;
 
     private final HestiaProps props;
-    private final ProcessExecutor processExecutor;
+    private final RemoteCommandPort remoteCommandPort;
 
     @Override
     public void installWebsite() {
-        processExecutor.execute(List.of(
-                "sudo",
-                "-u",
-                props.getUsername(),
-                "-H",
-                "wp",
-                "--path=" + wordpressPath,
-                "core",
-                "install",
-                "--url=https://" + hostname,
-                "--title=My Site",
-                "--admin_user=admin",
-                "--admin_password=Admin123!",
-                "--admin_email=admin@" + hostname
-        ));
+        remoteCommandPort.execute(
+                String.format(
+                        "sudo -u %s -H wp --path=%s core install " +
+                                "--url=https://%s " +
+                                "--title='My Site' " +
+                                "--admin_user=admin " +
+                                "--admin_password='Admin123!' " +
+                                "--admin_email=admin@%s",
+                        props.getUsername(),
+                        wordpressPath,
+                        hostname,
+                        hostname
+                )
+        );
     }
 
     @Override
     public void installTheme(String themePath) {
-        processExecutor.execute(List.of(
-                "sudo",
-                "-u",
-                props.getUsername(),
-                "-H",
-                "wp",
-                "--path=" + wordpressPath,
+        executeWpCommand(
                 "theme",
                 "install",
                 themePath
-        ));
+        );
     }
 
     @Override
     public void activateTheme(String name) {
-        processExecutor.execute(List.of(
-                "sudo",
-                "-u",
-                props.getUsername(),
-                "-H",
-                "wp",
-                "--path=" + wordpressPath,
+        executeWpCommand(
                 "theme",
                 "activate",
                 name
-        ));
+        );
     }
 
     @Override
     public void createConfig() {
-        processExecutor.execute(List.of(
-                "sudo",
-                "-u",
-                props.getUsername(),
-                "-H",
-                "wp",
-                "--path=" + wordpressPath,
+        executeWpCommand(
                 "config",
                 "create",
                 "--dbname=" + props.getDbName(),
                 "--dbuser=" + props.getDbUser(),
                 "--dbpass=" + props.getDbPassword(),
                 "--dbhost=localhost"
-        ));
+        );
+    }
+
+    private void executeWpCommand(String... arguments) {
+        var command = new StringBuilder()
+                .append("sudo -u ")
+                .append(props.getUsername())
+                .append(" -H wp ")
+                .append("--path=")
+                .append(wordpressPath);
+
+        for (String argument : arguments) {
+            command.append(" ").append(argument);
+        }
+
+        remoteCommandPort.execute(command.toString());
     }
 }
