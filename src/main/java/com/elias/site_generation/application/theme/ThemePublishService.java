@@ -54,9 +54,14 @@ class ThemePublishService implements ThemePublishUseCase {
         String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
         String tempPath = getDomainTempThemePath(siteId);
 
+        System.out.println(tempPath);
+        System.out.println(localFilepath);
         remoteCommandPort.upload(tempPath, localFilepath);
+        System.out.println("created temp file");
         websiteThemePort.installTheme(FileUtils.getFilePath(theme.id(), pathProps.getThemes()));
+        System.out.println("installed theme");
         remoteCommandPort.delete(tempPath);
+        System.out.println("deleted theme");
     }
 
     private String getDomainTempThemePath(long siteId) {

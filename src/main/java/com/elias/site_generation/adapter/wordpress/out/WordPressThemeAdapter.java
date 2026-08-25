@@ -86,8 +86,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
                 .append(escapeShellArgument(wordpressPath));
 
         for (String argument : arguments) {
-            command.append(" ")
-                    .append(escapeShellArgument(argument));
+            command.append(" ").append(escapeShellArgument(argument));
         }
 
         remoteCommandPort.execute(command.toString());

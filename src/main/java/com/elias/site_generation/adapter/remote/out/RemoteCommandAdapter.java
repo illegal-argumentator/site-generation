@@ -40,7 +40,6 @@ class RemoteCommandAdapter implements RemoteCommandPort {
         }
     }
 
-
     @Override
     public void execute(String command) {
         try (ClientSession session = client.connect()) {
