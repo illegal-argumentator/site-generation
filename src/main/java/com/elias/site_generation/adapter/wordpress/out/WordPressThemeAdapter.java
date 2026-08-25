@@ -68,7 +68,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
                 "create",
                 "--dbname=" + addUserUnderscorePrefix(props.getDbName()),
                 "--dbuser=" + addUserUnderscorePrefix(props.getDbUser()),
-                "--dbpass=" + addUserUnderscorePrefix(props.getDbPassword()),
+                "--dbpass=" + props.getDbPassword(),
                 "--dbhost=localhost"
         );
     }
