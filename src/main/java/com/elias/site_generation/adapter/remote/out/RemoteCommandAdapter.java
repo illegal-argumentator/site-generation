@@ -33,7 +33,6 @@ class RemoteCommandAdapter implements RemoteCommandPort {
             channel.open().verify();
             channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), TimeUnit.SECONDS.toMillis(30));
 
-            System.out.println(output);
             System.out.println(channel.getErr());
             System.out.println(channel.getExitStatus());
             if (channel.getExitStatus() != 0) {

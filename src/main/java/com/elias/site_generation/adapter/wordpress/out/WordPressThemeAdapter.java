@@ -24,7 +24,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     public void installWebsite() {
         remoteCommandPort.execute(
                 String.format(
-                        "sudo -u %s -H wp --path=%s core install " +
+                        "sudo -u %s -H /usr/local/bin/wp --path=%s core install " +
                                 "--url=https://%s " +
                                 "--title='My Site' " +
                                 "--admin_user=admin " +
@@ -72,7 +72,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
         var command = new StringBuilder()
                 .append("sudo -u ")
                 .append(props.getUsername())
-                .append(" -H wp ")
+                .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
                 .append(wordpressPath);
 
