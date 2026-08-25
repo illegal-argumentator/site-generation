@@ -17,6 +17,8 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     @Value("${server.hostname}")
     private String hostname;
 
+    private static final String UNDERSCORE_PREFIX = "_";
+
     private final HestiaProps props;
     private final RemoteCommandPort remoteCommandPort;
 
@@ -64,11 +66,15 @@ class WordPressThemeAdapter implements WebsiteThemePort {
         executeWpCommand(
                 "config",
                 "create",
-                "--dbname=" + props.getDbName(),
-                "--dbuser=" + props.getDbUser(),
-                "--dbpass=" + props.getDbPassword(),
+                "--dbname=" + addUserUnderscorePrefix(props.getDbName()),
+                "--dbuser=" + addUserUnderscorePrefix(props.getDbUser()),
+                "--dbpass=" + addUserUnderscorePrefix(props.getDbPassword()),
                 "--dbhost=localhost"
         );
+    }
+
+    private String addUserUnderscorePrefix(String prop) {
+        return props.getUsername() + UNDERSCORE_PREFIX + prop;
     }
 
     private void executeWpCommand(String... arguments) {
