@@ -13,6 +13,7 @@ services:
     volumes:
       - /opt/dataox/site-generation/templates:/app/templates
       - /opt/dataox/site-generation/themes:/app/themes
+      - /home/dataox/.ssh/site-generation/id_ed25519:/root/.ssh/id_ed25519:ro
 
   postgres-elias-db:
     image: postgres:9

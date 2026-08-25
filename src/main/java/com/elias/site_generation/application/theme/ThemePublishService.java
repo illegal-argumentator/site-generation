@@ -22,8 +22,6 @@ class ThemePublishService implements ThemePublishUseCase {
     private final HostingPort hostingPort;
     private final WebsiteThemePort websiteThemePort;
 
-    // TODO connect to server via ssh because we cannot use curl/bash inside the docker
-
     @Override
     public void publish(long siteId, Theme theme) {
         FuncUtils.runOrThrow(hostingPort::createDomain, new ThemePublishingException(siteId, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
