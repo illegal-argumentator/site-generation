@@ -10,10 +10,12 @@ import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 class ThemeGenerationAdapter implements ThemeGenerationPort {
@@ -24,6 +26,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
 
     @Override
     public Theme generate(Site site) {
+        log.info("Started generating theme.");
         String templateId = UUID.randomUUID().toString();
 
         try {
