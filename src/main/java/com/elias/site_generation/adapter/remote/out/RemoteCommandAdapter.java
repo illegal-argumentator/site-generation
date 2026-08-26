@@ -56,6 +56,7 @@ class RemoteCommandAdapter implements RemoteCommandPort {
             channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), TimeUnit.SECONDS.toMillis(30));
 
             Integer exit = channel.getExitStatus();
+            System.out.println(exit);
             if (exit == null || exit != 0) {
                 log.error("Error while executing command: '{}', reason: {}.", command, error);
                 throw new IllegalStateException(

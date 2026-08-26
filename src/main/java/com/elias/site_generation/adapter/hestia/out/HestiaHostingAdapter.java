@@ -49,7 +49,10 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     private void executeRemote(String... arguments) {
+        System.out.println(1);
         var command = String.join(" ", arguments);
+        System.out.println(2);
         remoteCommandPort.execute(command);
+        System.out.println(3);
     }
 }
