@@ -17,7 +17,7 @@ public class SiteCreationFailedEventListener {
 
     @EventListener
     public void listen(SiteCreationFailedEvent event) {
-        log.info("Received event for failing event: {}, reason: {}.", event.id(), event.reason());
+        log.info("Received event for site creation failed: {}, reason: {}", event.id(), event.reason());
         siteCommandPort.update(event.id(), buildBodyForFailed(event));
     }
 
