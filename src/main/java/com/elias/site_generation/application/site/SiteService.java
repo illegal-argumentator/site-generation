@@ -57,7 +57,7 @@ class SiteService implements SiteUseCase {
 
         site.setStatus(Status.PENDING);
         site.setType(type);
-        site.setDbUser(db.username());
+        site.setDbName(db.name());
         site.setDbPass(db.password());
         site.setHostname(hostname);
 
