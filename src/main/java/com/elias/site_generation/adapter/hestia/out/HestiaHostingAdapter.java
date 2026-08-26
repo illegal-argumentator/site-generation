@@ -37,13 +37,13 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     @Override
-    public void createDb(String dbUser, String dbPass) {
+    public void createDb(String dbName, String dbPass) {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-database",
                 props.getUsername(),
-                props.getDbName(),
-                dbUser,
+                dbName,
+                props.getDbUser(),
                 dbPass
         );
     }

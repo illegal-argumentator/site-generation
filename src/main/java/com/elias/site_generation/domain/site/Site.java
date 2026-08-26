@@ -22,7 +22,7 @@ public class Site {
     private String content;
 
     private String hostname;
-    private String dbUser;
+    private String dbName;
     private String dbPass;
 
     private String failReason;
@@ -33,13 +33,13 @@ public class Site {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private static final String DB_USER_PREFIX = "admin";
+    private static final String DB_NAME_PREFIX = "user";
     private static final int FIRST = 0, FOUR = 4, EIGHT = 8;
 
     public static Db generateDbCreds() {
-         String username = DB_USER_PREFIX.concat(UUID.randomUUID().toString().substring(FIRST, FOUR));
+         String name = DB_NAME_PREFIX.concat(UUID.randomUUID().toString().substring(FIRST, FOUR));
          String password = String.valueOf(UUID.randomUUID()).substring(FIRST, EIGHT);
-         return new Db(username, password);
+         return new Db(name, password);
     }
 
 }

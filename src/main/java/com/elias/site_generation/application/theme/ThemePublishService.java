@@ -40,7 +40,7 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(() -> hostingPort.enableSsl(site.getHostname()), new ThemePublishingException(id, "Failed to enable ssl for domain.", Status.SSL_ENABLE_FAILED));
         log.info("Enabled ssl for domain: {}.", site.getHostname());
 
-        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbUser(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
+        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbName(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", id);
 
         FuncUtils.runOrThrow(websiteThemePort::downloadWebsite, new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
