@@ -44,6 +44,8 @@ class RemoteCommandAdapter implements RemoteCommandPort {
 
     @Override
     public void execute(String command) {
+        log.info("Executing command: {}.", command);
+
         try (ClientSession session = client.connect()) {
             ChannelExec channel = session.createExecChannel(command);
 
