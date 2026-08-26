@@ -49,12 +49,7 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     private void executeRemote(String... arguments) {
-        var command = Arrays.stream(arguments).map(this::escapeShellArgument).collect(Collectors.joining(" "));
+        var command = String.join(" ", arguments);
         remoteCommandPort.execute(command);
     }
-
-    private String escapeShellArgument(String argument) {
-        return "'" + argument.replace("'", "'\"'\"'") + "'";
-    }
-
 }

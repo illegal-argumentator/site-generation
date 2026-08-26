@@ -62,13 +62,13 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     }
 
     @Override
-    public void createConfig() {
+    public void createConfig(String name, String password) {
         executeWpCommand(
                 "config",
                 "create",
-                "--dbname=" + addUserUnderscorePrefix(props.getDbName()),
+                "--dbname=" + addUserUnderscorePrefix(name),
                 "--dbuser=" + addUserUnderscorePrefix(props.getDbUser()),
-                "--dbpass=" + props.getDbPassword(),
+                "--dbpass=" + password,
                 "--dbhost=localhost"
         );
     }
@@ -80,19 +80,15 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private void executeWpCommand(String... arguments) {
         var command = new StringBuilder()
                 .append("sudo -n -u ")
-                .append(escapeShellArgument(props.getUsername()))
+                .append(props.getUsername())
                 .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
-                .append(escapeShellArgument(wordpressPath));
+                .append(wordpressPath);
 
         for (String argument : arguments) {
-            command.append(" ").append(escapeShellArgument(argument));
+            command.append(" ").append(argument);
         }
 
         remoteCommandPort.execute(command.toString());
-    }
-
-    private String escapeShellArgument(String argument) {
-        return "'" + argument.replace("'", "'\"'\"'") + "'";
     }
 }

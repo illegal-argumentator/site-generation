@@ -10,6 +10,6 @@ public interface WebsiteThemePort {
 
     void activateTheme(String name);
 
-    void createConfig();
+    void createConfig(String name, String password);
 
 }

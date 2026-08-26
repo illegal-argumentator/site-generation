@@ -46,7 +46,7 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(websiteThemePort::downloadWebsite, new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
         log.info("Downloaded WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(websiteThemePort::createConfig, new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemePort.createConfig(site.getDbName(), site.getDbPass()), new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
         log.info("Configured WordPress for site: {}.", id);
 
         FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(id, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
