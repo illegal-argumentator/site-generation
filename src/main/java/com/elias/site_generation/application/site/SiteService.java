@@ -1,7 +1,8 @@
 package com.elias.site_generation.application.site;
 
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
@@ -25,6 +26,7 @@ class SiteService implements SiteUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final ThemeGenerationPort themeGenerationPort;
+    private final String hostname;
 
     private final ApplicationEventPublisher publisher;
 
@@ -39,7 +41,7 @@ class SiteService implements SiteUseCase {
         Site saved = savePending(type, site);
 
 //        Theme theme = themeGenerationPort.generate(site);
-        publisher.publishEvent(new ThemePublishEvent(saved.getId(), new Theme("b67087ea-3bf4-4a42-b618-7c820080fe18", "Lucky Casino", new byte[1])));;
+        publisher.publishEvent(new ThemePublishEvent(saved, new Theme("b67087ea-3bf4-4a42-b618-7c820080fe18", "Lucky Casino", new byte[1])));;
 
         saveCreated(saved.getId(), "b67087ea-3bf4-4a42-b618-7c820080fe18");
     }
@@ -51,8 +53,14 @@ class SiteService implements SiteUseCase {
     }
 
     private Site savePending(TemplateType type, Site site) {
+        Db db = Site.generateDbCreds();
+
         site.setStatus(Status.PENDING);
         site.setType(type);
+        site.setDbUser(db.username());
+        site.setDbPass(db.password());
+        site.setHostname(hostname);
+
         return siteCommandPort.save(site);
     }
 

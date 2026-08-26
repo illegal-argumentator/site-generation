@@ -1,7 +1,6 @@
 package com.elias.site_generation.adapter.site.in;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.Status;
 import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;

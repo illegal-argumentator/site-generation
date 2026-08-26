@@ -2,8 +2,8 @@ package com.elias.site_generation.port.host;
 
 public interface HostingPort {
 
-    void createDomain();
+    void createDomain(String hostname);
 
-    void createDb();
+    void createDb(String dbUser, String dbPass);
 
 }

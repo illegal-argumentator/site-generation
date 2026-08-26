@@ -1,6 +1,7 @@
 package com.elias.site_generation.application.theme;
 
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
@@ -30,38 +31,35 @@ class ThemePublishService implements ThemePublishUseCase {
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
-    public void publish(long siteId, Theme theme) {
-        FuncUtils.runOrThrow(hostingPort::createDomain, new ThemePublishingException(siteId, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
-        log.info("Selected domain for site: {}.", siteId);
+    public void publish(Site site, Theme theme) {
+        Long id = site.getId();
 
-        FuncUtils.runOrThrow(hostingPort::createDb, new ThemePublishingException(siteId, "Failed to create db.", Status.DB_CREATION_FAILED));
-        log.info("Initialized db for site: {}.", siteId);
+        FuncUtils.runOrThrow(() -> hostingPort.createDomain(site.getHostname()), new ThemePublishingException(id, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
+        log.info("Selected domain for site: {}.", id);
 
-        FuncUtils.runOrThrow(websiteThemePort::downloadWebsite, new ThemePublishingException(siteId, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
-        log.info("Downloaded WordPress for site: {}.", siteId);
+        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbUser(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
+        log.info("Initialized db for site: {}.", id);
 
-        FuncUtils.runOrThrow(websiteThemePort::createConfig, new ThemePublishingException(siteId, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
-        log.info("Configured WordPress for site: {}.", siteId);
+        FuncUtils.runOrThrow(websiteThemePort::downloadWebsite, new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
+        log.info("Downloaded WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(siteId, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
-        log.info("Installed WordPress for site: {}.", siteId);
+        FuncUtils.runOrThrow(websiteThemePort::createConfig, new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+        log.info("Configured WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> installTheme(theme), new ThemePublishingException(siteId, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
-        log.info("Installed theme for site: {}.", siteId);
+        FuncUtils.runOrThrow(websiteThemePort::installWebsite, new ThemePublishingException(id, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
+        log.info("Installed WordPress for site: {}.", id);
+
+        FuncUtils.runOrThrow(() -> installTheme(theme), new ThemePublishingException(id, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
+        log.info("Installed theme for site: {}.", id);
     }
 
     private void installTheme(Theme theme) {
         String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
         String tempPath = getDomainTempThemePath(theme.id());
 
-        System.out.println(tempPath);
-        System.out.println(localFilepath);
         remoteCommandPort.upload(localFilepath, tempPath);
-        System.out.println("created temp file");
         websiteThemePort.installTheme(tempPath);
-        System.out.println("installed theme");
         remoteCommandPort.delete(tempPath);
-        System.out.println("deleted theme");
     }
 
     private String getDomainTempThemePath(String themeId) {

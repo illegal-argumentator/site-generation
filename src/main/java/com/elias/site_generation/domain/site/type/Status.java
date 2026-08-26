@@ -1,4 +1,4 @@
-package com.elias.site_generation.domain.site;
+package com.elias.site_generation.domain.site.type;
 
 public enum Status {
 

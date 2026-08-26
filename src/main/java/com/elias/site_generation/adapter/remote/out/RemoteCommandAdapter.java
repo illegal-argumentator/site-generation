@@ -3,6 +3,7 @@ package com.elias.site_generation.adapter.remote.out;
 import com.elias.site_generation.adapter.remote.out.config.SshRemoteClient;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 class RemoteCommandAdapter implements RemoteCommandPort {
@@ -53,12 +55,11 @@ class RemoteCommandAdapter implements RemoteCommandPort {
             channel.open().verify();
             channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), TimeUnit.SECONDS.toMillis(30));
 
-            System.out.println(channel.getErr());
-
             if (channel.getExitStatus() != 0) {
                 throw new IllegalStateException("Remote command failed: " + error);
             }
         } catch (IOException e) {
+            log.error("Unexpected exception occurred while executing command: {}.", e.getMessage());
             throw new RuntimeException(e);
         }
     }

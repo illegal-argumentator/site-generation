@@ -1,6 +1,6 @@
 package com.elias.site_generation.domain.theme.exception;
 
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.type.Status;
 import lombok.Getter;
 
 @Getter

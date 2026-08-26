@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.theme.in.exception;
 
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.exception.ThemeGenerationException;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,6 @@ import com.elias.site_generation.port.host.HostingPort;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.shared.props.HestiaProps;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -14,14 +13,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class HestiaHostingAdapter implements HostingPort {
 
-    @Value("${server.hostname}")
-    private String hostname;
-
     private final HestiaProps props;
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
-    public void createDomain() {
+    public void createDomain(String hostname) {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-web-domain",
@@ -31,14 +27,14 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     @Override
-    public void createDb() {
+    public void createDb(String dbUser, String dbPass) {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-database",
                 props.getUsername(),
                 props.getDbName(),
-                props.getDbUser(),
-                props.getDbPassword()
+                dbUser,
+                dbPass
         );
     }
 

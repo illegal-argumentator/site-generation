@@ -1,6 +1,6 @@
 package com.elias.site_generation.domain.site.event;
 
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.type.Status;
 
 public record SiteCreationFailedEvent(Long id, String reason, Status status) {
 }
