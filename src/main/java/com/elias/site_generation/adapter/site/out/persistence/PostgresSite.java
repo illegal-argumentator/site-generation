@@ -28,7 +28,7 @@ public class PostgresSite {
     private String failReason;
 
     private String hostname;
-    private String dbUser;
+    private String dbName;
     private String dbPass;
 
     private TemplateType type;

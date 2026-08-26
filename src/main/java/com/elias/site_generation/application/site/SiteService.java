@@ -26,7 +26,7 @@ class SiteService implements SiteUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final ThemeGenerationPort themeGenerationPort;
-    private final String hostname;
+//    private final String hostname;
 
     private final ApplicationEventPublisher publisher;
 
@@ -59,7 +59,6 @@ class SiteService implements SiteUseCase {
         site.setType(type);
         site.setDbName(db.name());
         site.setDbPass(db.password());
-        site.setHostname(hostname);
 
         return siteCommandPort.save(site);
     }
