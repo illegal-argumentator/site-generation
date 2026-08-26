@@ -40,10 +40,10 @@ class SiteService implements SiteUseCase {
     protected void process(TemplateType type, Site site) {
         Site saved = savePending(type, site);
 
-//        Theme theme = themeGenerationPort.generate(site);
-        publisher.publishEvent(new ThemePublishEvent(saved, new Theme("b67087ea-3bf4-4a42-b618-7c820080fe18", "Lucky Casino", new byte[1])));;
+        Theme theme = themeGenerationPort.generate(site);
+        publisher.publishEvent(new ThemePublishEvent(saved, theme));;
 
-        saveCreated(saved.getId(), "b67087ea-3bf4-4a42-b618-7c820080fe18");
+        saveCreated(saved.getId(), theme.id());
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {

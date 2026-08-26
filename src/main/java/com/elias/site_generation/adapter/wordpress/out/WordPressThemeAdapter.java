@@ -3,6 +3,7 @@ package com.elias.site_generation.adapter.wordpress.out;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.website.WebsiteThemePort;
 import com.elias.site_generation.shared.props.HestiaProps;
+import com.elias.site_generation.shared.props.WpProps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,15 +12,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class WordPressThemeAdapter implements WebsiteThemePort {
 
-    @Value("${wordpress.path}")
+    @Value("${wp.path}")
     private String wordpressPath;
+
+    private final HestiaProps hestiaProps;
+    private final WpProps wpProps;
 
     @Value("${server.hostname}")
     private String hostname;
 
     private static final String UNDERSCORE_PREFIX = "_";
 
-    private final HestiaProps props;
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
@@ -37,8 +40,8 @@ class WordPressThemeAdapter implements WebsiteThemePort {
                 "install",
                 "--url=https://" + hostname,
                 "--title=my_site",
-                "--admin_user=admin",
-                "--admin_password=Admin123!",
+                "--admin_user=" + wpProps.getUsername(),
+                "--admin_password=" + wpProps.getPassword(),
                 "--admin_email=admin@" + hostname
         );
     }
@@ -67,20 +70,20 @@ class WordPressThemeAdapter implements WebsiteThemePort {
                 "config",
                 "create",
                 "--dbname=" + addUserUnderscorePrefix(name),
-                "--dbuser=" + addUserUnderscorePrefix(props.getDbUser()),
+                "--dbuser=" + addUserUnderscorePrefix(hestiaProps.getDbUser()),
                 "--dbpass=" + password,
                 "--dbhost=localhost"
         );
     }
 
     private String addUserUnderscorePrefix(String prop) {
-        return props.getUsername() + UNDERSCORE_PREFIX + prop;
+        return hestiaProps.getUsername() + UNDERSCORE_PREFIX + prop;
     }
 
     private void executeWpCommand(String... arguments) {
         var command = new StringBuilder()
                 .append("sudo -n -u ")
-                .append(props.getUsername())
+                .append(hestiaProps.getUsername())
                 .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
                 .append(wordpressPath);

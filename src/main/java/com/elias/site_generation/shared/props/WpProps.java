@@ -8,10 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "hestia")
-public class HestiaProps {
+@ConfigurationProperties(prefix = "wp")
+public class WpProps {
 
+    private String path;
     private String username;
-    private String dbUser;
+    private String password;
 
 }
