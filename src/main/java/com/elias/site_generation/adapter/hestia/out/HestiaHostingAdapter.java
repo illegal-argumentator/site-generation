@@ -17,18 +17,23 @@ class HestiaHostingAdapter implements HostingPort {
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
-    public void createDomain(String hostname, boolean ssl) {
+    public void createDomain(String hostname) {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-web-domain",
                 props.getUsername(),
                 hostname
         );
+    }
 
-        if (ssl) {
-            addSsl(hostname);
-        }
-
+    @Override
+    public void enableSsl(String hostname) {
+        executeRemote(
+                "sudo",
+                "/usr/local/hestia/bin/v-add-letsencrypt-domain",
+                props.getUsername(),
+                hostname
+        );
     }
 
     @Override
@@ -50,15 +55,6 @@ class HestiaHostingAdapter implements HostingPort {
 
     private String escapeShellArgument(String argument) {
         return "'" + argument.replace("'", "'\"'\"'") + "'";
-    }
-
-    private void addSsl(String hostname) {
-        executeRemote(
-                "sudo",
-                "/usr/local/hestia/bin/v-add-letsencrypt-domain",
-                props.getUsername(),
-                hostname
-        );
     }
 
 }

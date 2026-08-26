@@ -34,8 +34,11 @@ class ThemePublishService implements ThemePublishUseCase {
     public void publish(Site site, Theme theme) {
         Long id = site.getId();
 
-        FuncUtils.runOrThrow(() -> hostingPort.createDomain(site.getHostname(), true), new ThemePublishingException(id, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
+        FuncUtils.runOrThrow(() -> hostingPort.createDomain(site.getHostname()), new ThemePublishingException(id, "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
         log.info("Selected domain for site: {}.", id);
+
+        FuncUtils.runOrThrow(() -> hostingPort.enableSsl(site.getHostname()), new ThemePublishingException(id, "Failed to enable ssl for domain.", Status.SSL_ENABLE_FAILED));
+        log.info("Enabled ssl for domain: {}.", site.getHostname());
 
         FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbUser(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", id);
