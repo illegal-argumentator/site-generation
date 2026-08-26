@@ -6,9 +6,6 @@ import com.elias.site_generation.shared.props.HestiaProps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 @Component
 @RequiredArgsConstructor
 class HestiaHostingAdapter implements HostingPort {
@@ -49,10 +46,7 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     private void executeRemote(String... arguments) {
-        System.out.println(1);
         var command = String.join(" ", arguments);
-        System.out.println(2);
         remoteCommandPort.execute(command);
-        System.out.println(3);
     }
 }
