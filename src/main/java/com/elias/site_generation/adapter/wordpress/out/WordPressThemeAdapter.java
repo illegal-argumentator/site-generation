@@ -36,7 +36,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
                 "core",
                 "install",
                 "--url=https://" + hostname,
-                "--title=My Site",
+                "--title=my_site",
                 "--admin_user=admin",
                 "--admin_password=Admin123!",
                 "--admin_email=admin@" + hostname
