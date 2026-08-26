@@ -16,8 +16,12 @@ public class PostgresSiteCommandAdapter implements SiteCommandPort {
 
     @Override
     public Site save(Site site) {
+        System.out.println(site);
         PostgresSite entity = repository.save(mapper.toEntity(site));
-        return mapper.toSite(entity);
+        System.out.println(entity);
+        Site site1 = mapper.toSite(entity);
+        System.out.println(site1);
+        return site1;
     }
 
     @Override
