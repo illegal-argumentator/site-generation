@@ -4,7 +4,7 @@ public interface WebsiteThemePort {
 
     void downloadWebsite();
 
-    void installWebsite();
+    void installWebsite(String hostname);
 
     void installTheme(String themePath);
 

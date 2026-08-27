@@ -13,6 +13,7 @@ public enum Status {
     THEME_INSTALLATION_FAILED,
 
     CREATED,
+    PUBLISHED,
     FAILED
 
 }

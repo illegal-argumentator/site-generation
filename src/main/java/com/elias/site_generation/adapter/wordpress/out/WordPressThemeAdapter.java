@@ -18,9 +18,6 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private final HestiaProps hestiaProps;
     private final WpProps wpProps;
 
-    @Value("${server.hostname}")
-    private String hostname;
-
     private static final String UNDERSCORE_PREFIX = "_";
 
     private final RemoteCommandPort remoteCommandPort;
@@ -34,7 +31,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     }
 
     @Override
-    public void installWebsite() {
+    public void installWebsite(String hostname) {
         executeWpCommand(
                 "core",
                 "install",
