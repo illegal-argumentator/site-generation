@@ -43,25 +43,25 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbName(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", id);
 
-        FuncUtils.runOrThrow(websiteThemePort::downloadWebsite, new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemePort.downloadWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
         log.info("Downloaded WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> websiteThemePort.createConfig(site.getDbName(), site.getDbPass()), new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemePort.createConfig(site.getDbName(), site.getDbPass(), site.getHostname()), new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
         log.info("Configured WordPress for site: {}.", id);
 
         FuncUtils.runOrThrow(() -> websiteThemePort.installWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
         log.info("Installed WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> installTheme(theme), new ThemePublishingException(id, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
+        FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), theme), new ThemePublishingException(id, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
         log.info("Installed theme for site: {}.", id);
     }
 
-    private void installTheme(Theme theme) {
+    private void installTheme(String hostname, Theme theme) {
         String localFilepath = FileUtils.getFilePath(theme.id(), pathProps.getThemes());
         String tempPath = getDomainTempThemePath(theme.id());
 
         remoteCommandPort.upload(localFilepath, tempPath);
-        websiteThemePort.installTheme(tempPath);
+        websiteThemePort.installTheme(tempPath, hostname);
         remoteCommandPort.delete(tempPath);
     }
 

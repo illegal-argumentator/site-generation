@@ -11,8 +11,14 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "wp")
 public class WpProps {
 
+    private static final String PATH_TEMPLATE = "/home/%s/web/%s/public_html";
+
     private String path;
     private String username;
     private String password;
+
+    public String buildPath(String hestiaUser, String hostname) {
+        return PATH_TEMPLATE.formatted(hestiaUser, hostname);
+    }
 
 }

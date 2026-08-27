@@ -5,15 +5,11 @@ import com.elias.site_generation.port.website.WebsiteThemePort;
 import com.elias.site_generation.shared.props.HestiaProps;
 import com.elias.site_generation.shared.props.WpProps;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 class WordPressThemeAdapter implements WebsiteThemePort {
-
-    @Value("${wp.path}")
-    private String wordpressPath;
 
     private final HestiaProps hestiaProps;
     private final WpProps wpProps;
@@ -23,8 +19,9 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
-    public void downloadWebsite() {
+    public void downloadWebsite(String hostname) {
         executeWpCommand(
+                hostname,
                 "core",
                 "download"
         );
@@ -33,6 +30,7 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     @Override
     public void installWebsite(String hostname) {
         executeWpCommand(
+                hostname,
                 "core",
                 "install",
                 "--url=https://" + hostname,
@@ -44,8 +42,9 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     }
 
     @Override
-    public void installTheme(String themePath) {
+    public void installTheme(String themePath, String hostname) {
         executeWpCommand(
+                hostname,
                 "theme",
                 "install",
                 themePath
@@ -53,8 +52,9 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     }
 
     @Override
-    public void activateTheme(String name) {
+    public void activateTheme(String name, String hostname) {
         executeWpCommand(
+                hostname,
                 "theme",
                 "activate",
                 name
@@ -62,8 +62,9 @@ class WordPressThemeAdapter implements WebsiteThemePort {
     }
 
     @Override
-    public void createConfig(String name, String password) {
+    public void createConfig(String name, String password, String hostname) {
         executeWpCommand(
+                hostname,
                 "config",
                 "create",
                 "--dbname=" + addUserUnderscorePrefix(name),
@@ -77,13 +78,13 @@ class WordPressThemeAdapter implements WebsiteThemePort {
         return hestiaProps.getUsername() + UNDERSCORE_PREFIX + prop;
     }
 
-    private void executeWpCommand(String... arguments) {
+    private void executeWpCommand(String hostname, String... arguments) {
         var command = new StringBuilder()
                 .append("sudo -n -u ")
                 .append(hestiaProps.getUsername())
                 .append(" -H /usr/local/bin/wp ")
                 .append("--path=")
-                .append(wordpressPath);
+                .append(wpProps.buildPath(hestiaProps.getUsername(), hostname));
 
         for (String argument : arguments) {
             command.append(" ").append(argument);
