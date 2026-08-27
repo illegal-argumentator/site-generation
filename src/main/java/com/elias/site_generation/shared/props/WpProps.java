@@ -13,7 +13,6 @@ public class WpProps {
 
     private static final String PATH_TEMPLATE = "/home/%s/web/%s/public_html";
 
-    private String path;
     private String username;
     private String password;
 
