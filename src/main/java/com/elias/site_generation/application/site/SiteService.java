@@ -8,6 +8,7 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
+import com.elias.site_generation.port.site.SiteQueryPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteUseCase;
@@ -26,7 +27,9 @@ class SiteService implements SiteUseCase {
 
     private final TemplateQueryPort templateQueryPort;
 
+    private final SiteQueryPort siteQueryPort;
     private final SiteCommandPort siteCommandPort;
+
     private final ThemeGenerationPort themeGenerationPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
@@ -39,14 +42,21 @@ class SiteService implements SiteUseCase {
         process(type, site);
     }
 
+    @Override
+    public void redeploy(long siteId) {
+        Site site = siteQueryPort.findById(siteId);
+        site.validateReadyForRedeploy();
+        publisher.publishEvent(new ThemePublishEvent(site));;
+    }
+
     @Async
     protected void process(TemplateType type, Site site) {
-        Site saved = savePending(type, site);
+        Site savedPending = savePending(type, site);
 
         Theme theme = themeGenerationPort.generate(site);
-        saveCreated(saved.getId(), theme.id());
+        Site savedCreated = saveCreated(savedPending.getId(), theme.id());
 
-        publisher.publishEvent(new ThemePublishEvent(saved, theme));;
+        publisher.publishEvent(new ThemePublishEvent(savedCreated));;
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
@@ -72,8 +82,8 @@ class SiteService implements SiteUseCase {
         return siteCommandPort.save(site);
     }
 
-    private void saveCreated(long siteId, String themeId) {
+    private Site saveCreated(long siteId, String themeId) {
         Site forUpdate = Site.builder().status(Status.CREATED).themeId(themeId).build();
-        siteCommandPort.update(siteId, forUpdate);
+        return siteCommandPort.update(siteId, forUpdate);
     }
 }

@@ -1,5 +1,7 @@
 package com.elias.site_generation.domain.site;
 
+import com.elias.site_generation.domain.site.exception.SiteAlreadyDeployedException;
+import com.elias.site_generation.domain.site.exception.SiteHasNotCreatedException;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -40,6 +42,23 @@ public class Site {
          String name = DB_NAME_PREFIX.concat(UUID.randomUUID().toString().substring(FIRST, FOUR));
          String password = String.valueOf(UUID.randomUUID()).substring(FIRST, EIGHT);
          return new Db(name, password);
+    }
+
+    public void validateReadyForRedeploy() {
+        throwIfAlreadyDeployed();
+        throwIfNotCreated();
+    }
+
+    private void throwIfAlreadyDeployed() {
+        if (status == Status.PUBLISHED) {
+            throw new SiteAlreadyDeployedException("Site already deployed.");
+        }
+    }
+
+    private void throwIfNotCreated() {
+        if (status == Status.PENDING || status == Status.FAILED) {
+            throw new SiteHasNotCreatedException("Site has not created yet.");
+        }
     }
 
 }

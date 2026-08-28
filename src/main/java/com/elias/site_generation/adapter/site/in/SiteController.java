@@ -21,4 +21,9 @@ public class SiteController {
         useCase.create(type, mapper.toSite(request));
     }
 
+    @PostMapping("/redeploy")
+    public void redeploy(@RequestParam long siteId) {
+        useCase.redeploy(siteId);
+    }
+
 }

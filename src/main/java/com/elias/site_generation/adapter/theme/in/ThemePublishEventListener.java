@@ -17,6 +17,6 @@ public class ThemePublishEventListener {
     @EventListener
     public void listen(ThemePublishEvent event) {
         log.info("Received event for publishing theme for site: {}.", event.site());
-        useCase.publish(event.site(), event.theme());
+        useCase.publish(event.site());
     }
 }

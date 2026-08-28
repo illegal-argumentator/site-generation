@@ -7,4 +7,6 @@ public interface SiteUseCase {
 
     void create(TemplateType type, Site site);
 
+    void redeploy(long siteId);
+
 }
