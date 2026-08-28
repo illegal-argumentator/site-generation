@@ -44,8 +44,6 @@ class RemoteCommandAdapter implements RemoteCommandPort {
 
     @Override
     public void execute(String command) {
-        log.info("Executing command: {}.", command);
-
         try (ClientSession session = client.connect()) {
             ChannelExec channel = session.createExecChannel(command);
 
@@ -61,6 +59,8 @@ class RemoteCommandAdapter implements RemoteCommandPort {
 
             // 15 code is too many requests 429
             // 4 is conflict 409
+            // 1 is command wasn't included in sudo visudo -f /etc/sudoers.d/site-generation and it requires password
+            // 3 doesn't exist
             if (exit == null || exit != 0) {
                 log.error("Error while executing command: '{}', code: {}, reason: {}.", command, exit, error);
                 throw new IllegalStateException(

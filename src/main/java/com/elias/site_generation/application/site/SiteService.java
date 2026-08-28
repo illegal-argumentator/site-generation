@@ -36,7 +36,7 @@ class SiteService implements SiteUseCase {
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
         throwIfDomainAlreadyExists(site.getHostname());
-//        process(type, site);
+        process(type, site);
     }
 
     @Async
