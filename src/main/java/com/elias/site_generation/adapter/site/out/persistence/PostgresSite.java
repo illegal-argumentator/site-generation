@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
-import com.elias.site_generation.domain.site.Status;
+import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,6 +26,10 @@ public class PostgresSite {
     private String content;
     private String language;
     private String failReason;
+
+    private String hostname;
+    private String dbName;
+    private String dbPass;
 
     private TemplateType type;
     private String themeId;

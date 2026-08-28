@@ -1,8 +1,8 @@
-package com.elias.site_generation.adapter.theme.out.strategy;
+package com.elias.site_generation.adapter.theme.out.generation.strategy;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
-import com.elias.site_generation.adapter.file.out.ZipFilePort;
+import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
@@ -24,7 +24,8 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrategy {
 
-    private static final String MAIN_PAGE_NAME = "index.html", MAIN_STYLE_NAME = "main-style.css";
+    private static final String MAIN_PAGE_NAME = "index.html";
+    private static final String STYLE_ELEMENT = "style";
 
     private static final List<String> ELEMENT_IDS = List.of(
             "#site-header",
@@ -46,14 +47,16 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
     public byte[] generate(ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(MAIN_PAGE_NAME, request.template());
 
-        Map<String, byte[]> files = Map.of(MAIN_PAGE_NAME, generateHtml(index, request), MAIN_STYLE_NAME, generateStyle(request));
+        Map<String, byte[]> files = Map.of(MAIN_PAGE_NAME, generateHtml(index,  generateStyle(request), request));
         return zipFilePort.update(request.template(), files);
     }
 
-    private byte[] generateHtml(byte[] index, ThemeGenerationRequest request) {
+    private byte[] generateHtml(byte[] index, byte[] style ,ThemeGenerationRequest request) {
         Document html = parseHtml(index);
         Map<String, CompletableFuture<String>> generatedElements = generateElements(html, request);
+
         applyGeneratedElements(html, generatedElements);
+        applyGeneratedStyles(html,  new String(style, StandardCharsets.UTF_8));
 
         return html.outerHtml().getBytes(StandardCharsets.UTF_8);
     }
@@ -96,6 +99,17 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
         ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(request.language(), elementHtml);
         String prompt = ThemePromptPolicyBuilder.buildHtmlChangePrompt(rules);
         return aiService.generate(new AiRequest(prompt, request.content()));
+    }
+
+    private void applyGeneratedStyles(Document html, String generatedCss) {
+        Element style = html.head().selectFirst(STYLE_ELEMENT);
+
+        if (style == null) {
+            style = html.createElement(STYLE_ELEMENT);
+            html.head().appendChild(style);
+        }
+
+        style.text(generatedCss);
     }
 
     private void applyGeneratedElements(Document html, Map<String, CompletableFuture<String>> generatedElements) {

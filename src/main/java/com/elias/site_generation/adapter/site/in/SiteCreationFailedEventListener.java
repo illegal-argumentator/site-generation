@@ -1,7 +1,6 @@
 package com.elias.site_generation.adapter.site.in;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.Status;
 import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +17,11 @@ public class SiteCreationFailedEventListener {
 
     @EventListener
     public void listen(SiteCreationFailedEvent event) {
-        log.info("Received event for failing event: {}, reason: {}.", event.id(), event.reason());
+        log.info("Received event for site creation failed: {}, reason: {}", event.id(), event.reason());
         siteCommandPort.update(event.id(), buildBodyForFailed(event));
     }
 
     private Site buildBodyForFailed(SiteCreationFailedEvent event) {
-        return Site.builder().status(Status.FAILED).failReason(event.reason()).build();
+        return Site.builder().status(event.status()).failReason(event.reason()).build();
     }
 }

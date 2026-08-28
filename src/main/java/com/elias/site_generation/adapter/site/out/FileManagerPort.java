@@ -1,8 +1,8 @@
-package com.elias.site_generation.adapter.file.out;
+package com.elias.site_generation.adapter.site.out;
 
 import com.elias.site_generation.shared.file.FilePath;
 
-public interface FilePort {
+public interface FileManagerPort {
 
     void write(FilePath path, byte[] file);
     byte[] read(FilePath path);
