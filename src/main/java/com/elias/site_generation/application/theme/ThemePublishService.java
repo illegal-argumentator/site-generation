@@ -58,7 +58,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void createDb(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.DB_CREATION_FAILED) {
-            FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbName(), site.getDbPass()), new ThemePublishingException(site.getId(), "Failed to create db.", Status.DB_CREATION_FAILED));
+            FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDb()), new ThemePublishingException(site.getId(), "Failed to create db.", Status.DB_CREATION_FAILED));
             log.info("Initialized db for site: {}.", site.getId());
         }
     }
@@ -72,7 +72,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void createConfig(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.WEBSITE_CONFIGURATION_FAILED) {
-            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.createConfig(site.getDbName(), site.getDbPass(), site.getHostname()), new ThemePublishingException(site.getId(), "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.createConfig(site.getDb(), site.getHostname()), new ThemePublishingException(site.getId(), "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
             log.info("Configured WordPress for site: {}.", site.getId());
         }
     }

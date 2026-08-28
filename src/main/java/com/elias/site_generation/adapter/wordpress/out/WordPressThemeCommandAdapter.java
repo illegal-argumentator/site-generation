@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.wordpress.out;
 
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.props.HestiaProps;
 import com.elias.site_generation.shared.props.WpProps;
@@ -60,14 +61,14 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
-    public void createConfig(String name, String password, String hostname) {
+    public void createConfig(Db db, String hostname) {
         remoteService.execute(
                 hostname,
                 "config",
                 "create",
-                "--dbname=" + addUserUnderscorePrefix(name),
-                "--dbuser=" + addUserUnderscorePrefix(hestiaProps.getDbUser()),
-                "--dbpass=" + password,
+                "--dbname=" + addUserUnderscorePrefix(db.name()),
+                "--dbuser=" + addUserUnderscorePrefix(db.user()),
+                "--dbpass=" + db.password(),
                 "--dbhost=localhost"
         );
     }

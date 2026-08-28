@@ -24,8 +24,8 @@ public class Site {
     private String content;
 
     private String hostname;
-    private String dbName;
-    private String dbPass;
+
+    private Db db;
 
     private String failReason;
 
@@ -35,13 +35,14 @@ public class Site {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private static final String DB_NAME_PREFIX = "user";
+    private static final String DB_NAME_PREFIX = "name", DB_USER_PREFIX = "user";
     private static final int FIRST = 0, FOUR = 4, EIGHT = 8;
 
     public static Db generateDbCreds() {
+         String user = DB_USER_PREFIX.concat(UUID.randomUUID().toString().substring(FIRST, FOUR));
          String name = DB_NAME_PREFIX.concat(UUID.randomUUID().toString().substring(FIRST, FOUR));
          String password = String.valueOf(UUID.randomUUID()).substring(FIRST, EIGHT);
-         return new Db(name, password);
+         return new Db(user, name, password);
     }
 
     public void validateReadyForRedeploy() {
@@ -60,5 +61,6 @@ public class Site {
             throw new SiteHasNotCreatedException("Site has not created yet.");
         }
     }
+
 
 }

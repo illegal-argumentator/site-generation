@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import jakarta.persistence.*;
@@ -28,8 +29,9 @@ public class PostgresSite {
     private String failReason;
 
     private String hostname;
-    private String dbName;
-    private String dbPass;
+
+    @Embedded
+    private Db db;
 
     private TemplateType type;
     private String themeId;

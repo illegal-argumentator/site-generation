@@ -12,6 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class HestiaProps {
 
     private String username;
-    private String dbUser;
 
 }
