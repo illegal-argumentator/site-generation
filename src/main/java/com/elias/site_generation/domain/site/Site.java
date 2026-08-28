@@ -3,6 +3,7 @@ package com.elias.site_generation.domain.site;
 import com.elias.site_generation.domain.site.exception.SiteAlreadyDeployedException;
 import com.elias.site_generation.domain.site.exception.SiteHasNotCreatedException;
 import com.elias.site_generation.domain.site.nested.Db;
+import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.user.User;
@@ -19,6 +20,7 @@ public class Site {
     private Long id;
 
     private Status status;
+    private DeployStatus deployStatus;
     private User owner;
     private String language;
     private String content;
@@ -51,13 +53,13 @@ public class Site {
     }
 
     private void throwIfAlreadyDeployed() {
-        if (status == Status.PUBLISHED) {
+        if (deployStatus == DeployStatus.PUBLISHED) {
             throw new SiteAlreadyDeployedException("Site already deployed.");
         }
     }
 
     private void throwIfNotCreated() {
-        if (status == Status.PENDING || status == Status.FAILED) {
+        if (status != Status.CREATED) {
             throw new SiteHasNotCreatedException("Site has not created yet.");
         }
     }

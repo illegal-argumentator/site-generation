@@ -1,0 +1,17 @@
+package com.elias.site_generation.domain.site.type;
+
+public enum DeployStatus {
+
+    PENDING,
+
+    DOMAIN_CREATION_FAILED,
+    SSL_ENABLE_FAILED,
+    DB_CREATION_FAILED,
+    WEBSITE_DOWNLOAD_FAILED,
+    WEBSITE_INSTALLATION_FAILED,
+    WEBSITE_CONFIGURATION_FAILED,
+    THEME_INSTALLATION_FAILED,
+
+    PUBLISHED
+
+}

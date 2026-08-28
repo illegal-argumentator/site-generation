@@ -3,6 +3,7 @@ package com.elias.site_generation.application.site;
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
@@ -46,7 +47,7 @@ class SiteService implements SiteUseCase {
     public void redeploy(long siteId) {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRedeploy();
-        publisher.publishEvent(new ThemePublishEvent(site));;
+        publish(site);
     }
 
     @Async
@@ -56,7 +57,7 @@ class SiteService implements SiteUseCase {
         Theme theme = themeGenerationPort.generate(site);
         Site savedCreated = saveCreated(savedPending.getId(), theme.id());
 
-        publisher.publishEvent(new ThemePublishEvent(savedCreated));;
+        publish(savedCreated);
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
@@ -84,5 +85,10 @@ class SiteService implements SiteUseCase {
     private Site saveCreated(long siteId, String themeId) {
         Site forUpdate = Site.builder().status(Status.CREATED).themeId(themeId).build();
         return siteCommandPort.update(siteId, forUpdate);
+    }
+
+    private void publish(Site site) {
+        siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.PENDING).build());
+        publisher.publishEvent(new ThemePublishEvent(site));
     }
 }
