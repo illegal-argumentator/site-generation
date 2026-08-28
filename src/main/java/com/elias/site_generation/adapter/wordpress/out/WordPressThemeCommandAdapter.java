@@ -67,7 +67,7 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
                 "config",
                 "create",
                 "--dbname=" + addUserUnderscorePrefix(db.name()),
-                "--dbuser=" + addUserUnderscorePrefix(db.user()),
+                "--dbuser=" + addUserUnderscorePrefix(db.username()),
                 "--dbpass=" + db.password(),
                 "--dbhost=localhost"
         );

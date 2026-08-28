@@ -41,7 +41,7 @@ class HestiaHostingAdapter implements HostingPort {
                 "/usr/local/hestia/bin/v-add-database",
                 props.getUsername(),
                 db.name(),
-                db.user(),
+                db.username(),
                 db.password()
         );
     }
