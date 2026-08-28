@@ -1,6 +1,6 @@
 package com.elias.site_generation.port.website;
 
-public interface WebsiteThemePort {
+public interface WebsiteThemeCommandPort {
 
     void downloadWebsite(String hostname);
 

@@ -1,5 +1,6 @@
 package com.elias.site_generation.application.site;
 
+import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.Status;
@@ -11,6 +12,7 @@ import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteUseCase;
 import com.elias.site_generation.port.theme.TemplateQueryPort;
+import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,13 +28,14 @@ class SiteService implements SiteUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final ThemeGenerationPort themeGenerationPort;
-//    private final String hostname;
+    private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     private final ApplicationEventPublisher publisher;
 
     @Override
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
+        throwIfDomainAlreadyExists(site.getHostname());
         process(type, site);
     }
 
@@ -49,6 +52,12 @@ class SiteService implements SiteUseCase {
     private void throwIfTemplateNotExists(TemplateType type) {
         if (!templateQueryPort.exists(type)) {
             throw new TemplateNotFoundException("Template not found by type: %s.".formatted(type));
+        }
+    }
+
+    private void throwIfDomainAlreadyExists(String hostname) {
+        if (websiteThemeQueryPort.exists(hostname)) {
+            throw new DomainAlreadyExistsException("Domain %s already exists.".formatted(hostname));
         }
     }
 

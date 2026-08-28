@@ -7,7 +7,7 @@ import com.elias.site_generation.domain.theme.exception.ThemePublishingException
 import com.elias.site_generation.port.host.HostingPort;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.theme.ThemePublishUseCase;
-import com.elias.site_generation.port.website.WebsiteThemePort;
+import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
 import com.elias.site_generation.shared.utils.FuncUtils;
@@ -27,7 +27,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private final FilePathProps pathProps;
 
     private final HostingPort hostingPort;
-    private final WebsiteThemePort websiteThemePort;
+    private final WebsiteThemeCommandPort websiteThemeCommandPort;
     private final RemoteCommandPort remoteCommandPort;
 
     @Override
@@ -43,13 +43,13 @@ class ThemePublishService implements ThemePublishUseCase {
         FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDbName(), site.getDbPass()), new ThemePublishingException(id, "Failed to create db.", Status.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> websiteThemePort.downloadWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemeCommandPort.downloadWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
         log.info("Downloaded WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> websiteThemePort.createConfig(site.getDbName(), site.getDbPass(), site.getHostname()), new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemeCommandPort.createConfig(site.getDbName(), site.getDbPass(), site.getHostname()), new ThemePublishingException(id, "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
         log.info("Configured WordPress for site: {}.", id);
 
-        FuncUtils.runOrThrow(() -> websiteThemePort.installWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
+        FuncUtils.runOrThrow(() -> websiteThemeCommandPort.installWebsite(site.getHostname()), new ThemePublishingException(id, "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
         log.info("Installed WordPress for site: {}.", id);
 
         FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), theme), new ThemePublishingException(id, "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
@@ -61,7 +61,7 @@ class ThemePublishService implements ThemePublishUseCase {
         String tempPath = getDomainTempThemePath(theme.id());
 
         remoteCommandPort.upload(localFilepath, tempPath);
-        websiteThemePort.installTheme(tempPath, hostname);
+        websiteThemeCommandPort.installTheme(tempPath, hostname);
         remoteCommandPort.delete(tempPath);
     }
 
