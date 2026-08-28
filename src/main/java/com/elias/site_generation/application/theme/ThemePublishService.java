@@ -45,6 +45,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void createDomain(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.DOMAIN_CREATION_FAILED) {
             FuncUtils.runOrThrow(() -> hostingPort.createDomain(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to select domain.", Status.DOMAIN_CREATION_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Selected domain for site: {}.", site.getId());
         }
     }
@@ -52,6 +53,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void enableSsl(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.SSL_ENABLE_FAILED) {
             FuncUtils.runOrThrow(() -> hostingPort.enableSsl(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to enable ssl for domain.", Status.SSL_ENABLE_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Enabled ssl for domain: {}.", site.getHostname());
         }
     }
@@ -59,6 +61,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void createDb(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.DB_CREATION_FAILED) {
             FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDb()), new ThemePublishingException(site.getId(), "Failed to create db.", Status.DB_CREATION_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Initialized db for site: {}.", site.getId());
         }
     }
@@ -66,6 +69,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void downloadWebsite(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.WEBSITE_DOWNLOAD_FAILED) {
             FuncUtils.runOrThrow(() -> websiteThemeCommandPort.downloadWebsite(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to download WordPress.", Status.WEBSITE_DOWNLOAD_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Downloaded WordPress for site: {}.", site.getId());
         }
     }
@@ -73,6 +77,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void createConfig(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.WEBSITE_CONFIGURATION_FAILED) {
             FuncUtils.runOrThrow(() -> websiteThemeCommandPort.createConfig(site.getDb(), site.getHostname()), new ThemePublishingException(site.getId(), "Failed to configure WordPress.", Status.WEBSITE_CONFIGURATION_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Configured WordPress for site: {}.", site.getId());
         }
     }
@@ -80,6 +85,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void installWebsite(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.WEBSITE_INSTALLATION_FAILED) {
             FuncUtils.runOrThrow(() -> websiteThemeCommandPort.installWebsite(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to install WordPress.", Status.WEBSITE_INSTALLATION_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Installed WordPress for site: {}.", site.getId());
         }
     }
@@ -87,6 +93,7 @@ class ThemePublishService implements ThemePublishUseCase {
     private void installTheme(Site site) {
         if (site.getStatus() == Status.CREATED || site.getStatus() == Status.THEME_INSTALLATION_FAILED) {
             FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), site.getThemeId()), new ThemePublishingException(site.getId(), "Failed to install theme.", Status.THEME_INSTALLATION_FAILED));
+            site.setStatus(Status.CREATED);
             log.info("Installed theme for site: {}.", site.getId());
         }
     }
