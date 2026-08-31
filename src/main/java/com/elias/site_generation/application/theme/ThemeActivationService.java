@@ -13,7 +13,7 @@ public class ThemeActivationService implements ThemeActivationUseCase {
 
     @Override
     public void activate(String themeName, String hostname) {
-        websiteThemeCommandPort.deleteIndex(hostname);
+//        websiteThemeCommandPort.deleteIndex(hostname);
         websiteThemeCommandPort.activateTheme(themeName, hostname);
     }
 }
