@@ -77,9 +77,12 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     public void deleteIndex(String hostname) {
         remoteService.execute(
                 hostname,
-                "sudo -u %s rm -f %s/index.html",
-                wpProps.getUsername(),
-                wpProps.buildPath(wpProps.getUsername(), hostname)
+                "sudo",
+                "-u",
+                hestiaProps.getUsername(),
+                "rm",
+                "-f",
+                wpProps.buildPath(hestiaProps.getUsername(), hostname) + "/index.html"
         );
     }
 
