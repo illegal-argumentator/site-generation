@@ -110,6 +110,6 @@ class SiteService implements SiteUseCase {
     @Async
     protected void publishActivation(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
-        publisher.publishEvent(new SiteActivationEvent("lucky-casino", site.getHostname()));
+        publisher.publishEvent(new SiteActivationEvent("lucky-casino", site));
     }
 }

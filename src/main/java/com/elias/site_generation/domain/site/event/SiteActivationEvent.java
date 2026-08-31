@@ -1,4 +1,6 @@
 package com.elias.site_generation.domain.site.event;
 
-public record SiteActivationEvent(String themeName, String hostname) {
+import com.elias.site_generation.domain.site.Site;
+
+public record SiteActivationEvent(String themeName, Site site) {
 }

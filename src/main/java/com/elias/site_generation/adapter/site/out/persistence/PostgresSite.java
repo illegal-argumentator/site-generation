@@ -1,6 +1,7 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
 import com.elias.site_generation.domain.site.nested.Db;
+import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -21,6 +22,9 @@ public class PostgresSite {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Enumerated(value = EnumType.STRING)
+    private ActiveStatus activeStatus;
 
     @Enumerated(value = EnumType.STRING)
     private CreationStatus creationStatus;
