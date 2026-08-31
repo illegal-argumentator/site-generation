@@ -28,6 +28,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
     private static final String STYLE_ELEMENT = "style";
 
     private static final List<String> ELEMENT_IDS = List.of(
+            "title",
             "#site-header",
             "#hero",
             "#stats",
@@ -51,7 +52,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
         return zipFilePort.update(request.template(), files);
     }
 
-    private byte[] generateHtml(byte[] index, byte[] style ,ThemeGenerationRequest request) {
+    private byte[] generateHtml(byte[] index, byte[] style, ThemeGenerationRequest request) {
         Document html = parseHtml(index);
         Map<String, CompletableFuture<String>> generatedElements = generateElements(html, request);
 
@@ -96,7 +97,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
     }
 
     private String generateElement(String elementHtml, ThemeGenerationRequest request) {
-        ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(request.language(), elementHtml);
+        ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(request.title(), request.language(), elementHtml);
         String prompt = ThemePromptPolicyBuilder.buildHtmlChangePrompt(rules);
         return aiService.generate(new AiRequest(prompt, request.content()));
     }

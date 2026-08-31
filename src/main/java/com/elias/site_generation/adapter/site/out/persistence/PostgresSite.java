@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
+import com.elias.site_generation.adapter.theme.out.persistence.PostgresTheme;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
@@ -42,7 +43,10 @@ public class PostgresSite {
     private Db db;
 
     private TemplateType type;
-    private String themeId;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "theme_id", referencedColumnName = "id")
+    private PostgresTheme theme;
 
     @CreatedDate
     private Instant createdAt;

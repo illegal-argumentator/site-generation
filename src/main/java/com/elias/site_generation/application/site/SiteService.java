@@ -2,7 +2,6 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.event.SiteActivationEvent;
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
-import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
@@ -11,7 +10,9 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
+import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
+import com.elias.site_generation.port.theme.ThemeCommandPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteUseCase;
@@ -30,10 +31,13 @@ class SiteService implements SiteUseCase {
 
     private final TemplateQueryPort templateQueryPort;
 
+    private final DbGenerationPort dbGenerationPort;
     private final SiteQueryPort siteQueryPort;
     private final SiteCommandPort siteCommandPort;
 
     private final ThemeGenerationPort themeGenerationPort;
+    private final ThemeCommandPort themeCommandPort;
+
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     private final ApplicationEventPublisher publisher;
@@ -64,7 +68,7 @@ class SiteService implements SiteUseCase {
         Site savedPending = savePending(type, site);
 
         Theme theme = themeGenerationPort.generate(site);
-        Site savedCreated = saveCreated(savedPending.getId(), theme.id());
+        Site savedCreated = saveCreated(savedPending.getId(), theme);
 
         publishDeploy(savedCreated);
     }
@@ -82,17 +86,14 @@ class SiteService implements SiteUseCase {
     }
 
     private Site savePending(TemplateType type, Site site) {
-        Db db = Site.generateDbCreds();
-
         site.setCreationStatus(CreationStatus.PENDING);
         site.setType(type);
-        site.setDb(db);
-
+        site.setDb(dbGenerationPort.generate());
         return siteCommandPort.save(site);
     }
 
-    private Site saveCreated(long siteId, String themeId) {
-        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).themeId(themeId).build();
+    private Site saveCreated(long siteId, Theme theme) {
+        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).theme(theme).build();
         return siteCommandPort.update(siteId, forUpdate);
     }
 

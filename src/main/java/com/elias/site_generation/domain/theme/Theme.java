@@ -1,6 +1,4 @@
 package com.elias.site_generation.domain.theme;
 
-public record Theme(
-        String id
-) {
+public record Theme(String id, String title) {
 }
