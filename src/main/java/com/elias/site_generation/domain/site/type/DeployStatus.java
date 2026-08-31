@@ -1,6 +1,6 @@
 package com.elias.site_generation.domain.site.type;
 
-public enum Status {
+public enum DeployStatus {
 
     PENDING,
 
@@ -12,8 +12,6 @@ public enum Status {
     WEBSITE_CONFIGURATION_FAILED,
     THEME_INSTALLATION_FAILED,
 
-    CREATED,
-    PUBLISHED,
-    FAILED
+    PUBLISHED
 
 }

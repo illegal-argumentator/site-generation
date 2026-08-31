@@ -1,6 +1,9 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
-import com.elias.site_generation.domain.site.type.Status;
+import com.elias.site_generation.domain.site.nested.Db;
+import com.elias.site_generation.domain.site.type.ActiveStatus;
+import com.elias.site_generation.domain.site.type.CreationStatus;
+import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,15 +24,22 @@ public class PostgresSite {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private Status status;
+    private ActiveStatus activeStatus;
+
+    @Enumerated(value = EnumType.STRING)
+    private CreationStatus creationStatus;
+
+    @Enumerated(value = EnumType.STRING)
+    private DeployStatus deployStatus;
 
     private String content;
     private String language;
     private String failReason;
 
     private String hostname;
-    private String dbName;
-    private String dbPass;
+
+    @Embedded
+    private Db db;
 
     private TemplateType type;
     private String themeId;

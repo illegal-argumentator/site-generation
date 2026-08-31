@@ -2,10 +2,8 @@ package com.elias.site_generation.port.site;
 
 import com.elias.site_generation.domain.site.Site;
 
-public interface SiteCommandPort {
+public interface SiteQueryPort {
 
-    Site save(Site site);
-
-    Site update(Long id, Site site);
+    Site findById(long id);
 
 }

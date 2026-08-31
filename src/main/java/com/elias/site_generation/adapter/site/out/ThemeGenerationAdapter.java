@@ -43,8 +43,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         byte[] theme = generateTheme(site, templateZip);
 
         saveTheme(templateId, theme);
-        // TODO generate new name for theme
-        return new Theme(templateId, "Lucky Casino", theme);
+        return new Theme(templateId);
     }
 
     private byte[] generateTheme(Site site, byte[] template) {

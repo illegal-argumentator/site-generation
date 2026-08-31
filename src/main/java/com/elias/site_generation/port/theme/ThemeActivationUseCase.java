@@ -2,8 +2,8 @@ package com.elias.site_generation.port.theme;
 
 import com.elias.site_generation.domain.site.Site;
 
-public interface ThemePublishUseCase {
+public interface ThemeActivationUseCase {
 
-    void publish(Site site);
+    void activate(String themeName, Site site);
 
 }

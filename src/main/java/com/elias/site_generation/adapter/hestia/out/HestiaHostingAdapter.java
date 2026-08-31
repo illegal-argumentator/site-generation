@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.hestia.out;
 
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.port.host.HostingPort;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.shared.props.HestiaProps;
@@ -34,14 +35,14 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     @Override
-    public void createDb(String dbName, String dbPass) {
+    public void createDb(Db db) {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-database",
                 props.getUsername(),
-                dbName,
-                props.getDbUser(),
-                dbPass
+                db.name(),
+                db.username(),
+                db.password()
         );
     }
 

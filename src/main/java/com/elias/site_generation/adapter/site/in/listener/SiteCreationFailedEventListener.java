@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.site.in;
+package com.elias.site_generation.adapter.site.in.listener;
 
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
@@ -22,6 +22,6 @@ public class SiteCreationFailedEventListener {
     }
 
     private Site buildBodyForFailed(SiteCreationFailedEvent event) {
-        return Site.builder().status(event.status()).failReason(event.reason()).build();
+        return Site.builder().creationStatus(event.creationStatus()).failReason(event.reason()).build();
     }
 }
