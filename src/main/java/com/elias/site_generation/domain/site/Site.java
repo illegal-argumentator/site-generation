@@ -1,10 +1,12 @@
 package com.elias.site_generation.domain.site;
 
-import com.elias.site_generation.domain.site.exception.SiteAlreadyDeployedException;
+import com.elias.site_generation.domain.site.exception.SiteActivationException;
+import com.elias.site_generation.domain.site.exception.SiteDeployException;
 import com.elias.site_generation.domain.site.exception.SiteHasNotCreatedException;
 import com.elias.site_generation.domain.site.nested.Db;
+import com.elias.site_generation.domain.site.type.ActiveStatus;
+import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
-import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.user.User;
 import lombok.Builder;
@@ -19,15 +21,16 @@ public class Site {
 
     private Long id;
 
-    private Status status;
-    private DeployStatus deployStatus;
     private User owner;
     private String language;
     private String content;
 
+    private Db db;
     private String hostname;
 
-    private Db db;
+    private CreationStatus creationStatus;
+    private DeployStatus deployStatus;
+    private ActiveStatus activeStatus;
 
     private String failReason;
 
@@ -48,18 +51,36 @@ public class Site {
     }
 
     public void validateReadyForRedeploy() {
-        throwIfAlreadyDeployed();
+        throwIfAlreadyPublished();
         throwIfNotCreated();
     }
 
-    private void throwIfAlreadyDeployed() {
+    public void validateReadyForActivation() {
+        throwIfNotCreated();
+        throwIfNotPublished();
+        throwIfAlreadyActivated();
+    }
+
+    private void throwIfAlreadyPublished() {
         if (deployStatus == DeployStatus.PUBLISHED) {
-            throw new SiteAlreadyDeployedException("Site already deployed.");
+            throw new SiteDeployException("Site already deployed.");
+        }
+    }
+
+    private void throwIfNotPublished() {
+        if (deployStatus != DeployStatus.PUBLISHED) {
+            throw new SiteDeployException("Site not deployed.");
+        }
+    }
+
+    private void throwIfAlreadyActivated() {
+        if (activeStatus == ActiveStatus.ACTIVATED) {
+            throw new SiteActivationException("Site already activated.");
         }
     }
 
     private void throwIfNotCreated() {
-        if (status != Status.CREATED) {
+        if (creationStatus != CreationStatus.CREATED) {
             throw new SiteHasNotCreatedException("Site has not created yet.");
         }
     }

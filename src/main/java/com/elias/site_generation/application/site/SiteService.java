@@ -1,10 +1,12 @@
 package com.elias.site_generation.application.site;
 
+import com.elias.site_generation.domain.site.event.SiteActivationEvent;
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.type.ActiveStatus;
+import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
-import com.elias.site_generation.domain.site.type.Status;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
@@ -47,7 +49,14 @@ class SiteService implements SiteUseCase {
     public void redeploy(long siteId) {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRedeploy();
-        publish(site);
+        publishDeployAsync(site);
+    }
+
+    @Override
+    public void activate(long siteId) {
+        Site site = siteQueryPort.findById(siteId);
+        site.validateReadyForActivation();
+        publishActivation(site);
     }
 
     @Async
@@ -57,7 +66,7 @@ class SiteService implements SiteUseCase {
         Theme theme = themeGenerationPort.generate(site);
         Site savedCreated = saveCreated(savedPending.getId(), theme.id());
 
-        publish(savedCreated);
+        publishDeploy(savedCreated);
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
@@ -75,7 +84,7 @@ class SiteService implements SiteUseCase {
     private Site savePending(TemplateType type, Site site) {
         Db db = Site.generateDbCreds();
 
-        site.setStatus(Status.PENDING);
+        site.setCreationStatus(CreationStatus.PENDING);
         site.setType(type);
         site.setDb(db);
 
@@ -83,12 +92,24 @@ class SiteService implements SiteUseCase {
     }
 
     private Site saveCreated(long siteId, String themeId) {
-        Site forUpdate = Site.builder().status(Status.CREATED).themeId(themeId).build();
+        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).themeId(themeId).build();
         return siteCommandPort.update(siteId, forUpdate);
     }
 
-    private void publish(Site site) {
+    private void publishDeploy(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.PENDING).build());
         publisher.publishEvent(new ThemePublishEvent(site));
+    }
+
+    @Async
+    protected void publishDeployAsync(Site site) {
+        publishDeploy(site);
+    }
+
+    // TODO impl Theme entity and save with name into the db
+    @Async
+    protected void publishActivation(Site site) {
+        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
+        publisher.publishEvent(new SiteActivationEvent("lucky-casino", site.getHostname()));
     }
 }

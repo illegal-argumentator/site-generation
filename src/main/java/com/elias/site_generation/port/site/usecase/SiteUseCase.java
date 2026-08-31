@@ -9,4 +9,6 @@ public interface SiteUseCase {
 
     void redeploy(long siteId);
 
+    void activate(long siteId);
+
 }

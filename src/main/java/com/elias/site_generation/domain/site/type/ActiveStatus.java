@@ -1,9 +1,9 @@
 package com.elias.site_generation.domain.site.type;
 
-public enum Status {
+public enum ActiveStatus {
 
     PENDING,
-    CREATED,
-    FAILED
+    FAILED,
+    ACTIVATED
 
 }

@@ -51,6 +51,19 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
+    public void createConfig(Db db, String hostname) {
+        remoteService.execute(
+                hostname,
+                "config",
+                "create",
+                "--dbname=" + addUserUnderscorePrefix(db.name()),
+                "--dbuser=" + addUserUnderscorePrefix(db.username()),
+                "--dbpass=" + db.password(),
+                "--dbhost=localhost"
+        );
+    }
+
+    @Override
     public void activateTheme(String name, String hostname) {
         remoteService.execute(
                 hostname,
@@ -61,15 +74,12 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
-    public void createConfig(Db db, String hostname) {
+    public void deleteIndex(String hostname) {
         remoteService.execute(
                 hostname,
-                "config",
-                "create",
-                "--dbname=" + addUserUnderscorePrefix(db.name()),
-                "--dbuser=" + addUserUnderscorePrefix(db.username()),
-                "--dbpass=" + db.password(),
-                "--dbhost=localhost"
+                "sudo -u %s rm -f %s/index.html",
+                wpProps.getUsername(),
+                wpProps.buildPath(wpProps.getUsername(), hostname)
         );
     }
 

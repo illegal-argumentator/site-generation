@@ -26,4 +26,9 @@ public class SiteController {
         useCase.redeploy(siteId);
     }
 
+    @PostMapping("/activate")
+    public void activate(@RequestParam long siteId) {
+        useCase.activate(siteId);
+    }
+
 }
