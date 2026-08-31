@@ -75,7 +75,7 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
 
     @Override
     public void deleteIndex(String hostname) {
-        remoteService.execute(
+        remoteService.executeCommand(
                 hostname,
                 "sudo",
                 "-u",

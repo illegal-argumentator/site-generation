@@ -29,4 +29,9 @@ class WordPressRemoteService {
 
         remoteCommandPort.execute(command.toString());
     }
+
+    public void executeCommand(String... arguments) {
+        var command = String.join(" ", arguments);
+        remoteCommandPort.execute(command);
+    }
 }
