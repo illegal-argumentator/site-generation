@@ -107,10 +107,9 @@ class SiteService implements SiteUseCase {
         publishDeploy(site);
     }
 
-    // TODO impl Theme entity and save with name into the db
     @Async
     protected void publishActivation(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
-        publisher.publishEvent(new SiteActivationEvent("lucky-casino", site));
+        publisher.publishEvent(new SiteActivationEvent(site));
     }
 }
