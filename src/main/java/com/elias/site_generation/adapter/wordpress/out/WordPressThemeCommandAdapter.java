@@ -17,7 +17,7 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     private final RemoteCommandPort remote;
 
     private static final String UNDERSCORE_PREFIX = "_";
-    private static final String DELETE_INDEX_TEMPLATE = "/home/%s/web/%s/public_html/index.html";
+    private static final String DELETE_INDEX_TEMPLATE = "sudo -u %s rm -f /home/%s/web/%s/public_html/index.html";
 
     @Override
     public void downloadWebsite(String hostname) {
@@ -69,7 +69,7 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
 
     @Override
     public void deleteIndex(String hostname) {
-        remote.delete(DELETE_INDEX_TEMPLATE.formatted(hestiaProps.getUsername(), hostname));
+        remote.execute(DELETE_INDEX_TEMPLATE.formatted(hestiaProps.getUsername(), hestiaProps.getUsername(), hostname));
     }
 
     private String buildCommand(String hostname, String... arguments) {
