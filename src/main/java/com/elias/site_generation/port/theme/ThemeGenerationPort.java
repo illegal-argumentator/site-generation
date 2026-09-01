@@ -5,6 +5,6 @@ import com.elias.site_generation.domain.theme.Theme;
 
 public interface ThemeGenerationPort {
 
-    Theme generate(Site site);
+    String generate(String themeId, Site site);
 
 }

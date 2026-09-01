@@ -14,4 +14,8 @@ public class PostgresTheme{
 
     private String title;
 
+    public static PostgresTheme from() {
+        return new PostgresTheme();
+    }
+
 }

@@ -4,6 +4,7 @@ import com.elias.site_generation.domain.theme.Theme;
 
 public interface ThemeCommandPort {
 
-    void save(Theme theme);
+    String save();
+    Theme update(String id, String title);
 
 }

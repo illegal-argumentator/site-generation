@@ -27,18 +27,17 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
     private final TemplateGenerationPort templateGenerationPort;
 
     @Override
-    public Theme generate(Site site) {
+    public String generate(String themeId, Site site) {
         log.info("Started generating theme.");
-        String templateId = UUID.randomUUID().toString();
 
         try {
-            return process(templateId, site);
+            return process(themeId, site);
         } catch (Exception e) {
             throw new ThemeGenerationException(site.getId(), "Unable to generate theme for site: %s.".formatted(site.getId()));
         }
     }
 
-    private Theme process(String templateId, Site site) {
+    private String process(String templateId, Site site) {
         String originalFilename = FileUtils.buildOriginalFilename(site.getType().getName(), FileUtils.ZIP_FORMAT);
 
         byte[] templateZip = fileManagerPort.read(FilePath.from(originalFilename, props.getTemplates()));
@@ -46,7 +45,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         byte[] theme = generateTheme(title, site, templateZip);
 
         saveTheme(templateId, theme);
-        return new Theme(templateId, title);
+        return title;
     }
 
     private byte[] generateTheme(String title, Site site, byte[] template) {

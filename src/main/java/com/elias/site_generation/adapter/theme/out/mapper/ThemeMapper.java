@@ -8,6 +8,6 @@ import org.mapstruct.Mapper;
 @Mapper(config = MapStructConfig.class)
 public interface ThemeMapper {
 
-    PostgresTheme toEntity(Theme theme);
+    Theme toTheme(PostgresTheme entity);
 
 }
