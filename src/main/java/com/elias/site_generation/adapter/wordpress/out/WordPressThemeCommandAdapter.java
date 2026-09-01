@@ -6,6 +6,7 @@ import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.props.HestiaProps;
 import com.elias.site_generation.shared.props.WpProps;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,9 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     private final WpProps wpProps;
     private final HestiaProps hestiaProps;
     private final RemoteCommandPort remote;
+
+    @Value("${template.name}")
+    private String TEMPLATE_NAME;
 
     private static final String UNDERSCORE_PREFIX = "_";
     private static final String DELETE_INDEX_TEMPLATE = "sudo -u %s rm -f /home/%s/web/%s/public_html/index.html";
@@ -62,8 +66,8 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
-    public void activateTheme(String name, String hostname) {
-        String command = buildCommand(hostname, "theme", "activate", name);
+    public void activateTheme(String hostname) {
+        String command = buildCommand(hostname, "theme", "activate", TEMPLATE_NAME);
         remote.execute(command);
     }
 
