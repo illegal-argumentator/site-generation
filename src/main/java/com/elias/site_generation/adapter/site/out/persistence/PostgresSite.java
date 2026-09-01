@@ -53,6 +53,9 @@ public class PostgresSite {
     @LastModifiedDate
     private Instant updatedAt;
 
+    @Version
+    private int version;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", nullable = false)
 //    private PostgresUser owner;

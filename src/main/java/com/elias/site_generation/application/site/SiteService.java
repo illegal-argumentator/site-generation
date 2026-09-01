@@ -46,7 +46,7 @@ class SiteService implements SiteUseCase {
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
         throwIfDomainAlreadyExists(site.getHostname());
-        process(type, site);
+        processAsync(type, site);
     }
 
     @Override
@@ -64,7 +64,7 @@ class SiteService implements SiteUseCase {
     }
 
     @Async
-    protected void process(TemplateType type, Site site) {
+    protected void processAsync(TemplateType type, Site site) {
         Site savedPending = savePending(type, site);
 
         Theme theme = themeGenerationPort.generate(site);
