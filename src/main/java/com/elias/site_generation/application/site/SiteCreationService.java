@@ -15,7 +15,7 @@ import com.elias.site_generation.port.site.SiteQueryPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
-import com.elias.site_generation.port.site.usecase.SiteUseCase;
+import com.elias.site_generation.port.site.usecase.SiteCreationUseCase;
 import com.elias.site_generation.port.theme.TemplateQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class SiteService implements SiteUseCase {
+class SiteCreationService implements SiteCreationUseCase {
 
     private final TemplateQueryPort templateQueryPort;
 
