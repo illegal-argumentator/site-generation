@@ -68,6 +68,7 @@ class SiteService implements SiteUseCase {
         Site savedPending = savePending(type, site);
 
         Theme theme = themeGenerationPort.generate(site);
+        themeCommandPort.save(theme);
         Site savedCreated = saveCreated(savedPending.getId(), theme);
 
         publishDeploy(savedCreated);

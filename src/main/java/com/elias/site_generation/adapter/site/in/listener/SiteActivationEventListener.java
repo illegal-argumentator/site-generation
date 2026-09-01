@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+// TODO test title added and theme saving
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
