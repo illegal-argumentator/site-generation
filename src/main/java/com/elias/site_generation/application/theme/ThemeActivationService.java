@@ -18,10 +18,10 @@ public class ThemeActivationService implements ThemeActivationUseCase {
     private final SiteCommandPort siteCommandPort;
 
     @Override
-    public void activate(String themeName, Site site) {
+    public void activate(Site site) {
         websiteThemeCommandPort.deleteIndex(site.getHostname());
-        websiteThemeCommandPort.activateTheme(themeName, site.getHostname());
+        websiteThemeCommandPort.activateTheme(site.getTheme().title(), site.getHostname());
         siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.ACTIVATED).build());
-        log.info("Theme {} activated.", themeName);
+        log.info("Theme activated.");
     }
 }

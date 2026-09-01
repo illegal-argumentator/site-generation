@@ -2,7 +2,6 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.event.SiteActivationEvent;
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
-import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
@@ -11,7 +10,9 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
+import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
+import com.elias.site_generation.port.theme.ThemeCommandPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteUseCase;
@@ -30,10 +31,13 @@ class SiteService implements SiteUseCase {
 
     private final TemplateQueryPort templateQueryPort;
 
+    private final DbGenerationPort dbGenerationPort;
     private final SiteQueryPort siteQueryPort;
     private final SiteCommandPort siteCommandPort;
 
     private final ThemeGenerationPort themeGenerationPort;
+    private final ThemeCommandPort themeCommandPort;
+
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     private final ApplicationEventPublisher publisher;
@@ -42,7 +46,7 @@ class SiteService implements SiteUseCase {
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
         throwIfDomainAlreadyExists(site.getHostname());
-        process(type, site);
+        processAsync(type, site);
     }
 
     @Override
@@ -60,11 +64,14 @@ class SiteService implements SiteUseCase {
     }
 
     @Async
-    protected void process(TemplateType type, Site site) {
+    protected void processAsync(TemplateType type, Site site) {
         Site savedPending = savePending(type, site);
 
-        Theme theme = themeGenerationPort.generate(site);
-        Site savedCreated = saveCreated(savedPending.getId(), theme.id());
+        String themeId = themeCommandPort.save();
+        String title = themeGenerationPort.generate(themeId, site);
+
+        Theme updated = themeCommandPort.update(themeId, title);
+        Site savedCreated = saveCreated(savedPending.getId(), updated);
 
         publishDeploy(savedCreated);
     }
@@ -82,17 +89,14 @@ class SiteService implements SiteUseCase {
     }
 
     private Site savePending(TemplateType type, Site site) {
-        Db db = Site.generateDbCreds();
-
         site.setCreationStatus(CreationStatus.PENDING);
         site.setType(type);
-        site.setDb(db);
-
+        site.setDb(dbGenerationPort.generate());
         return siteCommandPort.save(site);
     }
 
-    private Site saveCreated(long siteId, String themeId) {
-        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).themeId(themeId).build();
+    private Site saveCreated(long siteId, Theme theme) {
+        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).theme(theme).build();
         return siteCommandPort.update(siteId, forUpdate);
     }
 
@@ -106,10 +110,9 @@ class SiteService implements SiteUseCase {
         publishDeploy(site);
     }
 
-    // TODO impl Theme entity and save with name into the db
     @Async
     protected void publishActivation(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
-        publisher.publishEvent(new SiteActivationEvent("lucky-casino", site));
+        publisher.publishEvent(new SiteActivationEvent(site));
     }
 }

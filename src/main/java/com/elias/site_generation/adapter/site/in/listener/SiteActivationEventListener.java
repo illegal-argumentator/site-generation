@@ -16,8 +16,8 @@ public class SiteActivationEventListener {
 
     @EventListener
     public void listen(SiteActivationEvent event) {
-        log.info("Received event for site activation: {}.", event.themeName());
-        useCase.activate(event.themeName(), event.site());
+        log.info("Received event for site activation: {}.", event.site().getId());
+        useCase.activate(event.site());
     }
 
 }

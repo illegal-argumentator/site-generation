@@ -34,5 +34,4 @@ public class PostgresSiteCommandAdapter implements SiteCommandPort {
         return repository.findById(id).orElseThrow(() -> new SiteNotFoundException("Site not found."));
     }
 
-
 }

@@ -1,7 +1,7 @@
 package com.elias.site_generation.adapter.theme.in.exception;
 
-import com.elias.site_generation.domain.site.type.CreationStatus;
-import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
+import com.elias.site_generation.domain.theme.event.ThemePublishFailedEvent;
+import com.elias.site_generation.domain.site.type.DeployStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,8 @@ class ThemeExceptionService {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    public void publishSiteCreationFailed(long siteId, String reason, CreationStatus creationStatus) {
-        eventPublisher.publishEvent(new SiteCreationFailedEvent(siteId, reason, creationStatus));
+    public void publishThemePublishFailed(long siteId, String reason, DeployStatus deployStatus) {
+        eventPublisher.publishEvent(new ThemePublishFailedEvent(siteId, reason, deployStatus));
     }
 
 }
