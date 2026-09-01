@@ -22,6 +22,7 @@ public class PostgresSiteCommandAdapter implements SiteCommandPort {
 
     @Override
     public Site update(Long id, Site site) {
+        System.out.println("Site for update: " + site);
         PostgresSite entity = getOrThrow(id);
 
         mapper.updateEntity(entity, site);
