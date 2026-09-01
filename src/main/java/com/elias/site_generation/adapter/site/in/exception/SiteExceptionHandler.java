@@ -2,7 +2,7 @@ package com.elias.site_generation.adapter.site.in.exception;
 
 import com.elias.site_generation.domain.site.exception.*;
 import com.elias.site_generation.domain.site.type.CreationStatus;
-import com.elias.site_generation.domain.theme.exception.ThemeGenerationException;
+import com.elias.site_generation.domain.site.exception.SiteGenerationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,8 +42,8 @@ public class SiteExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(e.getMessage());
     }
 
-    @ExceptionHandler(ThemeGenerationException.class)
-    public void handleThemeGenerationException(ThemeGenerationException e) {
+    @ExceptionHandler(SiteGenerationException.class)
+    public void handleSiteGenerationException(SiteGenerationException e) {
         exceptionService.publishSiteCreationFailed(e.getSiteId(), e.getMessage(), CreationStatus.FAILED);
     }
 

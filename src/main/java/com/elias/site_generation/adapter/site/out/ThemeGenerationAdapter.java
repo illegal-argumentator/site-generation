@@ -4,8 +4,7 @@ import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.generation.TemplateGenerationPort;
 import com.elias.site_generation.adapter.theme.out.generation.TitleGenerationPort;
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.theme.Theme;
-import com.elias.site_generation.domain.theme.exception.ThemeGenerationException;
+import com.elias.site_generation.domain.site.exception.SiteGenerationException;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
@@ -13,8 +12,6 @@ import com.elias.site_generation.shared.props.FilePathProps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -33,7 +30,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         try {
             return process(themeId, site);
         } catch (Exception e) {
-            throw new ThemeGenerationException(site.getId(), "Unable to generate theme for site: %s.".formatted(site.getId()));
+            throw new SiteGenerationException(site.getId(), "Unable to generate theme for site: %s.".formatted(site.getId()));
         }
     }
 
