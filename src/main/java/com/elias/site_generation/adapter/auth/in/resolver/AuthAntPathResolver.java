@@ -17,8 +17,6 @@ public class AuthAntPathResolver implements AntPathResolver {
 
     @Override
     public boolean isPermittedPath(String path) {
-        System.out.println(props.allPaths());
-        System.out.printf(path);
         return Arrays.stream(props.allPaths())
                 .anyMatch(pr -> antPathMatcher.match(pr, path));
     }
