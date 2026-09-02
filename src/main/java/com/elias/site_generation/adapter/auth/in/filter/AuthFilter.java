@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.auth.in.filter;
 
+import com.elias.site_generation.adapter.auth.in.resolver.AuthAntPathResolver;
 import com.elias.site_generation.adapter.auth.out.utils.FilterUtils;
 import com.elias.site_generation.adapter.security.out.AuthDecoderPort;
 import com.elias.site_generation.domain.user.User;
@@ -33,6 +34,7 @@ import static com.elias.site_generation.adapter.security.out.utils.JwtUtils.isTo
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
+    private final AuthAntPathResolver resolver;
     private final UserQueryPort userQueryPort;
     private final AuthDecoderPort authDecoderPort;
 
@@ -77,5 +79,11 @@ public class AuthFilter extends OncePerRequestFilter {
         }
 
         throw new BadCredentialsException("Invalid token.");
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        return resolver.isPermittedPath(requestURI);
     }
 }
