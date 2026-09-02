@@ -21,4 +21,12 @@ public class PostgresUserQueryAdapter implements UserQueryPort {
 
         return mapper.toUser(entity);
     }
+
+    @Override
+    public User findById(String id) {
+        PostgresUser entity = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        return mapper.toUser(entity);
+    }
 }
