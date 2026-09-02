@@ -53,7 +53,7 @@ public class AuthService implements AuthUseCase {
 
     @Override
     public AuthResponseCommand refresh(RefreshRequestCommand command) {
-        User user = userQueryPort.findByEmail(tokenIdentityPort.extractId(command.refreshToken()));
+        User user = userQueryPort.findById(tokenIdentityPort.extractId(command.refreshToken()));
         return buildAuthResponse(user);
     }
 
