@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     ResponseEntity<AuthResponse> signUp(@Valid @RequestBody AuthRequest request) {
-        AuthResponseCommand responseCommand = useCase.signIn(mapper.toCommand(request));
+        AuthResponseCommand responseCommand = useCase.signUp(mapper.toCommand(request));
         return ResponseEntity.ok(mapper.toResponse(responseCommand));
     }
 
