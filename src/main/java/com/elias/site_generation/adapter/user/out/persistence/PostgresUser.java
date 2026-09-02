@@ -31,7 +31,8 @@ public class PostgresUser implements UserDetails {
     @OneToMany(
             mappedBy = "owner",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     private List<PostgresSite> sites;
 
@@ -55,7 +56,7 @@ public class PostgresUser implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
+    public @NonNull String getUsername() {
         return email;
     }
 }
