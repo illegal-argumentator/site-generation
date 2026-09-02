@@ -37,7 +37,9 @@ public class PostgresUser implements UserDetails {
 
     private Set<Role> roles;
 
+    @Column(unique = true)
     private String email;
+
     private String password;
 
     @CreatedDate

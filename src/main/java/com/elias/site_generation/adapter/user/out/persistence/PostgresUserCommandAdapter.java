@@ -2,8 +2,10 @@ package com.elias.site_generation.adapter.user.out.persistence;
 
 import com.elias.site_generation.adapter.user.out.mapper.UserMapper;
 import com.elias.site_generation.domain.user.User;
+import com.elias.site_generation.domain.user.exception.UserAlreadyExistsException;
 import com.elias.site_generation.port.user.UserCommandPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,7 +18,12 @@ public class PostgresUserCommandAdapter implements UserCommandPort {
     @Override
     public User save(User user) {
         PostgresUser entity = mapper.toEntity(user);
-        PostgresUser saved = repository.save(entity);
-        return mapper.toUser(saved);
+
+        try {
+            PostgresUser saved = repository.save(entity);
+            return mapper.toUser(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistsException("User already exists.");
+        }
     }
 }
