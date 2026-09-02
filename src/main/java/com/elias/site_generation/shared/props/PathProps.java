@@ -21,8 +21,8 @@ public class PathProps {
 
     public String[] allPaths() {
         return Stream.of(general, auth)
-                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
                 .toArray(String[]::new);
     }
 
