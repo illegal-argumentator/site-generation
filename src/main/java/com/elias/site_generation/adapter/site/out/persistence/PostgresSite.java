@@ -1,6 +1,7 @@
 package com.elias.site_generation.adapter.site.out.persistence;
 
 import com.elias.site_generation.adapter.theme.out.persistence.PostgresTheme;
+import com.elias.site_generation.adapter.user.out.persistence.PostgresUser;
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
@@ -53,7 +54,7 @@ public class PostgresSite {
     @LastModifiedDate
     private Instant updatedAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private PostgresUser owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private PostgresUser owner;
 }
