@@ -4,7 +4,7 @@ import com.elias.site_generation.application.auth.command.AuthRequestCommand;
 import com.elias.site_generation.application.auth.command.AuthResponseCommand;
 import com.elias.site_generation.application.auth.command.RefreshRequestCommand;
 
-public interface AuthUserUseCase {
+public interface AuthUseCase {
 
     AuthResponseCommand signIn(AuthRequestCommand command);
 

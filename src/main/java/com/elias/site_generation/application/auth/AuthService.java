@@ -7,7 +7,7 @@ import com.elias.site_generation.application.auth.command.TokenPayloadCommand;
 import com.elias.site_generation.domain.user.Role;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.domain.user.exception.IncorrectPasswordException;
-import com.elias.site_generation.port.auth.AuthUserUseCase;
+import com.elias.site_generation.port.auth.AuthUseCase;
 import com.elias.site_generation.port.security.PasswordHashingPort;
 import com.elias.site_generation.port.security.TokenGenerationPort;
 import com.elias.site_generation.port.security.TokenIdentityPort;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService implements AuthUserUseCase {
+public class AuthService implements AuthUseCase {
 
     private final UserQueryPort userQueryPort;
     private final UserCommandPort userCommandPort;
