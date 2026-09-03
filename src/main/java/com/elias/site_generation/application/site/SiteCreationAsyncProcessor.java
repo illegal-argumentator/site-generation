@@ -38,7 +38,7 @@ class SiteCreationAsyncProcessor {
     @Async
     public void createAsync(TemplateType type, Site site) {
         User owner = authUserPort.getAuthUser();
-        Site savedPending = savePending(type, owner, site);
+        Site savedPending = savePending(type, site);
 
         String themeId = themeCommandPort.save();
         String title = themeGenerationPort.generate(themeId, site);
@@ -61,11 +61,10 @@ class SiteCreationAsyncProcessor {
         publishDeploy(site);
     }
 
-    private Site savePending(TemplateType type, User user, Site site) {
+    private Site savePending(TemplateType type, Site site) {
         site.setCreationStatus(CreationStatus.PENDING);
         site.setType(type);
         site.setDb(dbGenerationPort.generate());
-        site.setOwner(user);
         return siteCommandPort.save(site);
     }
 
