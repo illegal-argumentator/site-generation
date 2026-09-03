@@ -37,13 +37,13 @@ public class TokenGenerationAdapter implements TokenGenerationPort {
     private String generateAccessToken(User user) {
 
         Map<String, Object> claims = Map.of(
-                TokenClaim.ID.getClaim(), user.id(),
-                TokenClaim.EMAIL.getClaim(), user.email(),
+                TokenClaim.ID.getClaim(), user.getId(),
+                TokenClaim.EMAIL.getClaim(), user.getEmail(),
                 TokenClaim.ROLES.getClaim(), String.join(COMMA_DELIMITER, user.toRoleNames())
         );
 
         JwtPayload jwtPayload = JwtPayload.builder()
-                .subject(user.email())
+                .subject(user.getEmail())
                 .claims(claims)
                 .expiration(jwtProperties.getAccessExpirationTime())
                 .build();
@@ -52,8 +52,8 @@ public class TokenGenerationAdapter implements TokenGenerationPort {
 
     private String generateRefreshToken(User user) {
         JwtPayload jwtPayload = JwtPayload.builder()
-                .subject(user.email())
-                .claims(Map.of(TokenClaim.ID.getClaim(), user.id()))
+                .subject(user.getEmail())
+                .claims(Map.of(TokenClaim.ID.getClaim(), user.getId()))
                 .expiration(jwtProperties.getRefreshExpirationTime())
                 .build();
 

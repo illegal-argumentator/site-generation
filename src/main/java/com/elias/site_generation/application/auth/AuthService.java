@@ -33,7 +33,7 @@ public class AuthService implements AuthUseCase {
     public AuthResponseCommand signIn(AuthRequestCommand command) {
         User user = userQueryPort.findByEmail(command.email());
 
-        boolean matches = passwordHashingPort.matches(command.password(), user.password());
+        boolean matches = passwordHashingPort.matches(command.password(), user.getPassword());
         if (!matches) throw new IncorrectPasswordException("Wrong credentials.");
 
         return buildAuthResponse(user);

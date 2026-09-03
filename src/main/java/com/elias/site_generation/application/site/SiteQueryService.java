@@ -19,7 +19,7 @@ public class SiteQueryService implements SiteQueryUseCase {
     public List<Site> getSites() {
         User authUser = authUserPort.getAuthUser();
         System.out.println(authUser);
-        return authUserPort.getAuthUser().sites();
+        return authUserPort.getAuthUser().getSites();
     }
 
 }
