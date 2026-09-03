@@ -49,8 +49,8 @@ class SiteCreationAsyncProcessor {
 
     @Async
     public void publishActivationAsync(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.IN_PROGRESS).build());
-        publisher.publishEvent(new SiteActivationEvent(site));
+        Site updated = siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.IN_PROGRESS).build());
+        publisher.publishEvent(new SiteActivationEvent(updated));
     }
 
     @Async
@@ -77,8 +77,8 @@ class SiteCreationAsyncProcessor {
     }
 
     private void publishDeploy(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
-        publisher.publishEvent(new ThemePublishEvent(site));
+        Site updated = siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
+        publisher.publishEvent(new ThemePublishEvent(updated));
     }
 
 }
