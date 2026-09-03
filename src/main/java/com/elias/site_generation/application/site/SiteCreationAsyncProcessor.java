@@ -9,7 +9,6 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.user.User;
-import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class SiteCreationAsyncProcessor {
 
-    private final AuthUserPort authUserPort;
     private final UserCommandPort userCommandPort;
 
     private final DbGenerationPort dbGenerationPort;
@@ -36,8 +34,7 @@ class SiteCreationAsyncProcessor {
     private final ApplicationEventPublisher publisher;
 
     @Async
-    public void createAsync(TemplateType type, Site site) {
-        User owner = authUserPort.getAuthUser();
+    public void createAsync(TemplateType type, User user, Site site) {
         Site savedPending = saveInit(type, site);
 
         String themeId = themeCommandPort.save();
@@ -46,7 +43,7 @@ class SiteCreationAsyncProcessor {
         Theme updated = themeCommandPort.update(themeId, title);
         Site savedCreated = saveCreated(savedPending.getId(), updated);
 
-        userCommandPort.update(owner.getId(), User.builder().sites(owner.collectSites(site)).build());
+        userCommandPort.update(user.getId(), User.builder().sites(user.collectSites(site)).build());
         publishDeploy(savedCreated);
     }
 

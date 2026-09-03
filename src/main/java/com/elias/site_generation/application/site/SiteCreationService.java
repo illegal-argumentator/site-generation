@@ -4,6 +4,8 @@ import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsExcept
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
+import com.elias.site_generation.domain.user.User;
+import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
 import com.elias.site_generation.port.site.usecase.SiteCreationUseCase;
 import com.elias.site_generation.port.theme.TemplateQueryPort;
@@ -20,6 +22,7 @@ class SiteCreationService implements SiteCreationUseCase {
     private final TemplateQueryPort templateQueryPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
+    private final AuthUserPort authUserPort;
     private final SiteQueryPort siteQueryPort;
     private final SiteCreationAsyncProcessor asyncProcessor;
 
@@ -27,7 +30,9 @@ class SiteCreationService implements SiteCreationUseCase {
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
         throwIfDomainAlreadyExists(site.getHostname());
-        asyncProcessor.createAsync(type, site);
+
+        User owner = authUserPort.getAuthUser();
+        asyncProcessor.createAsync(type, owner, site);
     }
 
     @Override
