@@ -10,6 +10,8 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
+import com.elias.site_generation.domain.user.User;
+import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
@@ -30,6 +32,8 @@ import org.springframework.stereotype.Service;
 class SiteCreationService implements SiteCreationUseCase {
 
     private final TemplateQueryPort templateQueryPort;
+
+    private final AuthUserPort authUserPort;
 
     private final DbGenerationPort dbGenerationPort;
     private final SiteQueryPort siteQueryPort;
@@ -65,7 +69,8 @@ class SiteCreationService implements SiteCreationUseCase {
 
     @Async
     protected void processAsync(TemplateType type, Site site) {
-        Site savedPending = savePending(type, site);
+        User owner = authUserPort.getAuthUser();
+        Site savedPending = savePending(type, owner, site);
 
         String themeId = themeCommandPort.save();
         String title = themeGenerationPort.generate(themeId, site);
@@ -88,10 +93,11 @@ class SiteCreationService implements SiteCreationUseCase {
         }
     }
 
-    private Site savePending(TemplateType type, Site site) {
+    private Site savePending(TemplateType type, User user, Site site) {
         site.setCreationStatus(CreationStatus.PENDING);
         site.setType(type);
         site.setDb(dbGenerationPort.generate());
+        site.setOwner(user);
         return siteCommandPort.save(site);
     }
 
