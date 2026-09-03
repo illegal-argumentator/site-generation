@@ -6,4 +6,7 @@ public interface UserCommandPort {
 
     User save(User user);
 
+    void update(String id, User user);
+
+
 }

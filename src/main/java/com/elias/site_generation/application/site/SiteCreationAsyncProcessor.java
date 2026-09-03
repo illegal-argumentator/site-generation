@@ -14,6 +14,7 @@ import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
+import com.elias.site_generation.port.user.UserCommandPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 class SiteCreationAsyncProcessor {
 
     private final AuthUserPort authUserPort;
+    private final UserCommandPort userCommandPort;
 
     private final DbGenerationPort dbGenerationPort;
     private final SiteCommandPort siteCommandPort;
@@ -44,6 +46,7 @@ class SiteCreationAsyncProcessor {
         Theme updated = themeCommandPort.update(themeId, title);
         Site savedCreated = saveCreated(savedPending.getId(), updated);
 
+        userCommandPort.update(owner.getId(), User.builder().sites(owner.collectSites(site)).build());
         publishDeploy(savedCreated);
     }
 
