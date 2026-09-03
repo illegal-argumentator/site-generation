@@ -20,6 +20,7 @@ class WordPressTemplateSlugQueryAdapter implements WebsiteTemplateSlugQueryPort 
 
     private final FilePathProps props;
     private final FileManagerPort fileManagerPort;
+    private static final String SLASH_DELIMITER = "/";
 
     @Override
     public String getSlug(TemplateType type) {
@@ -35,7 +36,7 @@ class WordPressTemplateSlugQueryAdapter implements WebsiteTemplateSlugQueryPort 
             while ((entry = zis.getNextEntry()) != null) {
                 String name = entry.getName();
 
-                int slashIndex = name.indexOf('/');
+                int slashIndex = name.indexOf(SLASH_DELIMITER);
 
                 if (slashIndex > 0) {
                     return name.substring(0, slashIndex);

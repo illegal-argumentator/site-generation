@@ -3,6 +3,7 @@ package com.elias.site_generation.domain.site.type;
 public enum DeployStatus {
 
     PENDING,
+    IN_PROGRESS,
 
     DOMAIN_CREATION_FAILED,
     SSL_ENABLE_FAILED,

@@ -108,7 +108,7 @@ class ThemePublishService implements ThemePublishUseCase {
     }
 
     private boolean shouldRunStep(DeployStatus status, DeployStatus fail) {
-        return (status == null || status == DeployStatus.PENDING) || status == fail;
+        return (status == null || status == DeployStatus.IN_PROGRESS) || status == fail;
     }
 
 }

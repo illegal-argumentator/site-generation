@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.theme.in.exception;
 
+import com.elias.site_generation.domain.theme.exception.ThemeActivationException;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,5 +15,10 @@ public class ThemeExceptionHandler {
     @ExceptionHandler(ThemePublishingException.class)
     public void handleThemePublishException(ThemePublishingException e) {
         exceptionService.publishThemePublishFailed(e.getSiteId(), e.getMessage(), e.getDeployStatus());
+    }
+
+    @ExceptionHandler(ThemeActivationException.class)
+    public void handleThemeActivationException(ThemeActivationException e) {
+        exceptionService.publishThemeActivationFailed(e.getSiteId(), e.getMessage(), e.getActiveStatus());
     }
 }

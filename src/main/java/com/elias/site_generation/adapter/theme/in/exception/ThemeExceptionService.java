@@ -1,5 +1,7 @@
 package com.elias.site_generation.adapter.theme.in.exception;
 
+import com.elias.site_generation.domain.site.type.ActiveStatus;
+import com.elias.site_generation.domain.theme.event.ThemeActivationFailedEvent;
 import com.elias.site_generation.domain.theme.event.ThemePublishFailedEvent;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,10 @@ class ThemeExceptionService {
 
     public void publishThemePublishFailed(long siteId, String reason, DeployStatus deployStatus) {
         eventPublisher.publishEvent(new ThemePublishFailedEvent(siteId, reason, deployStatus));
+    }
+
+    public void publishThemeActivationFailed(long siteId, String reason, ActiveStatus activeStatus) {
+        eventPublisher.publishEvent(new ThemeActivationFailedEvent(siteId, reason, activeStatus));
     }
 
 }

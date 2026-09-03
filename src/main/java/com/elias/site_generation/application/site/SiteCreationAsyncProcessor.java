@@ -38,7 +38,7 @@ class SiteCreationAsyncProcessor {
     @Async
     public void createAsync(TemplateType type, Site site) {
         User owner = authUserPort.getAuthUser();
-        Site savedPending = savePending(type, site);
+        Site savedPending = saveInit(type, site);
 
         String themeId = themeCommandPort.save();
         String title = themeGenerationPort.generate(themeId, site);
@@ -52,7 +52,7 @@ class SiteCreationAsyncProcessor {
 
     @Async
     public void publishActivationAsync(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
+        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.IN_PROGRESS).build());
         publisher.publishEvent(new SiteActivationEvent(site));
     }
 
@@ -61,8 +61,10 @@ class SiteCreationAsyncProcessor {
         publishDeploy(site);
     }
 
-    private Site savePending(TemplateType type, Site site) {
-        site.setCreationStatus(CreationStatus.PENDING);
+    private Site saveInit(TemplateType type, Site site) {
+        site.setCreationStatus(CreationStatus.IN_PROGRESS);
+        site.setActiveStatus(ActiveStatus.PENDING);
+        site.setDeployStatus(DeployStatus.PENDING);
         site.setType(type);
         site.setDb(dbGenerationPort.generate());
         return siteCommandPort.save(site);
@@ -74,7 +76,7 @@ class SiteCreationAsyncProcessor {
     }
 
     private void publishDeploy(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.PENDING).build());
+        siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
         publisher.publishEvent(new ThemePublishEvent(site));
     }
 
