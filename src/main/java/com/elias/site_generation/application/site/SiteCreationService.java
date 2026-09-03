@@ -1,29 +1,15 @@
 package com.elias.site_generation.application.site;
 
-import com.elias.site_generation.domain.site.event.SiteActivationEvent;
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.type.ActiveStatus;
-import com.elias.site_generation.domain.site.type.CreationStatus;
-import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
-import com.elias.site_generation.domain.theme.Theme;
-import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
-import com.elias.site_generation.domain.user.User;
-import com.elias.site_generation.port.auth.AuthUserPort;
-import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
-import com.elias.site_generation.port.theme.ThemeCommandPort;
-import com.elias.site_generation.port.theme.ThemeGenerationPort;
-import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.usecase.SiteCreationUseCase;
 import com.elias.site_generation.port.theme.TemplateQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -32,53 +18,30 @@ import org.springframework.stereotype.Service;
 class SiteCreationService implements SiteCreationUseCase {
 
     private final TemplateQueryPort templateQueryPort;
-
-    private final AuthUserPort authUserPort;
-
-    private final DbGenerationPort dbGenerationPort;
-    private final SiteQueryPort siteQueryPort;
-    private final SiteCommandPort siteCommandPort;
-
-    private final ThemeGenerationPort themeGenerationPort;
-    private final ThemeCommandPort themeCommandPort;
-
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
-    private final ApplicationEventPublisher publisher;
+    private final SiteQueryPort siteQueryPort;
+    private final SiteCreationAsyncProcessor asyncProcessor;
 
     @Override
     public void create(TemplateType type, Site site) {
         throwIfTemplateNotExists(type);
         throwIfDomainAlreadyExists(site.getHostname());
-        processAsync(type, site);
+        asyncProcessor.createAsync(type, site);
     }
 
     @Override
     public void redeploy(long siteId) {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRedeploy();
-        publishDeployAsync(site);
+        asyncProcessor.publishDeployAsync(site);
     }
 
     @Override
     public void activate(long siteId) {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForActivation();
-        publishActivation(site);
-    }
-
-    @Async
-    protected void processAsync(TemplateType type, Site site) {
-        User owner = authUserPort.getAuthUser();
-        Site savedPending = savePending(type, owner, site);
-
-        String themeId = themeCommandPort.save();
-        String title = themeGenerationPort.generate(themeId, site);
-
-        Theme updated = themeCommandPort.update(themeId, title);
-        Site savedCreated = saveCreated(savedPending.getId(), updated);
-
-        publishDeploy(savedCreated);
+        asyncProcessor.publishActivationAsync(site);
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
@@ -91,34 +54,5 @@ class SiteCreationService implements SiteCreationUseCase {
         if (websiteThemeQueryPort.exists(hostname)) {
             throw new DomainAlreadyExistsException("Domain %s already exists.".formatted(hostname));
         }
-    }
-
-    private Site savePending(TemplateType type, User user, Site site) {
-        site.setCreationStatus(CreationStatus.PENDING);
-        site.setType(type);
-        site.setDb(dbGenerationPort.generate());
-        site.setOwner(user);
-        return siteCommandPort.save(site);
-    }
-
-    private Site saveCreated(long siteId, Theme theme) {
-        Site forUpdate = Site.builder().creationStatus(CreationStatus.CREATED).theme(theme).build();
-        return siteCommandPort.update(siteId, forUpdate);
-    }
-
-    private void publishDeploy(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.PENDING).build());
-        publisher.publishEvent(new ThemePublishEvent(site));
-    }
-
-    @Async
-    protected void publishDeployAsync(Site site) {
-        publishDeploy(site);
-    }
-
-    @Async
-    protected void publishActivation(Site site) {
-        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.PENDING).build());
-        publisher.publishEvent(new SiteActivationEvent(site));
     }
 }

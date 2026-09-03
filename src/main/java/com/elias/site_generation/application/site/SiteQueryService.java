@@ -1,6 +1,7 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.usecase.SiteQueryUseCase;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ public class SiteQueryService implements SiteQueryUseCase {
 
     @Override
     public List<Site> getSites() {
+        User authUser = authUserPort.getAuthUser();
+        System.out.println(authUser);
         return authUserPort.getAuthUser().sites();
     }
 
