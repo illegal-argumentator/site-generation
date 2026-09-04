@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AsyncThemePublishingStrategy implements ExceptionHandlerStrategy {
+public class AsyncThemePublishingExceptionStrategy implements ExceptionHandlerStrategy {
 
     private final ApplicationEventPublisher eventPublisher;
 
