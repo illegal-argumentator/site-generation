@@ -81,7 +81,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void installWebsite(Site site) {
         if (shouldRunStep(site.getDeployStatus(), DeployStatus.WEBSITE_INSTALLATION_FAILED)) {
-            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.installWebsite(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to install WordPress.", DeployStatus.WEBSITE_INSTALLATION_FAILED));
+            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.installWebsite(site.getTheme().title(), site.getHostname()), new ThemePublishingException(site.getId(), "Failed to install WordPress.", DeployStatus.WEBSITE_INSTALLATION_FAILED));
             log.info("Installed WordPress for site: {}.", site.getId());
         }
     }

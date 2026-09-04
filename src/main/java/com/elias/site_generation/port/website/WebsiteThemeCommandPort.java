@@ -5,7 +5,7 @@ import com.elias.site_generation.domain.site.nested.Db;
 public interface WebsiteThemeCommandPort {
 
     void downloadWebsite(String hostname);
-    void installWebsite(String hostname);
+    void installWebsite(String title, String hostname);
     void installTheme(String themePath, String hostname);
     void createConfig(Db db, String hostname);
 

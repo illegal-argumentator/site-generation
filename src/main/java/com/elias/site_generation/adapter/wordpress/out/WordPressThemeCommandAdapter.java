@@ -26,13 +26,13 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
-    public void installWebsite(String hostname) {
+    public void installWebsite(String title, String hostname) {
         String command = buildCommand(
                 hostname,
                 "core",
                 "install",
                 "--url=https://" + hostname,
-                "--title=my_site",
+                "--title=" + title,
                 "--admin_user=" + wpProps.getUsername(),
                 "--admin_password=" + wpProps.getPassword(),
                 "--admin_email=admin@" + hostname);
