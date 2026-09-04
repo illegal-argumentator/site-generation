@@ -74,6 +74,4 @@ public class Site {
             throw new SiteHasNotCreatedException("Site has not created yet.");
         }
     }
-
-
 }

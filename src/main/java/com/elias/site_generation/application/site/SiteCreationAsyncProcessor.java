@@ -49,7 +49,7 @@ class SiteCreationAsyncProcessor {
 
     @Async
     public void publishActivationAsync(Site site) {
-        if (site.getActiveStatus() != null && site.getActiveStatus() != ActiveStatus.PENDING) {
+        if (site.getActiveStatus() == null || site.getActiveStatus() == ActiveStatus.PENDING) {
             Site updated = siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.IN_PROGRESS).build());
             publisher.publishEvent(new SiteActivationEvent(updated));
             return;
@@ -83,7 +83,7 @@ class SiteCreationAsyncProcessor {
     }
 
     private void publishDeploy(Site site) {
-        if (site.getDeployStatus() != null && site.getDeployStatus() != DeployStatus.PENDING) {
+        if (site.getDeployStatus() == null || site.getDeployStatus() == DeployStatus.PENDING) {
             Site updated = siteCommandPort.update(site.getId(), Site.builder().failReason(null).deployStatus(DeployStatus.IN_PROGRESS).build());
             publisher.publishEvent(new ThemePublishEvent(updated));
             return;
