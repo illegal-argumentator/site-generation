@@ -84,7 +84,7 @@ class SiteCreationAsyncProcessor {
 
     private void publishDeploy(Site site) {
         if (site.getDeployStatus() == null || site.getDeployStatus() == DeployStatus.PENDING) {
-            Site updated = siteCommandPort.update(site.getId(), Site.builder().failReason(null).deployStatus(DeployStatus.IN_PROGRESS).build());
+            Site updated = siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
             publisher.publishEvent(new ThemePublishEvent(updated));
             return;
         }

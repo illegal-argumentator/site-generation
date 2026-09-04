@@ -17,36 +17,41 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ThemeActivationService implements ThemeActivationUseCase {
 
-    private final WebsiteTemplateSlugQueryPort websiteTemplateSlugQueryPort;
-    private final WebsiteThemeCommandPort websiteThemeCommandPort;
     private final SiteCommandPort siteCommandPort;
+    private final WebsiteThemeCommandPort websiteThemeCommandPort;
+    private final WebsiteTemplateSlugQueryPort websiteTemplateSlugQueryPort;
 
     @Override
     public void activate(Site site) {
         String slug = websiteTemplateSlugQueryPort.getSlug(site.getType());
 
-        deleteIndex(site);
-        activateTheme(slug, site);
+        process(slug, site);
+        updateActivated(site);
 
-        siteCommandPort.update(site.getId(), Site.builder().activeStatus(ActiveStatus.ACTIVATED).build());
         log.info("Theme activated.");
     }
 
-    private void deleteIndex(Site site) {
-        if (shouldRunStep(site.getActiveStatus(), ActiveStatus.INDEX_DELETION_FAILED)) {
-            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.deleteIndex(site.getHostname()), new ThemeActivationException(site.getId(), "Failed to delete index.", ActiveStatus.INDEX_DELETION_FAILED));
-            log.info("Deleted index for site: {}.", site.getId());
+    private void process(String slug, Site site) {
+        switch (site.getActiveStatus()) {
+            case IN_PROGRESS, INDEX_DELETION_FAILED:
+                deleteIndex(site);
+            case ACTIVATION_FAILED:
+                activateTheme(slug, site);
         }
+    }
+
+    private void deleteIndex(Site site) {
+        FuncUtils.runOrThrow(() -> websiteThemeCommandPort.deleteIndex(site.getHostname()), new ThemeActivationException(site.getId(), "Failed to delete index.", ActiveStatus.INDEX_DELETION_FAILED));
+        log.info("Deleted index for site: {}.", site.getId());
     }
 
     private void activateTheme(String slug, Site site) {
-        if (shouldRunStep(site.getActiveStatus(), ActiveStatus.ACTIVATION_FAILED)) {
-            FuncUtils.runOrThrow(() -> websiteThemeCommandPort.activateTheme(slug, site.getHostname()), new ThemeActivationException(site.getId(), "Failed to activate theme.", ActiveStatus.ACTIVATION_FAILED));
-            log.info("Activated theme for site: {}.", site.getId());
-        }
+        FuncUtils.runOrThrow(() -> websiteThemeCommandPort.activateTheme(slug, site.getHostname()), new ThemeActivationException(site.getId(), "Failed to activate theme.", ActiveStatus.ACTIVATION_FAILED));
+        log.info("Activated theme for site: {}.", site.getId());
     }
 
-    private boolean shouldRunStep(ActiveStatus status, ActiveStatus fail) {
-        return (status == null || status == ActiveStatus.IN_PROGRESS) || status == fail;
+    private void updateActivated(Site site) {
+        Site update = Site.builder().failReason(null).activeStatus(ActiveStatus.ACTIVATED).build();
+        siteCommandPort.update(site.getId(), update);
     }
 }
