@@ -53,7 +53,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void enableSsl(Site site) {
         if (shouldRunStep(site.getDeployStatus(), DeployStatus.SSL_ENABLE_FAILED)) {
-            FuncUtils.runOrThrow(() -> hostingPort.enableSsl(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to enable ssl for domain.", DeployStatus.SSL_ENABLE_FAILED));
+            FuncUtils.runOrThrow(() -> hostingPort.enableSsl(site.getHostname()), new ThemePublishingException(site.getId(), "Failed to enable ssl for domain. Possibly domain is overused.", DeployStatus.SSL_ENABLE_FAILED));
             log.info("Enabled ssl for domain: {}.", site.getHostname());
         }
     }
@@ -108,7 +108,7 @@ class ThemePublishService implements ThemePublishUseCase {
     }
 
     private boolean shouldRunStep(DeployStatus status, DeployStatus fail) {
-        return (status == null || status == DeployStatus.PENDING) || status == fail;
+        return (status == null || status == DeployStatus.IN_PROGRESS) || status == fail;
     }
 
 }

@@ -9,6 +9,6 @@ public interface WebsiteThemeCommandPort {
     void installTheme(String themePath, String hostname);
     void createConfig(Db db, String hostname);
 
-    void activateTheme(String name, String hostname);
+    void activateTheme(String slug, String hostname);
     void deleteIndex(String hostname);
 }

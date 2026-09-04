@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "themes")
-public class PostgresTheme{
+public class PostgresTheme {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

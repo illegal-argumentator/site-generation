@@ -62,8 +62,8 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
-    public void activateTheme(String name, String hostname) {
-        String command = buildCommand(hostname, "theme", "activate", name);
+    public void activateTheme(String slug, String hostname) {
+        String command = buildCommand(hostname, "theme", "activate", slug);
         remote.execute(command);
     }
 

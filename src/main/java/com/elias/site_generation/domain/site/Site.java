@@ -9,7 +9,6 @@ import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
-import com.elias.site_generation.domain.user.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -21,7 +20,6 @@ import java.time.Instant;
 public class Site {
 
     private Long id;
-    private User owner;
 
     private String language;
     private String content;

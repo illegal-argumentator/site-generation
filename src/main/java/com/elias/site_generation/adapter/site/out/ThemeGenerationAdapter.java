@@ -28,10 +28,13 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         log.info("Started generating theme.");
 
         try {
-            return process(themeId, site);
+            String processed = process(themeId, site);
+            log.info("Theme generated.");
+            return processed;
         } catch (Exception e) {
             throw new SiteGenerationException(site.getId(), "Unable to generate theme for site: %s.".formatted(site.getId()));
         }
+
     }
 
     private String process(String templateId, Site site) {

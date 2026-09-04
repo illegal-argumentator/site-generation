@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ThemePublishEventListener {
 
-    // TODO check if theme activates by name
-
     private final ThemePublishUseCase useCase;
 
     @EventListener

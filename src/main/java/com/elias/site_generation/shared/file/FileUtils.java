@@ -33,6 +33,14 @@ public final class FileUtils {
         return TEMP_PATH + SLASH + folder + SLASH + filename;
     }
 
+    public static Path getPath(String filename, String directory) {
+        return Paths.get(
+                System.getProperty(FileUtils.USER_DIR),
+                directory,
+                filename
+        );
+    }
+
     private static Path getAbsolutePath(String directory) {
         if (directory == null || directory.isBlank()) {
             throw new IllegalArgumentException("Directory is empty.");
@@ -40,5 +48,4 @@ public final class FileUtils {
 
         return Paths.get(directory).toAbsolutePath().normalize();
     }
-
 }

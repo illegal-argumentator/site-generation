@@ -1,6 +1,7 @@
 package com.elias.site_generation.adapter.site.in;
 
 import com.elias.site_generation.adapter.site.in.dto.SitesResponse;
+import com.elias.site_generation.port.site.usecase.SiteQueryUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SiteQueryController {
 
+    private final SiteQueryUseCase useCase;
+
     @GetMapping
     public ResponseEntity<SitesResponse> getSites() {
-        return ResponseEntity.ok(new SitesResponse(List.of()));
+        return ResponseEntity.ok(new SitesResponse(useCase.getSites()));
     }
 
 }

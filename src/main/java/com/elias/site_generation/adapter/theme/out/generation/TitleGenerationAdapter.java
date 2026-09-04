@@ -19,7 +19,7 @@ public class TitleGenerationAdapter implements TitleGenerationPort {
     public String generate() {
         AiRequest request = new AiRequest(TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT);
         String title = aiService.generate(request);
-        log.info("New site title successfully generated: {}.", title);
+        log.info("Title successfully generated: {}.", title);
         return title;
     }
 }

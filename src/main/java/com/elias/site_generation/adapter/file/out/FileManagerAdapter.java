@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Slf4j
 @Service
@@ -20,7 +19,7 @@ class FileManagerAdapter implements FileManagerPort {
     @Override
     public void write(FilePath filePath, byte[] file) {
         try {
-            Path path = getPath(filePath.filename(), filePath.directory());
+            Path path = FileUtils.getPath(filePath.filename(), filePath.directory());
             Files.createDirectories(path.getParent());
             Files.write(path, file);
         } catch (IOException e) {
@@ -32,7 +31,7 @@ class FileManagerAdapter implements FileManagerPort {
     @Override
     public byte[] read(FilePath filePath) {
         try {
-            return Files.readAllBytes(getPath(filePath.filename(), filePath.directory()));
+            return Files.readAllBytes(FileUtils.getPath(filePath.filename(), filePath.directory()));
         } catch (IOException e) {
             log.error("Unable to read file: {}.", e.getMessage());
             throw new FileReadException("Unable to read file.");
@@ -41,14 +40,6 @@ class FileManagerAdapter implements FileManagerPort {
 
     @Override
     public boolean exists(FilePath filePath) {
-        return Files.exists(getPath(filePath.filename(), filePath.directory()));
-    }
-
-    private Path getPath(String filename, String directory) {
-        return Paths.get(
-                System.getProperty(FileUtils.USER_DIR),
-                directory,
-                filename
-        );
+        return Files.exists(FileUtils.getPath(filePath.filename(), filePath.directory()));
     }
 }
