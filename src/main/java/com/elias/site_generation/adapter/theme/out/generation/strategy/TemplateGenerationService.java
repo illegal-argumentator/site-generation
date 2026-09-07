@@ -32,7 +32,6 @@ final class TemplateGenerationService {
     byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(MAIN_PAGE_NAME, request.template());
         byte[] html = generateHtml(index, generateStyle(request), elements, request);
-
         Map<String, byte[]> files = Map.of(MAIN_PAGE_NAME, html);
         return zipFilePort.update(request.template(), files);
     }

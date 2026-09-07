@@ -39,7 +39,7 @@ class ThemePublishService implements ThemePublishUseCase {
 
     private void process(Site site) {
         switch (site.getDeployStatus()) {
-            case IN_PROGRESS, DOMAIN_CREATION_FAILED:
+            case PENDING, IN_PROGRESS, DOMAIN_CREATION_FAILED:
                 createDomain(site);
             case SSL_ENABLE_FAILED:
                 enableSsl(site);

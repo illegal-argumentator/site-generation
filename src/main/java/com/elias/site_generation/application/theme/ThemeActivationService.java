@@ -33,7 +33,7 @@ public class ThemeActivationService implements ThemeActivationUseCase {
 
     private void process(String slug, Site site) {
         switch (site.getActiveStatus()) {
-            case IN_PROGRESS, INDEX_DELETION_FAILED:
+            case PENDING, IN_PROGRESS, INDEX_DELETION_FAILED:
                 deleteIndex(site);
             case ACTIVATION_FAILED:
                 activateTheme(slug, site);
