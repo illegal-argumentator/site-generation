@@ -47,8 +47,7 @@ final class ImageGenerationService implements ImageGenerationPort {
     }
 
     private CompletableFuture<byte[]> generateAsync() {
-//        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
-        return CompletableFuture.supplyAsync(() -> new byte[]{0, 0, 0, 1});
+        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
     }
 
     private String generateImagePath(TemplateType type) {
