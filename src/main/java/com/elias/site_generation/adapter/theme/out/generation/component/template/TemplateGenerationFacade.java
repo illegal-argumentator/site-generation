@@ -38,16 +38,20 @@ public final class TemplateGenerationFacade {
     public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
         Map<String, byte[]> images = imageGenerationPort.generate(index);
-        byte[] html = generateHtml(index, images, elements, request);
-        return manageZip(request, Map.of(props.getIndexFile(), html), images);
+        byte[] html = generateHtml(index, images.keySet(), elements, request);
+        return updateZip(request, Map.of(props.getIndexFile(), html), images);
     }
 
-    private byte[] manageZip(ThemeGenerationRequest request, Map<String, byte[]> imagesForCreate, Map<String, byte[]> entityForUpdate) {
-        byte[] updatedTemplate = zipFilePort.update(request.template(), entityForUpdate);
-        return zipFilePort.write(updatedTemplate, imagesForCreate);
+    @SafeVarargs
+    private byte[] updateZip(ThemeGenerationRequest request, Map<String, byte[]>... entries) {
+        Map<String, byte[]> all = Arrays.stream(entries)
+                .flatMap(entry -> entry.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return zipFilePort.update(request.template(), all);
     }
 
-    private byte[] generateHtml(byte[] index, Map<String, byte[]> images, List<String> elements, ThemeGenerationRequest request) {
+    private byte[] generateHtml(byte[] index, Set<String> images, List<String> elements, ThemeGenerationRequest request) {
         Document html = Jsoup.parse(new String(index));
 
         String title = titleGenerationPort.generate();
@@ -57,9 +61,9 @@ public final class TemplateGenerationFacade {
         return applyElements(html, style, images, generatedElements);
     }
 
-    private byte[] applyElements(Document html, byte[] style, Map<String, byte[]> images, Map<String, String> generatedElements) {
+    private byte[] applyElements(Document html, byte[] style, Set<String> images, Map<String, String> generatedElements) {
         applyGeneratedElements(html, generatedElements);
-        applyImagePaths(html, images.keySet());
+        applyImagePaths(html, images);
         applyGeneratedStyles(html, new String(style));
         return html.outerHtml().getBytes();
     }
@@ -92,7 +96,6 @@ public final class TemplateGenerationFacade {
     }
 
     private String generateElement(String title, String elementHtml, ThemeGenerationRequest request) {
-
         ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(title, request.language(), elementHtml);
         String prompt = ThemePromptPolicyBuilder.buildHtmlChangePrompt(rules);
         return aiService.generate(new AiRequest(prompt, request.content()));

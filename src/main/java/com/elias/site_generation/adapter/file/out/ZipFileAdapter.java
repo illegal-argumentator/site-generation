@@ -29,8 +29,11 @@ class ZipFileAdapter implements ZipFilePort {
 
             ZipEntry entry;
 
+            Set<String> existingEntries = new HashSet<>();
+
             while ((entry = zis.getNextEntry()) != null) {
                 zos.putNextEntry(new ZipEntry(entry.getName()));
+                existingEntries.add(entry.getName());
 
                 byte[] fileEntry = getFileEntry(entry.getName(), files);
                 if (fileEntry != null) {
@@ -43,39 +46,11 @@ class ZipFileAdapter implements ZipFilePort {
                 zis.closeEntry();
             }
 
-        } catch (IOException e) {
-            log.error("Unable to write file: {}.", e.getMessage());
-            throw new FileWriteException("Unable to write file.");
-        }
-
-        return out.toByteArray();
-    }
-
-    @Override
-    public byte[] write(byte[] zipBytes, Map<String, byte[]> files) {
-        try (
-                ByteArrayInputStream input = new ByteArrayInputStream(zipBytes);
-                ZipInputStream zis = new ZipInputStream(input);
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                ZipOutputStream zos = new ZipOutputStream(output)
-        ) {
-            Set<String> existingEntries = new HashSet<>();
-
-            ZipEntry entry;
-
-            while ((entry = zis.getNextEntry()) != null) {
-                String name = entry.getName();
-                existingEntries.add(name);
-                zos.putNextEntry(new ZipEntry(name));
-                zis.transferTo(zos);
-
-                zos.closeEntry();
-                zis.closeEntry();
-            }
-
             for (Map.Entry<String, byte[]> file : files.entrySet()) {
                 String name = file.getKey();
+                System.out.println("Name " + name);
 
+                System.out.println("Contains " + existingEntries.contains(name));
                 if (existingEntries.contains(name)) {
                     continue;
                 }
@@ -85,13 +60,12 @@ class ZipFileAdapter implements ZipFilePort {
                 zos.closeEntry();
             }
 
-            zos.finish();
-
-            return output.toByteArray();
-
         } catch (IOException e) {
-            throw new RuntimeException("Unable to update ZIP", e);
+            log.error("Unable to write file: {}.", e.getMessage());
+            throw new FileWriteException("Unable to write file.");
         }
+
+        return out.toByteArray();
     }
 
     @Override
