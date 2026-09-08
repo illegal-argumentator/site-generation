@@ -38,7 +38,8 @@ public final class TemplateGenerationFacade {
     public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
 
-        byte[] html = generateHtml(index, elements, request);
+        String title = titleGenerationPort.generate();
+        byte[] html = generateHtml(title, index, elements, request);
         Map<String, byte[]> images = imageGenerationPort.generate(html);
 
         applyImagePaths(Jsoup.parse(new String(html)), images.keySet());
@@ -55,11 +56,11 @@ public final class TemplateGenerationFacade {
         return zipFilePort.update(request.template(), all);
     }
 
-    private byte[] generateHtml(byte[] index, List<String> elements, ThemeGenerationRequest request) {
+    private byte[] generateHtml(String title, byte[] index, List<String> elements, ThemeGenerationRequest request) {
         Document html = Jsoup.parse(new String(index));
 
         byte[] style = generateStyle(request);
-        Map<String, CompletableFuture<String>> generatedElements = generateElements(elements, html, request);
+        Map<String, CompletableFuture<String>> generatedElements = generateElements(title, elements, html, request);
 
         applyGeneratedElements(html, generatedElements);
         applyGeneratedStyles(html, new String(style));
@@ -77,7 +78,7 @@ public final class TemplateGenerationFacade {
         return aiService.generate(aiRequest);
     }
 
-    private Map<String, CompletableFuture<String>> generateElements(List<String> elements, Document html, ThemeGenerationRequest request) {
+    private Map<String, CompletableFuture<String>> generateElements(String title, List<String> elements, Document html, ThemeGenerationRequest request) {
         Map<String, CompletableFuture<String>> futures = new LinkedHashMap<>();
 
         for (String elementId : elements) {
@@ -85,15 +86,15 @@ public final class TemplateGenerationFacade {
             if (element == null) continue;
 
             String elementHtml = element.outerHtml();
-            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> generateElement(elementHtml, request), executor);
+            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> generateElement(title, elementHtml, request), executor);
             futures.put(elementId, future);
         }
 
         return futures;
     }
 
-    private String generateElement(String elementHtml, ThemeGenerationRequest request) {
-        String title = titleGenerationPort.generate();
+    private String generateElement(String title, String elementHtml, ThemeGenerationRequest request) {
+
         ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(title, request.language(), elementHtml);
         String prompt = ThemePromptPolicyBuilder.buildHtmlChangePrompt(rules);
         return aiService.generate(new AiRequest(prompt, request.content()));

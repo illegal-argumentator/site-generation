@@ -5,6 +5,7 @@ import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolic
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -18,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 final class ImageGenerationService implements ImageGenerationPort {
@@ -27,6 +29,8 @@ final class ImageGenerationService implements ImageGenerationPort {
 
     @Override
     public Map<String, byte[]> generate(byte[] html) {
+        log.info("Started images generation.");
+
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
         Document parsedHtml = Jsoup.parse(new String(html));
 
