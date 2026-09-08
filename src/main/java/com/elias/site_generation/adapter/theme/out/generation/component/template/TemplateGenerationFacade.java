@@ -37,14 +37,8 @@ public final class TemplateGenerationFacade {
 
     public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
-
-//        String title = titleGenerationPort.generate();
-//        byte[] html = generateHtml("title", index, elements, request);
-        Map<String, byte[]> images = imageGenerationPort.generate(index);
-
-        applyImagePaths(Jsoup.parse(new String(index)), images.keySet());
-
-        return updateZip(request, images, Map.of(props.getIndexFile(), index));
+        byte[] html = generateHtml(index, elements, request);
+        return updateZip(request, Map.of(props.getIndexFile(), html));
     }
 
     @SafeVarargs
@@ -56,15 +50,22 @@ public final class TemplateGenerationFacade {
         return zipFilePort.update(request.template(), all);
     }
 
-    private byte[] generateHtml(String title, byte[] index, List<String> elements, ThemeGenerationRequest request) {
+    private byte[] generateHtml(byte[] index, List<String> elements, ThemeGenerationRequest request) {
         Document html = Jsoup.parse(new String(index));
 
+        String title = titleGenerationPort.generate();
         byte[] style = generateStyle(request);
-        Map<String, CompletableFuture<String>> generatedElements = generateElements(title, elements, html, request);
+        Map<String, byte[]> images = imageGenerationPort.generate(index);
 
+        Map<String, String> generatedElements = generateElements(title, elements, html, request);
+
+        return applyElements(html, style, images, generatedElements);
+    }
+
+    private byte[] applyElements(Document html, byte[] style, Map<String, byte[]> images, Map<String, String> generatedElements) {
         applyGeneratedElements(html, generatedElements);
+        applyImagePaths(html, images.keySet());
         applyGeneratedStyles(html, new String(style));
-
         return html.outerHtml().getBytes();
     }
 
@@ -78,7 +79,7 @@ public final class TemplateGenerationFacade {
         return aiService.generate(aiRequest);
     }
 
-    private Map<String, CompletableFuture<String>> generateElements(String title, List<String> elements, Document html, ThemeGenerationRequest request) {
+    private Map<String, String> generateElements(String title, List<String> elements, Document html, ThemeGenerationRequest request) {
         Map<String, CompletableFuture<String>> futures = new LinkedHashMap<>();
 
         for (String elementId : elements) {
@@ -90,7 +91,9 @@ public final class TemplateGenerationFacade {
             futures.put(elementId, future);
         }
 
-        return futures;
+        CompletableFuture.allOf(futures.values().toArray(CompletableFuture[]::new)).join();
+        return futures.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().join()));
     }
 
     private String generateElement(String title, String elementHtml, ThemeGenerationRequest request) {
@@ -111,9 +114,8 @@ public final class TemplateGenerationFacade {
         style.text(generatedCss);
     }
 
-    private void applyGeneratedElements(Document html, Map<String, CompletableFuture<String>> generatedElements) {
-        CompletableFuture.allOf(generatedElements.values().toArray(CompletableFuture[]::new)).join();
-        generatedElements.forEach((elementId, future) -> replaceElement(html, elementId, future.join()));
+    private void applyGeneratedElements(Document html, Map<String, String> generatedElements) {
+        generatedElements.forEach((elementId, element) -> replaceElement(html, elementId, element));
     }
 
     private void applyImagePaths(Document html, Set<String> paths) {
@@ -122,8 +124,7 @@ public final class TemplateGenerationFacade {
 
         Iterator<String> iterator = paths.iterator();
         for (Element imageEl : imageEls) {
-            Element attr = imageEl.attr(SOURCE_ELEMENT, iterator.next());
-            System.out.println("result " + attr);
+            imageEl.attr(SOURCE_ELEMENT, iterator.next());
         }
     }
 
