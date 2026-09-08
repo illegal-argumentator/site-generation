@@ -40,7 +40,7 @@ final class ImageGenerationService implements ImageGenerationPort {
         imageElements.forEach(_ -> images.add(generateAsync()));
 
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
-        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
+        List<byte[]> files = images.stream().map(CompletableFuture::join).peek(bytes -> System.out.println("Generated image size: " + bytes.length)).toList();
 
         return files.stream().collect(Collectors.toMap(_ -> generateImagePath(), Function.identity()));
     }
@@ -50,6 +50,6 @@ final class ImageGenerationService implements ImageGenerationPort {
     }
 
     private String generateImagePath() {
-        return templateProps.getImagesClass().concat(UUID.randomUUID().toString().concat(FileUtils.ZIP_FORMAT));
+        return templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
     }
 }
