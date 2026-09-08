@@ -28,6 +28,7 @@ class ZipFileAdapter implements ZipFilePort {
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
+                System.out.println("Writing to: " + entry.getName());
                 zos.putNextEntry(new ZipEntry(entry.getName()));
 
                 byte[] fileEntry = getFileEntry(entry.getName(), files);
