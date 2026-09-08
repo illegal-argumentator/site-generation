@@ -28,7 +28,6 @@ class ZipFileAdapter implements ZipFilePort {
              ZipOutputStream zos = new ZipOutputStream(out)) {
 
             ZipEntry entry;
-
             Set<String> existingEntries = new HashSet<>();
 
             while ((entry = zis.getNextEntry()) != null) {
@@ -48,9 +47,6 @@ class ZipFileAdapter implements ZipFilePort {
 
             for (Map.Entry<String, byte[]> file : files.entrySet()) {
                 String name = file.getKey();
-                System.out.println("Name " + name);
-
-                System.out.println("Contains " + existingEntries.contains(name));
                 if (existingEntries.contains(name)) {
                     continue;
                 }

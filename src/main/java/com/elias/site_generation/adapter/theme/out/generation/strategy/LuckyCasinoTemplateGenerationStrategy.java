@@ -29,7 +29,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        return generationService.generate(ELEMENT_IDS, request);
+        return generationService.generate(TemplateType.LUCKY_CASINO, ELEMENT_IDS, request);
     }
 
     @Override

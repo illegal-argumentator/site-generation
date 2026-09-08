@@ -8,6 +8,7 @@ import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
+import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -35,9 +36,9 @@ public final class TemplateGenerationFacade {
     private final ZipFilePort zipFilePort;
     private final ExecutorService executor;
 
-    public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
+    public byte[] generate(TemplateType type, List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
-        Map<String, byte[]> images = imageGenerationPort.generate(index);
+        Map<String, byte[]> images = imageGenerationPort.generate(type, index);
         byte[] html = generateHtml(index, images.keySet(), elements, request);
         return updateZip(request, Map.of(props.getIndexFile(), html), images);
     }

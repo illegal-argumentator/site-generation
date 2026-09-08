@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.image;
 
 import com.elias.site_generation.adapter.ai.out.AiImageService;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolicy;
+import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ final class ImageGenerationService implements ImageGenerationPort {
     private final AiImageService aiImageService;
 
     @Override
-    public Map<String, byte[]> generate(byte[] html) {
+    public Map<String, byte[]> generate(TemplateType type, byte[] html) {
         log.info("Started images generation.");
 
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
@@ -42,15 +43,18 @@ final class ImageGenerationService implements ImageGenerationPort {
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
         List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
 
-        return files.stream().collect(Collectors.toMap(_ -> generateImagePath(), Function.identity()));
+        return files.stream().collect(Collectors.toMap(_ -> generateImagePath(type), Function.identity()));
     }
 
     private CompletableFuture<byte[]> generateAsync() {
 //        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
-        return CompletableFuture.supplyAsync(() -> new byte[]{0,0,0,1});
+        return CompletableFuture.supplyAsync(() -> new byte[]{0, 0, 0, 1});
     }
 
-    private String generateImagePath() {
-        return templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
+    private String generateImagePath(TemplateType type) {
+        return type.getName() +
+                templateProps.getImagesPath() +
+                UUID.randomUUID() +
+                FileUtils.WEBP_FORMAT;
     }
 }
