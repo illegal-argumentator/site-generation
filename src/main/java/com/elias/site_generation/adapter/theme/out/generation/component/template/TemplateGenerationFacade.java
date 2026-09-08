@@ -37,28 +37,23 @@ public final class TemplateGenerationFacade {
 
     public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
-        byte[] html = generateHtml(index, elements, request);
-        return updateZip(request, Map.of(props.getIndexFile(), html));
+        Map<String, byte[]> images = imageGenerationPort.generate(index);
+        byte[] html = generateHtml(index, images, elements, request);
+        return manageZip(request, Map.of(props.getIndexFile(), html), images);
     }
 
-    @SafeVarargs
-    private byte[] updateZip(ThemeGenerationRequest request, Map<String, byte[]>... entries) {
-        Map<String, byte[]> all = Arrays.stream(entries)
-                .flatMap(entry -> entry.entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return zipFilePort.update(request.template(), all);
+    private byte[] manageZip(ThemeGenerationRequest request, Map<String, byte[]> imagesForCreate, Map<String, byte[]> entityForUpdate) {
+        byte[] updatedTemplate = zipFilePort.update(request.template(), entityForUpdate);
+        return zipFilePort.write(updatedTemplate, imagesForCreate);
     }
 
-    private byte[] generateHtml(byte[] index, List<String> elements, ThemeGenerationRequest request) {
+    private byte[] generateHtml(byte[] index, Map<String, byte[]> images, List<String> elements, ThemeGenerationRequest request) {
         Document html = Jsoup.parse(new String(index));
 
         String title = titleGenerationPort.generate();
         byte[] style = generateStyle(request);
-        Map<String, byte[]> images = imageGenerationPort.generate(index);
 
         Map<String, String> generatedElements = generateElements(title, elements, html, request);
-
         return applyElements(html, style, images, generatedElements);
     }
 

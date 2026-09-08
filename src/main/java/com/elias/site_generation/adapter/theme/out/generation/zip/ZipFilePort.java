@@ -6,6 +6,8 @@ public interface ZipFilePort {
 
     byte[] update(byte[] target, Map<String, byte[]> files);
 
+    byte[] write(byte[] target, Map<String, byte[]> files);
+
     byte[] extract(String filename, byte[] source);
 
 }

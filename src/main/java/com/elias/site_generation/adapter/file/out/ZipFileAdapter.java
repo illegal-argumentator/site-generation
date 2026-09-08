@@ -20,23 +20,19 @@ import java.util.zip.ZipOutputStream;
 @Component
 class ZipFileAdapter implements ZipFilePort {
 
+    @Override
     public byte[] update(byte[] target, Map<String, byte[]> files) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(target));
              ZipOutputStream zos = new ZipOutputStream(out)) {
 
-            Set<String> existingFiles = new HashSet<>();
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
-                String filename = entry.getName();
-                existingFiles.add(filename);
+                zos.putNextEntry(new ZipEntry(entry.getName()));
 
-                zos.putNextEntry(new ZipEntry(filename));
-
-                byte[] fileEntry = files.get(filename);
-
+                byte[] fileEntry = getFileEntry(entry.getName(), files);
                 if (fileEntry != null) {
                     zos.write(fileEntry);
                 } else {
@@ -47,8 +43,6 @@ class ZipFileAdapter implements ZipFilePort {
                 zis.closeEntry();
             }
 
-            writeNotExisting(existingFiles, zos, files);
-
         } catch (IOException e) {
             log.error("Unable to write file: {}.", e.getMessage());
             throw new FileWriteException("Unable to write file.");
@@ -57,13 +51,46 @@ class ZipFileAdapter implements ZipFilePort {
         return out.toByteArray();
     }
 
-    private void writeNotExisting(Set<String> existingFiles, ZipOutputStream zos, Map<String, byte[]> files) throws IOException {
-        for (Map.Entry<String, byte[]> file : files.entrySet()) {
-            if (!existingFiles.contains(file.getKey())) {
-                zos.putNextEntry(new ZipEntry(file.getKey()));
+    @Override
+    public byte[] write(byte[] zipBytes, Map<String, byte[]> files) {
+        try (
+                ByteArrayInputStream input = new ByteArrayInputStream(zipBytes);
+                ZipInputStream zis = new ZipInputStream(input);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(output)
+        ) {
+            Set<String> existingEntries = new HashSet<>();
+
+            ZipEntry entry;
+
+            while ((entry = zis.getNextEntry()) != null) {
+                String name = entry.getName();
+                existingEntries.add(name);
+                zos.putNextEntry(new ZipEntry(name));
+                zis.transferTo(zos);
+
+                zos.closeEntry();
+                zis.closeEntry();
+            }
+
+            for (Map.Entry<String, byte[]> file : files.entrySet()) {
+                String name = file.getKey();
+
+                if (existingEntries.contains(name)) {
+                    continue;
+                }
+
+                zos.putNextEntry(new ZipEntry(name));
                 zos.write(file.getValue());
                 zos.closeEntry();
             }
+
+            zos.finish();
+
+            return output.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to update ZIP", e);
         }
     }
 
@@ -97,5 +124,15 @@ class ZipFileAdapter implements ZipFilePort {
         }
 
         throw new FileReadException("File %s not found.".formatted(filename));
+    }
+
+    private byte[] getFileEntry(String filename, Map<String, byte[]> files) {
+        for (Map.Entry<String, byte[]> entry : files.entrySet()) {
+            if (filename.contains(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
     }
 }
