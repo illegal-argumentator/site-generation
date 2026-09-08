@@ -51,7 +51,7 @@ public class ThemeActivationService implements ThemeActivationUseCase {
     }
 
     private void updateActivated(Site site) {
-        Site update = Site.builder().failReason(null).activeStatus(ActiveStatus.ACTIVATED).build();
+        Site update = Site.builder().failReason("").activeStatus(ActiveStatus.ACTIVATED).build();
         siteCommandPort.update(site.getId(), update);
     }
 }

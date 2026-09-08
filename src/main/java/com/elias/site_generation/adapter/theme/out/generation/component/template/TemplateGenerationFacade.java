@@ -1,57 +1,74 @@
-package com.elias.site_generation.adapter.theme.out.generation.strategy;
+package com.elias.site_generation.adapter.theme.out.generation.component.template;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
+import com.elias.site_generation.adapter.theme.out.generation.component.image.ImageGenerationPort;
+import com.elias.site_generation.adapter.theme.out.generation.component.title.TitleGenerationPort;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
+import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-final class TemplateGenerationService {
+public final class TemplateGenerationFacade {
 
-    private static final String MAIN_PAGE_NAME = "index.html", STYLE_ELEMENT = "style";
+    private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
+    private final ImageGenerationPort imageGenerationPort;
+    private final TitleGenerationPort titleGenerationPort;
+
+    private final TemplateProps props;
     private final AiService aiService;
     private final ZipFilePort zipFilePort;
     private final ExecutorService executor;
 
-    byte[] generate(List<String> elements, ThemeGenerationRequest request) {
-        byte[] index = zipFilePort.extract(MAIN_PAGE_NAME, request.template());
-        byte[] html = generateHtml(index, generateStyle(request), elements, request);
-        Map<String, byte[]> files = Map.of(MAIN_PAGE_NAME, html);
-        return zipFilePort.update(request.template(), files);
+    public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
+        byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
+
+        byte[] html = generateHtml(index, elements, request);
+        Map<String, byte[]> images = imageGenerationPort.generate(html);
+
+        applyImagePaths(Jsoup.parse(new String(html)), images.keySet());
+
+        return updateZip(request, images, Map.of(props.getIndexFile(), html));
     }
 
-    private byte[] generateHtml(byte[] index, byte[] style, List<String> elements, ThemeGenerationRequest request) {
-        Document html = parseHtml(index);
+    @SafeVarargs
+    private byte[] updateZip(ThemeGenerationRequest request, Map<String, byte[]>... entries) {
+        Map<String, byte[]> all = Arrays.stream(entries)
+                .flatMap(entry -> entry.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return zipFilePort.update(request.template(), all);
+    }
+
+    private byte[] generateHtml(byte[] index, List<String> elements, ThemeGenerationRequest request) {
+        Document html = Jsoup.parse(new String(index));
+
+        byte[] style = generateStyle(request);
         Map<String, CompletableFuture<String>> generatedElements = generateElements(elements, html, request);
 
         applyGeneratedElements(html, generatedElements);
-        applyGeneratedStyles(html,  new String(style, StandardCharsets.UTF_8));
+        applyGeneratedStyles(html, new String(style));
 
-        return html.outerHtml().getBytes(StandardCharsets.UTF_8);
+        return html.outerHtml().getBytes();
     }
 
     private byte[] generateStyle(ThemeGenerationRequest request) {
-        return generateDesign(request).getBytes(StandardCharsets.UTF_8);
-    }
-
-    private Document parseHtml(byte[] content) {
-        return Jsoup.parse(new String(content, StandardCharsets.UTF_8));
+        return generateDesign(request).getBytes();
     }
 
     private String generateDesign(ThemeGenerationRequest request) {
@@ -76,7 +93,8 @@ final class TemplateGenerationService {
     }
 
     private String generateElement(String elementHtml, ThemeGenerationRequest request) {
-        ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(request.title(), request.language(), elementHtml);
+        String title = titleGenerationPort.generate();
+        ThemePromptPolicyBuilder.Rules rules = new ThemePromptPolicyBuilder.Rules(title, request.language(), elementHtml);
         String prompt = ThemePromptPolicyBuilder.buildHtmlChangePrompt(rules);
         return aiService.generate(new AiRequest(prompt, request.content()));
     }
@@ -95,6 +113,16 @@ final class TemplateGenerationService {
     private void applyGeneratedElements(Document html, Map<String, CompletableFuture<String>> generatedElements) {
         CompletableFuture.allOf(generatedElements.values().toArray(CompletableFuture[]::new)).join();
         generatedElements.forEach((elementId, future) -> replaceElement(html, elementId, future.join()));
+    }
+
+    private void applyImagePaths(Document html, Set<String> paths) {
+        Elements imageEls = html.select(props.getImagesClass());
+        if (imageEls.size() < paths.size()) throw new IllegalStateException("Not enough images for the page.");
+
+        Iterator<String> iterator = paths.iterator();
+        for (Element imageEl : imageEls) {
+            imageEl.attr(SOURCE_ELEMENT, iterator.next());
+        }
     }
 
     private void replaceElement(Document html, String elementId, String generatedHtml) {

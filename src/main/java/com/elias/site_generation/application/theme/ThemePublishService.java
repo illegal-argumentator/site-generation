@@ -106,7 +106,7 @@ class ThemePublishService implements ThemePublishUseCase {
     }
 
     private void updatePublished(Site site) {
-        Site update = Site.builder().failReason(null).deployStatus(DeployStatus.PUBLISHED).build();
+        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).build();
         siteCommandPort.update(site.getId(), update);
     }
 }

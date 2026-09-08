@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation;
+package com.elias.site_generation.adapter.theme.out.generation.component.title;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
@@ -11,7 +11,7 @@ import static com.elias.site_generation.adapter.theme.out.prompt.CasinoTitleProm
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TitleGenerationAdapter implements TitleGenerationPort {
+final class TitleGenerationAdapter implements TitleGenerationPort {
 
     private final AiService aiService;
 
