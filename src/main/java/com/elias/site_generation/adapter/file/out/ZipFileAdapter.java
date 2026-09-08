@@ -45,12 +45,9 @@ class ZipFileAdapter implements ZipFilePort {
                 zis.closeEntry();
             }
 
-            System.out.println(existingEntries);
-
             for (Map.Entry<String, byte[]> file : files.entrySet()) {
                 String name = file.getKey();
-                System.out.printf("name " + name);
-                if (existingEntries.contains(name)) {
+                if (containsByText(name, existingEntries)) {
                     continue;
                 }
 
@@ -108,4 +105,13 @@ class ZipFileAdapter implements ZipFilePort {
 
         return null;
     }
+
+    private boolean containsByText(String target,  Set<String> existingEntries) {
+        for (String existingEntry : existingEntries) {
+            if (existingEntry.contains(target)) return true;
+        }
+
+        return false;
+    }
+
 }
