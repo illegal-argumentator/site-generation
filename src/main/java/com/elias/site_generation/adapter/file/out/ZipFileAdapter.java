@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -18,7 +20,6 @@ import java.util.zip.ZipOutputStream;
 @Component
 class ZipFileAdapter implements ZipFilePort {
 
-    @Override
     public byte[] update(byte[] target, Map<String, byte[]> files) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -26,18 +27,22 @@ class ZipFileAdapter implements ZipFilePort {
              ZipOutputStream zos = new ZipOutputStream(out)) {
 
             ZipEntry entry;
+            Set<String> existingFiles = new HashSet<>();
 
             while ((entry = zis.getNextEntry()) != null) {
-                System.out.println("Writing to: " + entry.getName());
-                zos.putNextEntry(new ZipEntry(entry.getName()));
+                String filename = entry.getName();
+                existingFiles.add(filename);
 
-                byte[] fileEntry = getFileEntry(entry.getName(), files);
+                zos.putNextEntry(new ZipEntry(filename));
+                byte[] fileEntry = files.get(filename);
+
                 if (fileEntry != null) {
                     zos.write(fileEntry);
                 } else {
                     zis.transferTo(zos);
                 }
 
+                writeNotExisting(existingFiles, zos, files);
                 zos.closeEntry();
                 zis.closeEntry();
             }
@@ -48,6 +53,16 @@ class ZipFileAdapter implements ZipFilePort {
         }
 
         return out.toByteArray();
+    }
+
+    private void writeNotExisting(Set<String> existingFiles, ZipOutputStream zos, Map<String, byte[]> files) throws IOException {
+        for (Map.Entry<String, byte[]> file : files.entrySet()) {
+            if (!existingFiles.contains(file.getKey())) {
+                zos.putNextEntry(new ZipEntry(file.getKey()));
+                zos.write(file.getValue());
+                zos.closeEntry();
+            }
+        }
     }
 
     @Override
@@ -80,15 +95,5 @@ class ZipFileAdapter implements ZipFilePort {
         }
 
         throw new FileReadException("File %s not found.".formatted(filename));
-    }
-
-    private byte[] getFileEntry(String filename, Map<String, byte[]> files) {
-        for (Map.Entry<String, byte[]> entry : files.entrySet()) {
-            if (filename.contains(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-
-        return null;
     }
 }
