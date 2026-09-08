@@ -55,10 +55,10 @@ public final class TemplateGenerationFacade {
     private byte[] generateHtml(byte[] index, Set<String> images, List<String> elements, ThemeGenerationRequest request) {
         Document html = Jsoup.parse(new String(index));
 
-        String title = titleGenerationPort.generate();
+//        String title = titleGenerationPort.generate();
         byte[] style = generateStyle(request);
 
-        Map<String, String> generatedElements = generateElements(title, elements, html, request);
+        Map<String, String> generatedElements = generateElements("title", elements, html, request);
         return applyElements(html, style, images, generatedElements);
     }
 

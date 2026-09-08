@@ -45,8 +45,11 @@ class ZipFileAdapter implements ZipFilePort {
                 zis.closeEntry();
             }
 
+            System.out.println(existingEntries);
+
             for (Map.Entry<String, byte[]> file : files.entrySet()) {
                 String name = file.getKey();
+                System.out.printf("name " + name);
                 if (existingEntries.contains(name)) {
                     continue;
                 }
