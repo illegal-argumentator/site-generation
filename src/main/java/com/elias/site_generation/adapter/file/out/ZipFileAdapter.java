@@ -26,14 +26,15 @@ class ZipFileAdapter implements ZipFilePort {
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(target));
              ZipOutputStream zos = new ZipOutputStream(out)) {
 
-            ZipEntry entry;
             Set<String> existingFiles = new HashSet<>();
+            ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
                 String filename = entry.getName();
                 existingFiles.add(filename);
 
                 zos.putNextEntry(new ZipEntry(filename));
+
                 byte[] fileEntry = files.get(filename);
 
                 if (fileEntry != null) {
@@ -42,10 +43,11 @@ class ZipFileAdapter implements ZipFilePort {
                     zis.transferTo(zos);
                 }
 
-                writeNotExisting(existingFiles, zos, files);
                 zos.closeEntry();
                 zis.closeEntry();
             }
+
+            writeNotExisting(existingFiles, zos, files);
 
         } catch (IOException e) {
             log.error("Unable to write file: {}.", e.getMessage());
