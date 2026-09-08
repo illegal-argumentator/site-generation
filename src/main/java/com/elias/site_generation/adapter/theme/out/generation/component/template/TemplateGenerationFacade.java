@@ -120,12 +120,10 @@ public final class TemplateGenerationFacade {
         Elements imageEls = html.select(props.getImagesClass());
         if (imageEls.size() < paths.size()) throw new IllegalStateException("Not enough images for the page.");
 
-        System.out.println("Image gen els: " + imageEls.size());
-        System.out.println("Image gen els: " + imageEls);
-
         Iterator<String> iterator = paths.iterator();
         for (Element imageEl : imageEls) {
-            imageEl.attr(SOURCE_ELEMENT, iterator.next());
+            Element attr = imageEl.attr(SOURCE_ELEMENT, iterator.next());
+            System.out.println("result " + attr);
         }
     }
 

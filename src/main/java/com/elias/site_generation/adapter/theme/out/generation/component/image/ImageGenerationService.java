@@ -51,8 +51,6 @@ final class ImageGenerationService implements ImageGenerationPort {
     }
 
     private String generateImagePath() {
-        String v = templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
-        System.out.println("Generated image path: " + v);
-        return v;
+        return templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
     }
 }
