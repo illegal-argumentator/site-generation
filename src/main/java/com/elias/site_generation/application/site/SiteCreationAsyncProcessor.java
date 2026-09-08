@@ -44,7 +44,7 @@ class SiteCreationAsyncProcessor {
         Theme updated = themeCommandPort.update(themeId, title);
         Site savedCreated = saveCreated(savedPending.getId(), updated);
 
-//        publishDeploy(savedCreated);
+        publishDeploy(savedCreated);
     }
 
     @Async

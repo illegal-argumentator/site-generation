@@ -40,16 +40,19 @@ final class ImageGenerationService implements ImageGenerationPort {
         imageElements.forEach(_ -> images.add(generateAsync()));
 
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
-        List<byte[]> files = images.stream().map(CompletableFuture::join).peek(bytes -> System.out.println("Generated image size: " + bytes.length)).toList();
+        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
 
         return files.stream().collect(Collectors.toMap(_ -> generateImagePath(), Function.identity()));
     }
 
     private CompletableFuture<byte[]> generateAsync() {
-        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
+//        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
+        return CompletableFuture.supplyAsync(() -> new byte[]{0,0,0,1});
     }
 
     private String generateImagePath() {
-        return templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
+        String v = templateProps.getImagesPath().concat(UUID.randomUUID().toString().concat(FileUtils.WEBP_FORMAT));
+        System.out.println("Generated image path: " + v);
+        return v;
     }
 }

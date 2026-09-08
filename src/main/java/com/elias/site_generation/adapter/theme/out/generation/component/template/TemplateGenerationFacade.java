@@ -38,13 +38,13 @@ public final class TemplateGenerationFacade {
     public byte[] generate(List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
 
-        String title = titleGenerationPort.generate();
-        byte[] html = generateHtml(title, index, elements, request);
-        Map<String, byte[]> images = imageGenerationPort.generate(html);
+//        String title = titleGenerationPort.generate();
+//        byte[] html = generateHtml("title", index, elements, request);
+        Map<String, byte[]> images = imageGenerationPort.generate(index);
 
-        applyImagePaths(Jsoup.parse(new String(html)), images.keySet());
+        applyImagePaths(Jsoup.parse(new String(index)), images.keySet());
 
-        return updateZip(request, images, Map.of(props.getIndexFile(), html));
+        return updateZip(request, images, Map.of(props.getIndexFile(), index));
     }
 
     @SafeVarargs
@@ -119,6 +119,9 @@ public final class TemplateGenerationFacade {
     private void applyImagePaths(Document html, Set<String> paths) {
         Elements imageEls = html.select(props.getImagesClass());
         if (imageEls.size() < paths.size()) throw new IllegalStateException("Not enough images for the page.");
+
+        System.out.println("Image gen els: " + imageEls.size());
+        System.out.println("Image gen els: " + imageEls);
 
         Iterator<String> iterator = paths.iterator();
         for (Element imageEl : imageEls) {
