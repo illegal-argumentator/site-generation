@@ -147,7 +147,7 @@ public final class TemplateGenerationFacade {
         String basePath = type.getName().concat(props.getAssetsSourcePath());
         return files.entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> FilePath.from(entry.getKey(), basePath.concat(entry.getKey())),
+                        entry -> FilePath.from(entry.getKey(), basePath),
                         Map.Entry::getValue)
                 );
     }
