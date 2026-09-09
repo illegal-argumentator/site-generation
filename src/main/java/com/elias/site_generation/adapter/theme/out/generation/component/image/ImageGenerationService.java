@@ -34,15 +34,17 @@ final class ImageGenerationService implements ImageGenerationPort {
         Document parsedHtml = Jsoup.parse(new String(html));
 
         Elements imageElements = parsedHtml.select(templateProps.getImagesClass());
-        if (imageElements.isEmpty()) return Map.of();
+        System.out.println(imageElements.size());
+        throw new RuntimeException();
+//        if (imageElements.isEmpty()) return Map.of();
 
-        imageElements.forEach(_ -> images.add(generateAsync()));
-
-        CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
-        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
-
-        log.info("Generated {} images.", files.size());
-        return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
+//        imageElements.forEach(_ -> images.add(generateAsync()));
+//
+//        CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
+//        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
+//
+//        log.info("Generated {} images.", files.size());
+//        return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
     }
 
     private CompletableFuture<byte[]> generateAsync() {

@@ -42,18 +42,13 @@ final class TemplateComponentsApplier {
     }
 
     private void applyImagePaths(Document html, Set<String> images) {
-        try {
-            Elements imageEls = html.select(props.getImagesClass());
-            if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
+        Elements imageEls = html.select(props.getImagesClass());
+        if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
 
-            Iterator<String> iterator = images.iterator();
-            for (Element imageEl : imageEls) {
-                String srcVal = imageEl.attr(SOURCE_ELEMENT);
-                imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
-            }
-        } catch (Exception e) {
-            log.error("Error ", e);
-            throw e;
+        Iterator<String> iterator = images.iterator();
+        for (Element imageEl : imageEls) {
+            String srcVal = imageEl.attr(SOURCE_ELEMENT);
+            imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
         }
     }
 
