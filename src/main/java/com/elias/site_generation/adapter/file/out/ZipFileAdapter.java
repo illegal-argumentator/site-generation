@@ -3,6 +3,7 @@ package com.elias.site_generation.adapter.file.out;
 import com.elias.site_generation.adapter.file.out.exception.FileReadException;
 import com.elias.site_generation.adapter.file.out.exception.FileWriteException;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
+import com.elias.site_generation.shared.file.FilePath;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ import java.util.zip.ZipOutputStream;
 class ZipFileAdapter implements ZipFilePort {
 
     @Override
-    public byte[] update(byte[] target, Map<String, byte[]> files) {
+    public byte[] update(byte[] target, Map<FilePath, byte[]> files) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(target));
@@ -45,13 +46,13 @@ class ZipFileAdapter implements ZipFilePort {
                 zis.closeEntry();
             }
 
-            for (Map.Entry<String, byte[]> file : files.entrySet()) {
-                String name = file.getKey();
-                if (containsByText(name, existingEntries)) {
+            for (Map.Entry<FilePath, byte[]> file : files.entrySet()) {
+                FilePath filePath = file.getKey();
+                if (containsByText(filePath.filename(), existingEntries)) {
                     continue;
                 }
 
-                zos.putNextEntry(new ZipEntry(name));
+                zos.putNextEntry(new ZipEntry(filePath.buildPath()));
                 zos.write(file.getValue());
                 zos.closeEntry();
             }
@@ -96,9 +97,9 @@ class ZipFileAdapter implements ZipFilePort {
         throw new FileReadException("File %s not found.".formatted(filename));
     }
 
-    private byte[] getFileEntry(String filename, Map<String, byte[]> files) {
-        for (Map.Entry<String, byte[]> entry : files.entrySet()) {
-            if (filename.contains(entry.getKey())) {
+    private byte[] getFileEntry(String filename, Map<FilePath, byte[]> files) {
+        for (Map.Entry<FilePath, byte[]> entry : files.entrySet()) {
+            if (filename.contains(entry.getKey().filename())) {
                 return entry.getValue();
             }
         }

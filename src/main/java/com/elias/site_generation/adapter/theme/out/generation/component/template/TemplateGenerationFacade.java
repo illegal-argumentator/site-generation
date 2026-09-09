@@ -9,6 +9,7 @@ import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
 import com.elias.site_generation.domain.theme.TemplateType;
+import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -38,14 +39,16 @@ public final class TemplateGenerationFacade {
 
     public byte[] generate(TemplateType type, List<String> elements, ThemeGenerationRequest request) {
         byte[] index = zipFilePort.extract(props.getIndexFile(), request.template());
-        Map<String, byte[]> images = imageGenerationPort.generate(type, index);
+
+        Map<String, byte[]> images = imageGenerationPort.generate(index);
         byte[] html = generateHtml(index, images.keySet(), elements, request);
-        return updateZip(request, Map.of(props.getIndexFile(), html), images);
+
+        return updateZip(request, Map.of(FilePath.from(props.getIndexFile()), html), mapToImagePaths(type, images));
     }
 
     @SafeVarargs
-    private byte[] updateZip(ThemeGenerationRequest request, Map<String, byte[]>... entries) {
-        Map<String, byte[]> all = Arrays.stream(entries)
+    private byte[] updateZip(ThemeGenerationRequest request, Map<FilePath, byte[]>... entries) {
+        Map<FilePath, byte[]> all = Arrays.stream(entries)
                 .flatMap(entry -> entry.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -117,13 +120,13 @@ public final class TemplateGenerationFacade {
         generatedElements.forEach((elementId, element) -> replaceElement(html, elementId, element));
     }
 
-    private void applyImagePaths(Document html, Set<String> paths) {
+    private void applyImagePaths(Document html, Set<String> images) {
         Elements imageEls = html.select(props.getImagesClass());
-        if (imageEls.size() < paths.size()) throw new IllegalStateException("Not enough images for the page.");
+        if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
 
-        Iterator<String> iterator = paths.iterator();
+        Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
-            imageEl.attr(SOURCE_ELEMENT, iterator.next());
+            imageEl.attr(SOURCE_ELEMENT, props.getAssetsLocalPath().concat(iterator.next()));
         }
     }
 
@@ -139,4 +142,14 @@ public final class TemplateGenerationFacade {
 
         if (replacement != null) original.replaceWith(replacement);
     }
+
+    private Map<FilePath, byte[]> mapToImagePaths(TemplateType type, Map<String, byte[]> files) {
+        String basePath = type.getName().concat(props.getAssetsSourcePath());
+        return files.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> FilePath.from(entry.getKey(), basePath.concat(entry.getKey())),
+                        Map.Entry::getValue)
+                );
+    }
+
 }

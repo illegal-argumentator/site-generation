@@ -2,7 +2,6 @@ package com.elias.site_generation.adapter.theme.out.generation.component.image;
 
 import com.elias.site_generation.adapter.ai.out.AiImageService;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolicy;
-import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ final class ImageGenerationService implements ImageGenerationPort {
     private final AiImageService aiImageService;
 
     @Override
-    public Map<String, byte[]> generate(TemplateType type, byte[] html) {
+    public Map<String, byte[]> generate(byte[] html) {
         log.info("Started images generation.");
 
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
@@ -43,17 +42,14 @@ final class ImageGenerationService implements ImageGenerationPort {
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
         List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
 
-        return files.stream().collect(Collectors.toMap(_ -> generateImagePath(type), Function.identity()));
+        return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
     }
 
     private CompletableFuture<byte[]> generateAsync() {
         return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
     }
 
-    private String generateImagePath(TemplateType type) {
-        return type.getName() +
-                templateProps.getImagesPath() +
-                UUID.randomUUID() +
-                FileUtils.PNG_FORMAT;
+    private String generateOriginalImageName() {
+        return UUID.randomUUID() + FileUtils.PNG_FORMAT;
     }
 }
