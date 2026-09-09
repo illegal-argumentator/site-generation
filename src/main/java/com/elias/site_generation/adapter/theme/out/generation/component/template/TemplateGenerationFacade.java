@@ -4,11 +4,13 @@ import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public final class TemplateGenerationFacade {
@@ -21,11 +23,15 @@ public final class TemplateGenerationFacade {
 
     public byte[] generate(Set<String> elements, ThemeGenerationRequest request) {
         byte[] indexExample = zipFilePort.extract(props.getIndexFile(), request.template());
+        log.info("Extracted index from template.");
         byte[] generatedCss = templateGenerator.generateCss(request.content());
+        log.info("Generated css.");
 
         byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
+        log.info("Generated html.");
         TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
         byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, elements);
+        log.info("Applied files to index.");
 
         return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), request.images());
     }

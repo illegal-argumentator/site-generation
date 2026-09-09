@@ -30,8 +30,6 @@ final class ImageGenerationService implements ImageGenerationPort {
 
     @Override
     public Map<String, byte[]> generate(byte[] html) {
-        log.info("Started images generation.");
-
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
         Document parsedHtml = Jsoup.parse(new String(html));
 
@@ -43,6 +41,7 @@ final class ImageGenerationService implements ImageGenerationPort {
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
         List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
 
+        log.info("Generated {} images.", files.size());
         return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
     }
 
