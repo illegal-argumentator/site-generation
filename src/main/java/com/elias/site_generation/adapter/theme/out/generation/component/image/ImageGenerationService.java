@@ -1,6 +1,7 @@
 package com.elias.site_generation.adapter.theme.out.generation.component.image;
 
 import com.elias.site_generation.adapter.ai.out.AiImageService;
+import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolicy;
 import com.elias.site_generation.port.theme.ImageGenerationPort;
 import com.elias.site_generation.shared.file.FileUtils;
@@ -27,24 +28,25 @@ final class ImageGenerationService implements ImageGenerationPort {
 
     private final TemplateProps templateProps;
     private final AiImageService aiImageService;
+    private final ZipFilePort zipFilePort;
 
     @Override
-    public Map<String, byte[]> generate(byte[] html) {
+    public Map<String, byte[]> generate(byte[] source) {
+        byte[] html = zipFilePort.extract(templateProps.getIndexFile(), source);
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
         Document parsedHtml = Jsoup.parse(new String(html));
 
-        Elements imageElements = parsedHtml.select(templateProps.getImagesClass());
-        System.out.println(imageElements.size());
-        throw new RuntimeException();
-//        if (imageElements.isEmpty()) return Map.of();
 
-//        imageElements.forEach(_ -> images.add(generateAsync()));
-//
-//        CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
-//        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
-//
-//        log.info("Generated {} images.", files.size());
-//        return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
+        Elements imageElements = parsedHtml.select(templateProps.getImagesClass());
+        if (imageElements.isEmpty()) return Map.of();
+
+        imageElements.forEach(_ -> images.add(generateAsync()));
+
+        CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
+        List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
+
+        log.info("Generated {} images.", files.size());
+        return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
     }
 
     private CompletableFuture<byte[]> generateAsync() {
