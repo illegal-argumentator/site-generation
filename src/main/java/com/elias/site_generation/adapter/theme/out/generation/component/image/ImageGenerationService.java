@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.image;
 
 import com.elias.site_generation.adapter.ai.out.AiImageService;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolicy;
+import com.elias.site_generation.port.theme.ImageGenerationPort;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,6 @@ final class ImageGenerationService implements ImageGenerationPort {
     }
 
     private String generateOriginalImageName() {
-        return UUID.randomUUID() + FileUtils.PNG_FORMAT;
+        return templateProps.getAssetsPath() + UUID.randomUUID() + FileUtils.PNG_FORMAT;
     }
 }

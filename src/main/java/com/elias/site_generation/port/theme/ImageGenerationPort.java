@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation.component.image;
+package com.elias.site_generation.port.theme;
 
 import java.util.Map;
 

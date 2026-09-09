@@ -13,7 +13,6 @@ public class TemplateProps {
 
     private String indexFile;
     private String imagesClass;
-    private String assetsLocalPath;
-    private String assetsSourcePath;
+    private String assetsPath;
 
 }

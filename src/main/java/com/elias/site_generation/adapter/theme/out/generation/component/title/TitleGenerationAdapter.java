@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.title;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
+import com.elias.site_generation.port.theme.TitleGenerationPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

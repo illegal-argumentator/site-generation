@@ -6,7 +6,7 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +14,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
 
     private final TemplateGenerationFacade generationService;
 
-    private static final List<String> ELEMENT_IDS = List.of(
+    private static final Set<String> ELEMENT_IDS = Set.of(
             "title",
             "#site-header",
             "#hero",
@@ -29,7 +29,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        return generationService.generate(TemplateType.LUCKY_CASINO, ELEMENT_IDS, request);
+        return generationService.generate(ELEMENT_IDS, request);
     }
 
     @Override

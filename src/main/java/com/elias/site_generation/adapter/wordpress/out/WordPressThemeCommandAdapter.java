@@ -17,7 +17,7 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     private final RemoteCommandPort remote;
 
     private static final String UNDERSCORE_PREFIX = "_";
-    private static final String DELETE_INDEX_TEMPLATE = "sudo -u %s rm -f /home/%s/web/%s/public_html/index.html";
+    private static final String DELETE_INDEX_TEMPLATE = "sudo -u %s rm -f /home/%s/web/%s/public_html/index.php";
 
     @Override
     public void downloadWebsite(String hostname) {

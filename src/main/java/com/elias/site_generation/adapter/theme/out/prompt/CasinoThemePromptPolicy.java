@@ -115,7 +115,7 @@ public final class CasinoThemePromptPolicy {
                 [GENERATED CSS]
             </style>
             
-            in the `<head>` of `index.html`
+            in the `<head>` of `index.php`
             """;
 
     public static final String LUCKY_CASINO_STYLES_SAMPLE = """
