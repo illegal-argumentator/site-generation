@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.templat
 
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Iterator;
 import java.util.Set;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 final class TemplateComponentsApplier {
@@ -20,7 +22,9 @@ final class TemplateComponentsApplier {
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
     public byte[] applyIndex(IndexComponent component, Set<String> images) {
+        log.info("Index component: {}, images: {}", component, images);
         Document html = Jsoup.parse(new String(component.index));
+        log.info("Parsed php to document: {}", html.hasText());
 
         applyGeneratedStyles(html, new String(component.css));
         applyImagePaths(html, images);

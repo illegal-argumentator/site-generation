@@ -11,6 +11,8 @@ final class AsyncExceptionFactory {
 
     private final List<ExceptionHandlerStrategy> strategies;
 
+    // TODO handle npe
+
     ExceptionHandlerStrategy getStrategy(Throwable ex) {
         return strategies.stream().filter(strategy -> strategy.getType().isInstance(ex))
                 .findFirst()
