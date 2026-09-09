@@ -30,7 +30,7 @@ public final class TemplateGenerationFacade {
         byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
         log.info("Generated html.");
         TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
-        byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, elements);
+        byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, request.images().keySet());
         log.info("Applied files to index.");
 
         return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), request.images());

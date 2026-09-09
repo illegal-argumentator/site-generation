@@ -22,9 +22,8 @@ final class TemplateComponentsApplier {
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
     public byte[] applyIndex(IndexComponent component, Set<String> images) {
-        log.info("Index component: {}, images: {}", component, images);
         Document html = Jsoup.parse(new String(component.index));
-        log.info("Parsed php to document: {}", html.hasText());
+        System.out.println((long) html.select(".gen-image").size());
 
         applyGeneratedStyles(html, new String(component.css));
         applyImagePaths(html, images);
@@ -41,6 +40,7 @@ final class TemplateComponentsApplier {
         }
 
         style.text(generatedCss);
+        log.info("Styles applied.");
     }
 
     private void applyImagePaths(Document html, Set<String> images) {
@@ -52,6 +52,7 @@ final class TemplateComponentsApplier {
             String srcVal = imageEl.attr(SOURCE_ELEMENT);
             imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
         }
+        log.info("Images applied");
     }
 
     public record IndexComponent(byte[] index, byte[] css) {
