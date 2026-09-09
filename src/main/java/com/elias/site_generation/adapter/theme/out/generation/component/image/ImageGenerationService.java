@@ -54,6 +54,6 @@ final class ImageGenerationService implements ImageGenerationPort {
         return type.getName() +
                 templateProps.getImagesPath() +
                 UUID.randomUUID() +
-                FileUtils.WEBP_FORMAT;
+                FileUtils.PNG_FORMAT;
     }
 }

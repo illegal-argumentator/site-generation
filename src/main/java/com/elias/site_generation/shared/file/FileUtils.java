@@ -13,7 +13,7 @@ public final class FileUtils {
 
     public static final String USER_DIR = "user.dir";
     public static final String ZIP_FORMAT = ".zip";
-    public static final String WEBP_FORMAT = ".webp";
+    public static final String PNG_FORMAT = ".png";
     public static final String TEMP_PATH = "/tmp";
 
     public static String buildOriginalFilename(String name, String contentType) {
