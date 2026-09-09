@@ -23,15 +23,11 @@ public final class TemplateGenerationFacade {
 
     public byte[] generate(Set<String> elements, ThemeGenerationRequest request) {
         byte[] indexExample = zipFilePort.extract(props.getIndexFile(), request.template());
-        log.info("Extracted index from template.");
         byte[] generatedCss = templateGenerator.generateCss(request.content());
-        log.info("Generated css.");
 
         byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
-        log.info("Generated html.");
         TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
         byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, request.images().keySet());
-        log.info("Applied files to index.");
 
         return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), request.images());
     }

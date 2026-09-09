@@ -49,8 +49,16 @@ final class TemplateComponentsApplier {
             Iterator<String> iterator = images.iterator();
             for (Element imageEl : imageEls) {
                 String srcVal = imageEl.attr(SOURCE_ELEMENT);
-                System.out.println(srcVal);
-                imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
+                String src = srcVal;
+                String assets = props.getAssetsPath();
+                String image = iterator.next();
+
+                System.out.println("src = " + src);
+                System.out.println("assets = " + assets);
+                System.out.println("image = " + image);
+
+                imageEl.attr(SOURCE_ELEMENT, src + assets + image);
+//                imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
             }
         } catch (Exception e) {
             log.error(e.getMessage());
