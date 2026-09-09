@@ -23,7 +23,6 @@ final class TemplateComponentsApplier {
 
     public byte[] applyIndex(IndexComponent component, Set<String> images) {
         Document html = Jsoup.parse(new String(component.index));
-        System.out.println((long) html.select(".gen-image").size());
 
         applyGeneratedStyles(html, new String(component.css));
         applyImagePaths(html, images);
@@ -40,19 +39,23 @@ final class TemplateComponentsApplier {
         }
 
         style.text(generatedCss);
-        log.info("Styles applied.");
     }
 
     private void applyImagePaths(Document html, Set<String> images) {
-        Elements imageEls = html.select(props.getImagesClass());
-        if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
+        try {
+            Elements imageEls = html.select(props.getImagesClass());
+            if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
 
-        Iterator<String> iterator = images.iterator();
-        for (Element imageEl : imageEls) {
-            String srcVal = imageEl.attr(SOURCE_ELEMENT);
-            imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
+            Iterator<String> iterator = images.iterator();
+            for (Element imageEl : imageEls) {
+                String srcVal = imageEl.attr(SOURCE_ELEMENT);
+                System.out.println(srcVal);
+                imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
         }
-        log.info("Images applied");
     }
 
     public record IndexComponent(byte[] index, byte[] css) {
