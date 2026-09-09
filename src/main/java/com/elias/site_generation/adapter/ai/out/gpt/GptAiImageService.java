@@ -8,6 +8,7 @@ import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Objects;
 
 @Service
@@ -25,7 +26,8 @@ class GptAiImageService implements AiImageService {
                 throw new IllegalStateException("Result is not present after image generation.");
             }
 
-            return Objects.requireNonNull(result.getOutput().getB64Json()).getBytes();
+            String b64 = Objects.requireNonNull(result.getOutput().getB64Json());
+            return Base64.getDecoder().decode(b64);
         } catch (Exception e) {
             throw new AiException("Unable to generate image: %s.".formatted(e.getMessage()));
         }
