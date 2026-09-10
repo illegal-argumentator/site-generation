@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation;
+package com.elias.site_generation.adapter.theme.out.generation.factory;
 
 import com.elias.site_generation.adapter.theme.out.generation.strategy.TemplateGenerationStrategy;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-class ThemeGenerationFactory {
+public class ThemeGenerationFactory {
 
     private final List<TemplateGenerationStrategy> strategies;
 

@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation;
+package com.elias.site_generation.port.theme;
 
 public interface TitleGenerationPort {
 

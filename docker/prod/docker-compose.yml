@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  site-generation-prod:
+    build: ../..
+    ports:
+      - "${APP_PORT}:8080"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      CHAT_GPT_API_KEY: ${CHAT_GPT_API_KEY}
+    depends_on:
+      - postgres-elias-db-prod
+    volumes:
+      - /opt/dataox/site-generation/templates:/app/templates
+      - /opt/dataox/site-generation/themes:/app/themes
+      - /home/dataox/.ssh/site-generation/id_ed25519:/root/.ssh/id_ed25519:ro
+
+  postgres-elias-db-prod:
+    image: postgres:9
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: always
+    volumes:
+      - elias-volume-prod:/var/lib/postgresql/data
+
+volumes:
+  elias-volume-prod:

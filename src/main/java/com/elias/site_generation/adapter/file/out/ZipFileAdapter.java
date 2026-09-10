@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -26,9 +28,11 @@ class ZipFileAdapter implements ZipFilePort {
              ZipOutputStream zos = new ZipOutputStream(out)) {
 
             ZipEntry entry;
+            Set<String> existingEntries = new HashSet<>();
 
             while ((entry = zis.getNextEntry()) != null) {
                 zos.putNextEntry(new ZipEntry(entry.getName()));
+                existingEntries.add(entry.getName());
 
                 byte[] fileEntry = getFileEntry(entry.getName(), files);
                 if (fileEntry != null) {
@@ -39,6 +43,17 @@ class ZipFileAdapter implements ZipFilePort {
 
                 zos.closeEntry();
                 zis.closeEntry();
+            }
+
+            for (Map.Entry<String, byte[]> file : files.entrySet()) {
+                String name = file.getKey();
+                if (containsByText(name, existingEntries)) {
+                    continue;
+                }
+
+                zos.putNextEntry(new ZipEntry(name));
+                zos.write(file.getValue());
+                zos.closeEntry();
             }
 
         } catch (IOException e) {
@@ -90,4 +105,13 @@ class ZipFileAdapter implements ZipFilePort {
 
         return null;
     }
+
+    private boolean containsByText(String target,  Set<String> existingEntries) {
+        for (String existingEntry : existingEntries) {
+            if (existingEntry.contains(target)) return true;
+        }
+
+        return false;
+    }
+
 }

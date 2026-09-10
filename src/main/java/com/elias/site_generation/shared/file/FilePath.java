@@ -6,4 +6,12 @@ public record FilePath(String filename, String directory) {
         return new FilePath(filename, directory);
     }
 
+    public static FilePath from(String filename) {
+        return new FilePath(filename, null);
+    }
+
+    public String buildPath() {
+        return directory.concat(filename);
+    }
+
 }
