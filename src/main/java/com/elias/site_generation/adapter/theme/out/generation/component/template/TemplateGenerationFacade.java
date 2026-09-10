@@ -45,7 +45,7 @@ public final class TemplateGenerationFacade {
     private Map<String, byte[]> mapImagesAbsolutPath(TemplateType type, Map<String, byte[]> images) {
         return images.entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> type.getName().concat(entry.getKey()),
+                        entry -> props.getThemesPath() + type.getName() + entry.getKey(),
                         Map.Entry::getValue)
                 );
     }

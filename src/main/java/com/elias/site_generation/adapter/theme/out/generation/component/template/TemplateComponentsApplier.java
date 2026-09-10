@@ -47,8 +47,7 @@ final class TemplateComponentsApplier {
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
-            String srcVal = imageEl.attr(SOURCE_ELEMENT);
-            imageEl.attr(SOURCE_ELEMENT, srcVal + props.getAssetsPath().concat(iterator.next()));
+            imageEl.attr(SOURCE_ELEMENT, props.getAssetsPath().concat(iterator.next()));
         }
     }
 
