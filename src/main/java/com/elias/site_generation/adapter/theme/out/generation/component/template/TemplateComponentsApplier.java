@@ -18,7 +18,6 @@ import java.util.Set;
 final class TemplateComponentsApplier {
 
     private final TemplateProps props;
-
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
     public byte[] applyIndex(IndexComponent component, Set<String> images) {
@@ -47,7 +46,7 @@ final class TemplateComponentsApplier {
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
-            imageEl.attr(SOURCE_ELEMENT, props.getAssetsPath().concat(iterator.next()));
+            imageEl.attr(SOURCE_ELEMENT, iterator.next());
         }
     }
 
