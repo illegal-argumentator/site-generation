@@ -36,7 +36,6 @@ final class ImageGenerationService implements ImageGenerationPort {
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
         Document parsedHtml = Jsoup.parse(new String(html));
 
-
         Elements imageElements = parsedHtml.select(templateProps.getImagesClass());
         if (imageElements.isEmpty()) return Map.of();
 

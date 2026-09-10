@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.templat
 
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
+import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public final class TemplateGenerationFacade {
     private final TemplateGenerator templateGenerator;
     private final TemplateComponentsApplier componentsApplier;
 
-    public byte[] generate(Set<String> elements, ThemeGenerationRequest request) {
+    public byte[] generate(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
         byte[] indexExample = zipFilePort.extract(props.getIndexFile(), request.template());
         byte[] generatedCss = templateGenerator.generateCss(request.content());
 
@@ -29,7 +30,7 @@ public final class TemplateGenerationFacade {
         TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
         byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, request.images().keySet());
 
-        return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), request.images());
+        return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), mapImagesAbsolutPath(type, request.images()));
     }
 
     @SafeVarargs
@@ -41,5 +42,12 @@ public final class TemplateGenerationFacade {
         return zipFilePort.update(template, all);
     }
 
+    private Map<String, byte[]> mapImagesAbsolutPath(TemplateType type, Map<String, byte[]> images) {
+        return images.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> type.getName().concat(entry.getKey()),
+                        Map.Entry::getValue)
+                );
+    }
 
 }
