@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  site-generation:
+  site-generation-dev:
     build: ../..
     ports:
       - "${APP_PORT}:8080"
@@ -17,7 +17,7 @@ services:
       - /opt/dataox/site-generation/themes:/app/themes
       - /home/dataox/.ssh/site-generation/id_ed25519:/root/.ssh/id_ed25519:ro
 
-  postgres-elias-db:
+  postgres-elias-db-dev:
     image: postgres:9
     env_file:
       - .env
@@ -29,7 +29,7 @@ services:
       - "${POSTGRES_PORT}:5432"
     restart: always
     volumes:
-      - elias-volume:/var/lib/postgresql/data
+      - elias-volume-dev:/var/lib/postgresql/data
 
 volumes:
-  elias-volume:
+  elias-volume-dev:
