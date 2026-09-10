@@ -16,21 +16,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class TemplateGenerationFacade {
 
-    private final TemplateProps props;
+    private final TemplateProps templateProps;
     private final ZipFilePort zipFilePort;
 
     private final TemplateGenerator templateGenerator;
     private final TemplateComponentsApplier componentsApplier;
 
     public byte[] generate(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
-        byte[] indexExample = zipFilePort.extract(props.getIndexFile(), request.template());
+        byte[] indexExample = zipFilePort.extract(templateProps.getIndexFile(), request.template());
         byte[] generatedCss = templateGenerator.generateCss(request.content());
 
         byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
         TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
-        byte[] appliedIndex = componentsApplier.applyIndex(indexComponent, request.images().keySet());
+        byte[] appliedIndex = componentsApplier.applyIndex(type, indexComponent, request.images().keySet());
 
-        return updateZip(request.template(), Map.of(props.getIndexFile(), appliedIndex), mapImagesAbsolutPath(type, request.images()));
+        return updateZip(request.template(), Map.of(templateProps.getIndexFile(), appliedIndex), mapImagesAbsolutPath(type, request.images()));
     }
 
     @SafeVarargs
@@ -45,7 +45,7 @@ public final class TemplateGenerationFacade {
     private Map<String, byte[]> mapImagesAbsolutPath(TemplateType type, Map<String, byte[]> images) {
         return images.entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> props.getThemesPath() + type.getName() + entry.getKey(),
+                        entry -> templateProps.getAssetsOriginPathTemplate().formatted(type.getName())  + entry.getKey(),
                         Map.Entry::getValue)
                 );
     }

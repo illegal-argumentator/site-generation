@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.theme.out.generation.component.template;
 
+import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,11 @@ final class TemplateComponentsApplier {
     private final TemplateProps props;
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
-    public byte[] applyIndex(IndexComponent component, Set<String> images) {
+    public byte[] applyIndex(TemplateType type, IndexComponent component, Set<String> images) {
         Document html = Jsoup.parse(new String(component.index));
 
         applyGeneratedStyles(html, new String(component.css));
-        applyImagePaths(html, images);
+        applyImagePaths(type, html, images);
 
         return html.outerHtml().getBytes();
     }
@@ -40,13 +41,13 @@ final class TemplateComponentsApplier {
         style.text(generatedCss);
     }
 
-    private void applyImagePaths(Document html, Set<String> images) {
+    private void applyImagePaths(TemplateType type, Document html, Set<String> images) {
         Elements imageEls = html.select(props.getImagesClass());
         if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
-            imageEl.attr(SOURCE_ELEMENT, iterator.next());
+            imageEl.attr(SOURCE_ELEMENT, props.getThemesPathTemplate() + type.getName() + iterator.next());
         }
     }
 

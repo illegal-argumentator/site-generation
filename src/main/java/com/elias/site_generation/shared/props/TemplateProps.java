@@ -14,6 +14,7 @@ public class TemplateProps {
     private String indexFile;
     private String imagesClass;
     private String assetsPath;
-    private String themesPath;
+    private String themesPathTemplate;
+    private String assetsOriginPathTemplate;
 
 }
