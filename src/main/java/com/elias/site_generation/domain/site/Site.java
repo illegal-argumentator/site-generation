@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.With;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -49,6 +50,16 @@ public class Site {
         throwIfNotCreated();
         throwIfNotPublished();
         throwIfAlreadyActivated();
+    }
+
+    public static boolean hasMoreInProgressThanLimit(int max, List<Site> sites) {
+        long inProgressCount = sites.stream().filter(site ->
+                site.getActiveStatus() == ActiveStatus.IN_PROGRESS ||
+                        site.getDeployStatus() == DeployStatus.IN_PROGRESS ||
+                        site.getCreationStatus() == CreationStatus.IN_PROGRESS
+        ).count();
+
+        return inProgressCount > max;
     }
 
     private void throwIfAlreadyPublished() {

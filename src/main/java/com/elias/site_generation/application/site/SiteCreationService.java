@@ -2,6 +2,7 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.exception.SiteParallelCreationLimitReachedException;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
 import com.elias.site_generation.domain.user.User;
@@ -12,12 +13,19 @@ import com.elias.site_generation.port.theme.TemplateQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class SiteCreationService implements SiteCreationUseCase {
+
+    @Value("${sites.parallel-limit}")
+    private int parallelLimit;
 
     private final TemplateQueryPort templateQueryPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
@@ -32,6 +40,8 @@ class SiteCreationService implements SiteCreationUseCase {
         throwIfDomainAlreadyExists(site.getHostname());
 
         User owner = authUserPort.getAuthUser();
+        throwIfParallelCreationLimitReached(owner);
+
         asyncProcessor.createAsync(type, owner, site);
     }
 
@@ -59,5 +69,17 @@ class SiteCreationService implements SiteCreationUseCase {
         if (websiteThemeQueryPort.exists(hostname)) {
             throw new DomainAlreadyExistsException("Domain %s already exists.".formatted(hostname));
         }
+    }
+
+    private void throwIfParallelCreationLimitReached(User user) {
+        List<Site> sites = user.getSites();
+        if (CollectionUtils.isEmpty(sites)) {
+            return;
+        }
+
+        if (Site.hasMoreInProgressThanLimit(parallelLimit, sites)) {
+            throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
+        }
+
     }
 }
