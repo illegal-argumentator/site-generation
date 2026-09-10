@@ -11,7 +11,7 @@ services:
     environment:
       CHAT_GPT_API_KEY: ${CHAT_GPT_API_KEY}
     depends_on:
-      - postgres-elias-db
+      - postgres-elias-db-dev
     volumes:
       - /opt/dataox/site-generation/templates:/app/templates
       - /opt/dataox/site-generation/themes:/app/themes
