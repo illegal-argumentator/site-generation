@@ -47,7 +47,7 @@ final class TemplateComponentsApplier {
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
-            imageEl.attr(SOURCE_ELEMENT, props.getThemesPathTemplate() + type.getName() + iterator.next());
+            imageEl.attr(SOURCE_ELEMENT, props.getThemesPathTemplate().formatted(type.getName()) + iterator.next());
         }
     }
 
