@@ -54,14 +54,14 @@ public class Site {
         throwIfAlreadyActivated();
     }
 
-    public static boolean hasMoreInProgressThanLimit(int max, List<Site> sites) {
+    public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
         long inProgressCount = sites.stream().filter(site ->
                 site.getActiveStatus() == ActiveStatus.IN_PROGRESS ||
                         site.getDeployStatus() == DeployStatus.IN_PROGRESS ||
                         site.getCreationStatus() == CreationStatus.IN_PROGRESS
         ).count();
 
-        return inProgressCount > max;
+        return inProgressCount >= max;
     }
 
     public static Set<Long> collectIds(List<Site> sites) {

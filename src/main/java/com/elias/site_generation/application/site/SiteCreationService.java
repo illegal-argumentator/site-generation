@@ -77,7 +77,7 @@ class SiteCreationService implements SiteCreationUseCase {
             return;
         }
 
-        if (Site.hasMoreInProgressThanLimit(parallelLimit, entities)) {
+        if (Site.hasMoreOrEqualInProgressThanLimit(parallelLimit, entities)) {
             throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
         }
     }
