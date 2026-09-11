@@ -36,7 +36,6 @@ class SiteCreationAsyncProcessor {
     @Async
     public void createAsync(TemplateType type, User user, Site site) {
         Site savedPending = saveInit(type, site);
-        System.out.println("Saved pending " + savedPending);
         saveUserSite(user, savedPending);
 
         String themeId = themeCommandPort.save();
