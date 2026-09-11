@@ -3,6 +3,7 @@ package com.elias.site_generation.adapter.exception.out.strategy;
 import com.elias.site_generation.adapter.exception.out.ExceptionHandlerStrategy;
 import com.elias.site_generation.domain.site.event.SiteCreationFailedEvent;
 import com.elias.site_generation.domain.site.exception.SiteGenerationException;
+import com.elias.site_generation.domain.site.type.CreationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class AsyncSiteGenerationExceptionStrategy implements ExceptionHandlerStr
     @Override
     public void process(Throwable ex) {
         SiteGenerationException siteEx = (SiteGenerationException) ex;
-        eventPublisher.publishEvent(new SiteCreationFailedEvent(siteEx.getSiteId(), siteEx.getMessage(), null));
+        eventPublisher.publishEvent(new SiteCreationFailedEvent(siteEx.getSiteId(), siteEx.getMessage(), CreationStatus.FAILED));
     }
 
     @Override

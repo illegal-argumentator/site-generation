@@ -39,7 +39,7 @@ class SiteCreationAsyncProcessor {
         saveUserSite(user, savedPending);
 
         String themeId = themeCommandPort.save();
-        String title = themeGenerationPort.generate(themeId, site);
+        String title = themeGenerationPort.generate(themeId, savedPending);
 
         Theme updated = themeCommandPort.update(themeId, title);
         Site savedCreated = saveCreated(savedPending.getId(), updated);

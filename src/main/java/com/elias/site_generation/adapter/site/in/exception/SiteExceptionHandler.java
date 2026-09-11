@@ -3,6 +3,8 @@ package com.elias.site_generation.adapter.site.in.exception;
 import com.elias.site_generation.domain.site.exception.*;
 import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.exception.SiteGenerationException;
+import com.elias.site_generation.shared.exception.ExceptionResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,29 +19,59 @@ public class SiteExceptionHandler {
 
     private final SiteExceptionService exceptionService;
 
-    @ExceptionHandler(SiteCreationException.class)
-    public void handleSiteCreationException(SiteCreationException e) {
-        log.error(e.getMessage());
+    @ExceptionHandler(SiteParallelCreationLimitReachedException.class)
+    public ResponseEntity<ExceptionResponse> handleSiteParallelCreationLimitReachedException(SiteParallelCreationLimitReachedException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
     @ExceptionHandler(DomainAlreadyExistsException.class)
-    public ResponseEntity<String> handleDomainAlreadyExistsException(DomainAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleDomainAlreadyExistsException(DomainAlreadyExistsException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.CONFLICT.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(SiteDeployException.class)
-    public ResponseEntity<String> handleSiteAlreadyDeployedException(SiteDeployException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleSiteAlreadyDeployedException(SiteDeployException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.CONFLICT.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(SiteHasNotCreatedException.class)
-    public ResponseEntity<String> handleSiteHasNotCreatedException(SiteHasNotCreatedException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleSiteHasNotCreatedException(SiteHasNotCreatedException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(SiteNotFoundException.class)
-    public ResponseEntity<String> handleSiteNotFoundException(SiteNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleSiteNotFoundException(SiteNotFoundException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.NOT_FOUND.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(SiteGenerationException.class)
