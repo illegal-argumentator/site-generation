@@ -15,6 +15,8 @@ import lombok.With;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -60,6 +62,10 @@ public class Site {
         ).count();
 
         return inProgressCount > max;
+    }
+
+    public static Set<Long> collectIds(List<Site> sites) {
+        return sites.stream().map(Site::getId).collect(Collectors.toSet());
     }
 
     private void throwIfAlreadyPublished() {

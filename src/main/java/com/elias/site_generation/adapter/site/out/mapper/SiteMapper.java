@@ -8,11 +8,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.List;
+
 @Mapper(config = MapStructConfig.class)
 public interface SiteMapper {
 
     PostgresSite toEntity(Site site);
     Site toSite(PostgresSite entity);
+    List<Site> toSites(List<PostgresSite> entities);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(@MappingTarget PostgresSite entity, Site site);

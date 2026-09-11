@@ -72,14 +72,13 @@ class SiteCreationService implements SiteCreationUseCase {
     }
 
     private void throwIfParallelCreationLimitReached(User user) {
-        List<Site> sites = user.getSites();
-        if (CollectionUtils.isEmpty(sites)) {
+        List<Site> entities = siteQueryPort.findAllById(Site.collectIds(user.getSites()));
+        if (CollectionUtils.isEmpty(entities)) {
             return;
         }
 
-        if (Site.hasMoreInProgressThanLimit(parallelLimit, sites)) {
+        if (Site.hasMoreInProgressThanLimit(parallelLimit, entities)) {
             throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
         }
-
     }
 }
