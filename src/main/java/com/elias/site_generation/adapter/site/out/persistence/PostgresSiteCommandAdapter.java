@@ -26,6 +26,7 @@ public class PostgresSiteCommandAdapter implements SiteCommandPort {
         PostgresSite entity = getOrThrow(id);
 
         mapper.updateEntity(entity, site);
+        System.out.println("After update " + entity);
         PostgresSite updated = repository.save(entity);
 
         return mapper.toSite(updated);
