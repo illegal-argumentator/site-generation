@@ -6,20 +6,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${web.client.prod-url}")
-    private String CLIENT_PROD_URL;
+    private List<String> CLIENT_PROD_URLS;
 
     @Value("${web.client.dev-url}")
     private String CLIENT_DEV_URL;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        CLIENT_PROD_URLS.add(CLIENT_DEV_URL);
+
         registry.addMapping("/**")
-                .allowedOrigins(CLIENT_PROD_URL, CLIENT_DEV_URL)
+                .allowedOrigins(CLIENT_PROD_URLS.toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(false)

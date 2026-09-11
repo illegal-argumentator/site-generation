@@ -7,6 +7,9 @@ import com.elias.site_generation.port.site.SiteQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 public class PostgresSiteQueryAdapter implements SiteQueryPort {
@@ -20,5 +23,11 @@ public class PostgresSiteQueryAdapter implements SiteQueryPort {
                  .orElseThrow(() -> new SiteNotFoundException("Site not found."));
 
          return mapper.toSite(entity);
+    }
+
+    @Override
+    public List<Site> findAllById(Set<Long> ids) {
+        List<PostgresSite> entities = repository.findAllById(ids);
+        return mapper.toSites(entities);
     }
 }
