@@ -20,14 +20,14 @@ class SiteDeployAsyncProcessor {
 
     @Async
     public void publishAsync(String domain, Site site) {
-        saveDeployPending(domain, site);
-        publishDeploy(site);
+        Site deploy = saveDeployPending(domain, site);
+        publishDeploy(deploy);
     }
 
-    private void saveDeployPending(String domain, Site site) {
+    private Site saveDeployPending(String domain, Site site) {
         site.setHostname(domain);
         Site update = Site.builder().deployStatus(DeployStatus.IN_PROGRESS).activeStatus(ActiveStatus.PENDING).hostname(domain).build();
-        siteCommandPort.update(site.getId(), update);
+        return siteCommandPort.update(site.getId(), update);
     }
 
     private void publishDeploy(Site site) {
