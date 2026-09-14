@@ -36,7 +36,7 @@ public class SiteCommandService implements SiteCommandUseCase {
         validateDomainExistence(domain);
 
         cleanUpDomain(existence);
-        asyncProcessor.publishAsync(existence);
+        asyncProcessor.publishAsync(domain, existence);
     }
 
     private void validateDomainExistence(String hostname) {
