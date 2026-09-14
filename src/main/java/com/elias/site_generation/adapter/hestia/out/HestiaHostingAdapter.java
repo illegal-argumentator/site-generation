@@ -61,7 +61,8 @@ class HestiaHostingAdapter implements HostingPort {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-delete-database",
-                props.getUsername()
+                props.getUsername(),
+                name
         );
     }
 
