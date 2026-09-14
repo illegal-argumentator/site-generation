@@ -22,15 +22,24 @@ public final class TemplateGenerationFacade {
     private final TemplateGenerator templateGenerator;
     private final TemplateComponentsApplier componentsApplier;
 
-    public byte[] generate(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
-        byte[] indexExample = zipFilePort.extract(templateProps.getIndexFile(), request.template());
-        byte[] generatedCss = templateGenerator.generateCss(request.content());
+    public byte[] generate(TemplateType type, Map<String, Set<String>> elements, ThemeGenerationRequest request) {
+        HashMap<String, byte[]> pages = new HashMap<>();
 
-        byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
-        TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
-        byte[] appliedIndex = componentsApplier.applyIndex(type, indexComponent, request.images().keySet());
+        for (Map.Entry<String, Set<String>> entry : elements.entrySet()) {
+            byte[] generatePage = generatePage(type, entry.getValue(), request);
+            pages.put(entry.getKey(), generatePage);
+        }
 
-        return updateZip(request.template(), Map.of(templateProps.getIndexFile(), appliedIndex), mapImagesAbsolutPath(type, request.images()));
+        return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
+    }
+
+    public byte[] generatePage(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
+        byte[] zipComponent = zipFilePort.extract(templateProps.getIndexFile(), request.template());
+        byte[] css = templateGenerator.generateCss(request.content());
+        byte[] html = templateGenerator.generateHtml(zipComponent, elements, request);
+
+        TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(html, css);
+        return componentsApplier.applyIndex(type, indexComponent, request.images().keySet());
     }
 
     @SafeVarargs

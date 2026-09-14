@@ -26,7 +26,7 @@ final class TemplateGenerator {
     private final ExecutorService executor;
 
     public byte[] generateCss(String content) {
-        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_STYLES_SAMPLE);
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_HOME_PAGE_STYLES_SAMPLE);
         String response = aiService.generate(new AiRequest(prompt, content));
         return response.getBytes();
     }
