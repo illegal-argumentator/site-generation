@@ -7,6 +7,8 @@ import com.elias.site_generation.shared.props.HestiaProps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.elias.site_generation.shared.utils.Delimiters.UNDERSCORE_PREFIX;
+
 @Component
 @RequiredArgsConstructor
 class HestiaHostingAdapter implements HostingPort {
@@ -19,6 +21,16 @@ class HestiaHostingAdapter implements HostingPort {
         executeRemote(
                 "sudo",
                 "/usr/local/hestia/bin/v-add-web-domain",
+                props.getUsername(),
+                hostname
+        );
+    }
+
+    @Override
+    public void deleteDomain(String hostname) {
+        executeRemote(
+                "sudo",
+                "/usr/local/hestia/bin/v-delete-web-domain",
                 props.getUsername(),
                 hostname
         );
@@ -43,6 +55,16 @@ class HestiaHostingAdapter implements HostingPort {
                 db.name(),
                 db.username(),
                 db.password()
+        );
+    }
+
+    @Override
+    public void deleteDb(String name) {
+        executeRemote(
+                "sudo",
+                "/usr/local/hestia/bin/v-delete-database",
+                props.getUsername(),
+                props.getUsername() + UNDERSCORE_PREFIX + name
         );
     }
 

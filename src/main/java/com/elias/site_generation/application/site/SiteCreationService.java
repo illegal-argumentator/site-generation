@@ -2,6 +2,7 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.exception.NotSiteOwnerException;
 import com.elias.site_generation.domain.site.exception.SiteParallelCreationLimitReachedException;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
@@ -47,15 +48,23 @@ class SiteCreationService implements SiteCreationUseCase {
 
     @Override
     public void redeploy(long siteId) {
+        User authUser = authUserPort.getAuthUser();
+        validateSiteOwner(siteId, authUser);
+
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRedeploy();
+
         asyncProcessor.publishDeployAsync(site);
     }
 
     @Override
     public void activate(long siteId) {
+        User authUser = authUserPort.getAuthUser();
+        validateSiteOwner(siteId, authUser);
+
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForActivation();
+
         asyncProcessor.publishActivationAsync(site);
     }
 
@@ -79,6 +88,12 @@ class SiteCreationService implements SiteCreationUseCase {
 
         if (Site.hasMoreOrEqualInProgressThanLimit(parallelLimit, entities)) {
             throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
+        }
+    }
+
+    private void validateSiteOwner(long siteId, User owner) {
+        if (!owner.containsSiteId(siteId)) {
+            throw new NotSiteOwnerException("You're not site owner.");
         }
     }
 }

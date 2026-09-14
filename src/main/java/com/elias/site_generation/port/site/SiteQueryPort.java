@@ -11,5 +11,4 @@ public interface SiteQueryPort {
 
     List<Site> findAllById(Set<Long> ids);
 
-
 }

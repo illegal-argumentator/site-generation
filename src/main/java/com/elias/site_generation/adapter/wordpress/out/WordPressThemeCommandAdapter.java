@@ -8,6 +8,8 @@ import com.elias.site_generation.shared.props.WpProps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.elias.site_generation.shared.utils.Delimiters.UNDERSCORE_PREFIX;
+
 @Component
 @RequiredArgsConstructor
 class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
@@ -16,7 +18,6 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     private final HestiaProps hestiaProps;
     private final RemoteCommandPort remote;
 
-    private static final String UNDERSCORE_PREFIX = "_";
     private static final String DELETE_INDEX_TEMPLATE = "sudo -u %s rm -f /home/%s/web/%s/public_html/index.html";
 
     @Override
