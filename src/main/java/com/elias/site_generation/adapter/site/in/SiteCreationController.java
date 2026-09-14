@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/sites")
 @RequiredArgsConstructor
+@RequestMapping("/sites")
 public class SiteCreationController {
 
     private final DtoSiteMapper mapper;

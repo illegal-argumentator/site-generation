@@ -8,4 +8,6 @@ public final class Delimiters {
 
     public static final String COMMA_DELIMITER = ", ";
 
+    public static final String UNDERSCORE_PREFIX = "_";
+
 }
