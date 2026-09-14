@@ -30,4 +30,5 @@ public class PostgresSiteQueryAdapter implements SiteQueryPort {
         List<PostgresSite> entities = repository.findAllById(ids);
         return mapper.toSites(entities);
     }
+
 }

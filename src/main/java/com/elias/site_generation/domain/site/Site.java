@@ -44,14 +44,17 @@ public class Site {
     private Instant updatedAt;
 
     public void validateReadyForRedeploy() {
-        throwIfAlreadyPublished();
-        throwIfNotCreated();
+        throwIfAtLeastOneStatusInProgress(new SiteDeployException("Site is already in progress."));
+        throwIfCreationStatusNotCreated();
+        throwIfDeployStatusPublished();
+        throwIfActiveStatusActivated();
     }
 
     public void validateReadyForActivation() {
-        throwIfNotCreated();
-        throwIfNotPublished();
-        throwIfAlreadyActivated();
+        throwIfCreationStatusNotCreated();
+        throwIfDeployStatusNotPublished();
+        throwIfActiveStatusInProgress();
+        throwIfActiveStatusActivated();
     }
 
     public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
@@ -68,27 +71,41 @@ public class Site {
         return sites.stream().map(Site::getId).collect(Collectors.toSet());
     }
 
-    private void throwIfAlreadyPublished() {
+    private void throwIfDeployStatusPublished() {
         if (deployStatus == DeployStatus.PUBLISHED) {
             throw new SiteDeployException("Site already deployed.");
         }
     }
 
-    private void throwIfNotPublished() {
+    private void throwIfDeployStatusNotPublished() {
         if (deployStatus != DeployStatus.PUBLISHED) {
             throw new SiteDeployException("Site not deployed.");
         }
     }
 
-    private void throwIfAlreadyActivated() {
+    private void throwIfActiveStatusActivated() {
         if (activeStatus == ActiveStatus.ACTIVATED) {
             throw new SiteActivationException("Site already activated.");
         }
     }
 
-    private void throwIfNotCreated() {
+    private void throwIfActiveStatusInProgress() {
+        if (activeStatus == ActiveStatus.IN_PROGRESS) {
+            throw new SiteActivationException("Site already activating.");
+        }
+    }
+
+    private void throwIfCreationStatusNotCreated() {
         if (creationStatus != CreationStatus.CREATED) {
             throw new SiteHasNotCreatedException("Site has not created yet.");
+        }
+    }
+
+    private void throwIfAtLeastOneStatusInProgress(RuntimeException ex) {
+        if (this.creationStatus == CreationStatus.IN_PROGRESS ||
+                this.deployStatus == DeployStatus.IN_PROGRESS ||
+                this.activeStatus == ActiveStatus.IN_PROGRESS) {
+            throw ex;
         }
     }
 }

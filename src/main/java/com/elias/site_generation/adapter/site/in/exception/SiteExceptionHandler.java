@@ -19,6 +19,17 @@ public class SiteExceptionHandler {
 
     private final SiteExceptionService exceptionService;
 
+    @ExceptionHandler(NotSiteOwnerException.class)
+    public ResponseEntity<ExceptionResponse> handleNotSiteOwnerException(NotSiteOwnerException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.FORBIDDEN.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(exceptionResponse);
+    }
+
     @ExceptionHandler(SiteParallelCreationLimitReachedException.class)
     public ResponseEntity<ExceptionResponse> handleSiteParallelCreationLimitReachedException(SiteParallelCreationLimitReachedException e, HttpServletRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()

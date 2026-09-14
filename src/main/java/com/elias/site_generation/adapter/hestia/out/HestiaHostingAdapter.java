@@ -25,6 +25,16 @@ class HestiaHostingAdapter implements HostingPort {
     }
 
     @Override
+    public void deleteDomain(String hostname) {
+        executeRemote(
+                "sudo",
+                "/usr/local/hestia/bin/v-delete-web-domain",
+                props.getUsername(),
+                hostname
+        );
+    }
+
+    @Override
     public void enableSsl(String hostname) {
         executeRemote(
                 "sudo",
@@ -43,6 +53,15 @@ class HestiaHostingAdapter implements HostingPort {
                 db.name(),
                 db.username(),
                 db.password()
+        );
+    }
+
+    @Override
+    public void deleteDb(String name) {
+        executeRemote(
+                "sudo",
+                "/usr/local/hestia/bin/v-delete-database",
+                props.getUsername()
         );
     }
 
