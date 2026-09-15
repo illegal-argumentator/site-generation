@@ -39,11 +39,20 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
             "#site-footer"
     );
 
+    private final Set<String> FAQ_ELEMENTS = Set.of(
+            "title",
+            "#site-header",
+            "#page-hero",
+            "#faq-content",
+            "#site-footer"
+    );
+
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
         Map<String, ElementPayload> pages = Map.of(
                 templateProps.getIndexFile(), buildIndexPayload(request.content()),
-                templateProps.getCookiesFile(), buildCookiesPayload(request.content())
+                templateProps.getCookiesFile(), buildCookiesPayload(request.content()),
+                templateProps.getCookiesFile(), buildFaqPayload(request.content())
         );
         return generationService.generate(TemplateType.LUCKY_CASINO, pages, request);
     }
@@ -56,6 +65,11 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
     private ElementPayload buildCookiesPayload(String content) {
         String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_COOKIES_PAGE_STYLES_SAMPLE);
         return ElementPayload.from(prompt, COOKIES_ELEMENTS);
+    }
+
+    private ElementPayload buildFaqPayload(String content) {
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_FAQ_STYLES_SAMPLE);
+        return ElementPayload.from(prompt, FAQ_ELEMENTS);
     }
 
     @Override
