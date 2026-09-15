@@ -30,7 +30,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
             "#site-footer"
     );
 
-    private final Set<String> COOKIE_ELEMENTS = Set.of(
+    private final Set<String> COOKIES_ELEMENTS = Set.of(
             "title",
             "#site-header",
             "#page-hero",
@@ -40,7 +40,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        Map<String, Set<String>> pages = Map.of(templateProps.getIndexFile(), INDEX_ELEMENTS, templateProps.getCookiesFile(), COOKIE_ELEMENTS);
+        Map<String, Set<String>> pages = Map.of(templateProps.getIndexFile(), INDEX_ELEMENTS, templateProps.getCookiesFile(), COOKIES_ELEMENTS);
         return generationService.generate(TemplateType.LUCKY_CASINO, pages, request);
     }
 

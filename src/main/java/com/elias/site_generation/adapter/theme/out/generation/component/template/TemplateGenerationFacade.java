@@ -23,23 +23,25 @@ public final class TemplateGenerationFacade {
     private final TemplateComponentsApplier componentsApplier;
 
     public byte[] generate(TemplateType type, Map<String, Set<String>> elements, ThemeGenerationRequest request) {
-        HashMap<String, byte[]> pages = new HashMap<>();
+        Map<String, byte[]> pages = new HashMap<>();
 
         for (Map.Entry<String, Set<String>> entry : elements.entrySet()) {
-            byte[] generatePage = generatePage(type, entry.getValue(), request);
-            pages.put(entry.getKey(), generatePage);
+            PageComponent generatePage = generatePage(entry.getKey(), entry.getValue(), request);
+            byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
+            pages.put(entry.getKey(), appliedIndex);
         }
+
 
         return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
     }
 
-    public byte[] generatePage(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
-        byte[] zipComponent = zipFilePort.extract(templateProps.getIndexFile(), request.template());
+    public PageComponent generatePage(String filename, Set<String> elements, ThemeGenerationRequest request) {
+        byte[] zipComponent = zipFilePort.extract(filename, request.template());
         byte[] css = templateGenerator.generateCss(request.content());
         byte[] html = templateGenerator.generateHtml(zipComponent, elements, request);
 
-        TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(html, css);
-        return componentsApplier.applyIndex(type, indexComponent, request.images().keySet());
+        return PageComponent.from(html, css);
+
     }
 
     @SafeVarargs
