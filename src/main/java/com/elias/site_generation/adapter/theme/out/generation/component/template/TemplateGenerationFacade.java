@@ -3,8 +3,10 @@ package com.elias.site_generation.adapter.theme.out.generation.component.templat
 import com.elias.site_generation.adapter.theme.out.generation.strategy.ElementPayload;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
+import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
+import com.elias.site_generation.shared.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,11 +28,24 @@ public final class TemplateGenerationFacade {
     public byte[] generate(TemplateType type, Map<String, ElementPayload> elements, ThemeGenerationRequest request) {
         Map<String, byte[]> pages = new HashMap<>();
 
+        String firstGeneratedCss = "";
         for (Map.Entry<String, ElementPayload> entry : elements.entrySet()) {
-            PageComponent generatePage = generatePage(entry.getKey(), entry.getValue(), request);
+            ElementPayload value = entry.getValue(); String key = entry.getKey();
+
+            if (!StringUtils.isEmpty(firstGeneratedCss)) {
+                ElementPayload newPayload = value.withPrompt(CasinoThemePromptPolicy.buildCasinoStylesWithCreated(value.prompt()));
+                entry.setValue(newPayload);
+            }
+
+            PageComponent generatePage = generatePage(key, value, request);
+            if (StringUtils.isEmpty(firstGeneratedCss)) {
+                firstGeneratedCss = new String(generatePage.css());
+            }
+
             byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
-            pages.put(entry.getKey(), appliedIndex);
-            log.info("Generated file: {}.", entry.getKey());
+
+            pages.put(key, appliedIndex);
+            log.info("Generated file: {}.", key);
         }
 
 
@@ -43,7 +58,6 @@ public final class TemplateGenerationFacade {
         byte[] html = templateGenerator.generateHtml(zipComponent, payload.tags(), request);
 
         return PageComponent.from(html, css);
-
     }
 
     @SafeVarargs

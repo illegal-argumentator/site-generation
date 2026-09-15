@@ -118,6 +118,17 @@ public final class CasinoThemePromptPolicy {
             in the `<head>` of `index.html`
             """;
 
+    private static final String CASINO_STYLES_TEMPLATE_WITH_CREATED = """
+            %s
+            
+            Below are the styles generated for another page of the same website. Use them as a reference to maintain a consistent visual style and design across all pages:
+            %s
+            """;
+
+    public static String buildCasinoStylesWithCreated(String createdCss) {
+        return CASINO_STYLES_TEMPLATE_WITH_CREATED.formatted(CASINO_STYLES_TEMPLATE, createdCss);
+    }
+
     public static final String LUCKY_CASINO_HOME_PAGE_STYLES_SAMPLE = """
             /* =========================================================
                  1. DESIGN TOKENS — edit these to re-skin the whole page
