@@ -1,5 +1,6 @@
 package com.elias.site_generation.adapter.theme.out.generation.component.template;
 
+import com.elias.site_generation.adapter.theme.out.generation.strategy.ElementPayload;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -22,10 +23,10 @@ public final class TemplateGenerationFacade {
     private final TemplateGenerator templateGenerator;
     private final TemplateComponentsApplier componentsApplier;
 
-    public byte[] generate(TemplateType type, Map<String, Set<String>> elements, ThemeGenerationRequest request) {
+    public byte[] generate(TemplateType type, Map<String, ElementPayload> elements, ThemeGenerationRequest request) {
         Map<String, byte[]> pages = new HashMap<>();
 
-        for (Map.Entry<String, Set<String>> entry : elements.entrySet()) {
+        for (Map.Entry<String, ElementPayload> entry : elements.entrySet()) {
             PageComponent generatePage = generatePage(entry.getKey(), entry.getValue(), request);
             byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
             pages.put(entry.getKey(), appliedIndex);
@@ -35,10 +36,10 @@ public final class TemplateGenerationFacade {
         return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
     }
 
-    public PageComponent generatePage(String filename, Set<String> elements, ThemeGenerationRequest request) {
+    public PageComponent generatePage(String filename, ElementPayload payload, ThemeGenerationRequest request) {
         byte[] zipComponent = zipFilePort.extract(filename, request.template());
-        byte[] css = templateGenerator.generateCss(request.content());
-        byte[] html = templateGenerator.generateHtml(zipComponent, elements, request);
+        byte[] css = templateGenerator.generateCss(request.content(), payload.prompt());
+        byte[] html = templateGenerator.generateHtml(zipComponent, payload.tags(), request);
 
         return PageComponent.from(html, css);
 

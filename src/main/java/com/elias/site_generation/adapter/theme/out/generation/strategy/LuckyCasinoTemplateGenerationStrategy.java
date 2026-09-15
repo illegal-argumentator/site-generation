@@ -2,6 +2,7 @@ package com.elias.site_generation.adapter.theme.out.generation.strategy;
 
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.generation.component.template.TemplateGenerationFacade;
+import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,21 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        Map<String, Set<String>> pages = Map.of(templateProps.getIndexFile(), INDEX_ELEMENTS, templateProps.getCookiesFile(), COOKIES_ELEMENTS);
+        Map<String, ElementPayload> pages = Map.of(
+                templateProps.getCookiesFile(), buildIndexPayload(request.content()),
+                templateProps.getCookiesFile(), buildCookiesPayload(request.content())
+        );
         return generationService.generate(TemplateType.LUCKY_CASINO, pages, request);
+    }
+
+    private ElementPayload buildIndexPayload(String content) {
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_HOME_PAGE_STYLES_SAMPLE);
+        return ElementPayload.from(prompt, INDEX_ELEMENTS);
+    }
+
+    private ElementPayload buildCookiesPayload(String content) {
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_COOKIES_PAGE_STYLES_SAMPLE);
+        return ElementPayload.from(prompt, COOKIES_ELEMENTS);
     }
 
     @Override
