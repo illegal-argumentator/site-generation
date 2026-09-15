@@ -42,7 +42,7 @@ class LuckyCasinoTemplateGenerationStrategy implements TemplateGenerationStrateg
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
         Map<String, ElementPayload> pages = Map.of(
-                templateProps.getCookiesFile(), buildIndexPayload(request.content()),
+                templateProps.getIndexFile(), buildIndexPayload(request.content()),
                 templateProps.getCookiesFile(), buildCookiesPayload(request.content())
         );
         return generationService.generate(TemplateType.LUCKY_CASINO, pages, request);
