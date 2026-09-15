@@ -43,10 +43,8 @@ final class TemplateComponentsApplier {
     }
 
     private void applyImagePaths(TemplateType type, Document html, Set<String> images) {
-        if (CollectionUtils.isEmpty(images)) return;;
-
         Elements imageEls = html.select(props.getImagesClass());
-        if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
+        if (CollectionUtils.isEmpty(images) || (imageEls.size() < images.size())) return;;
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
