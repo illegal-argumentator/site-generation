@@ -30,6 +30,7 @@ public final class TemplateGenerationFacade {
             PageComponent generatePage = generatePage(entry.getKey(), entry.getValue(), request);
             byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
             pages.put(entry.getKey(), appliedIndex);
+            log.info("Generated file: {}.", entry.getKey());
         }
 
 
