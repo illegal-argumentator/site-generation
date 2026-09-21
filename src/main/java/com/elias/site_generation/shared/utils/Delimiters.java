@@ -10,4 +10,6 @@ public final class Delimiters {
 
     public static final String UNDERSCORE_PREFIX = "_";
 
+    public static final String SLASH_PREFIX = "/";
+
 }

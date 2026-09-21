@@ -87,7 +87,7 @@ class ThemePublishService implements ThemePublishUseCase {
     }
 
     private void installTheme(Site site) {
-        FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), site.getTheme().id()), new ThemePublishingException(site.getId(), "Failed to install theme.", DeployStatus.THEME_INSTALLATION_FAILED));
+        FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), site.getTheme().id()), (e) -> new ThemePublishingException(site.getId(), "Failed to install theme.", DeployStatus.THEME_INSTALLATION_FAILED, e));
         log.info("Installed theme for site: {}.", site.getId());
     }
 

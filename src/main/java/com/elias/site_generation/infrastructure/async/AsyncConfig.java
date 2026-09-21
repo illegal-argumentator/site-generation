@@ -20,7 +20,7 @@ public class AsyncConfig implements AsyncConfigurer {
     @Override
     public @Nullable AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (ex, _, _) -> {
-            log.warn("Handling async exception: {}.", ex.getClass());
+            log.warn("Handling async exception: {}.", ex.getClass(), ex);
             asyncExceptionHandlerPort.handle(ex);
         };
     }

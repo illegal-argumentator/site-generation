@@ -1,9 +1,12 @@
 package com.elias.site_generation.adapter.theme.out.generation.component.template;
 
+import com.elias.site_generation.adapter.theme.out.generation.strategy.ElementPayload;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
+import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
+import com.elias.site_generation.shared.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,15 +25,38 @@ public final class TemplateGenerationFacade {
     private final TemplateGenerator templateGenerator;
     private final TemplateComponentsApplier componentsApplier;
 
-    public byte[] generate(TemplateType type, Set<String> elements, ThemeGenerationRequest request) {
-        byte[] indexExample = zipFilePort.extract(templateProps.getIndexFile(), request.template());
-        byte[] generatedCss = templateGenerator.generateCss(request.content());
+    public byte[] generate(TemplateType type, Map<String, ElementPayload> elements, ThemeGenerationRequest request) {
+        Map<String, byte[]> pages = new HashMap<>();
 
-        byte[] generatedHtml = templateGenerator.generateHtml(indexExample, elements, request);
-        TemplateComponentsApplier.IndexComponent indexComponent = TemplateComponentsApplier.IndexComponent.from(generatedHtml, generatedCss);
-        byte[] appliedIndex = componentsApplier.applyIndex(type, indexComponent, request.images().keySet());
+        String firstGeneratedCss = "";
+        for (Map.Entry<String, ElementPayload> entry : elements.entrySet()) {
+            ElementPayload value = entry.getValue(); String key = entry.getKey();
 
-        return updateZip(request.template(), Map.of(templateProps.getIndexFile(), appliedIndex), mapImagesAbsolutPath(type, request.images()));
+            if (!StringUtils.isEmpty(firstGeneratedCss)) {
+                value = value.withPrompt(CasinoThemePromptPolicy.buildCasinoStylesWithCreated(firstGeneratedCss));
+            }
+
+            PageComponent generatePage = generatePage(key, value, request);
+            if (StringUtils.isEmpty(firstGeneratedCss)) {
+                firstGeneratedCss = new String(generatePage.css());
+            }
+
+            byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
+
+            pages.put(key, appliedIndex);
+            log.info("Generated file: {}.", key);
+        }
+
+
+        return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
+    }
+
+    public PageComponent generatePage(String filename, ElementPayload payload, ThemeGenerationRequest request) {
+        byte[] zipComponent = zipFilePort.extract(filename, request.template());
+        byte[] css = templateGenerator.generateCss(request.content(), payload.prompt());
+        byte[] html = templateGenerator.generateHtml(zipComponent, payload.tags(), request);
+
+        return PageComponent.from(html, css);
     }
 
     @SafeVarargs

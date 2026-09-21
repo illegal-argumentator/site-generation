@@ -3,7 +3,6 @@ package com.elias.site_generation.adapter.theme.out.generation.component.templat
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
-import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
 import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuilder;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -25,8 +24,7 @@ final class TemplateGenerator {
     private final AiService aiService;
     private final ExecutorService executor;
 
-    public byte[] generateCss(String content) {
-        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, CasinoThemePromptPolicy.LUCKY_CASINO_STYLES_SAMPLE);
+    public byte[] generateCss(String content, String prompt) {
         String response = aiService.generate(new AiRequest(prompt, content));
         return response.getBytes();
     }
