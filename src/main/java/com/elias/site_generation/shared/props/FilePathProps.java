@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "file.path")
 public class FilePathProps {
 
-    private String base;
     private String themes;
     private String templates;
 

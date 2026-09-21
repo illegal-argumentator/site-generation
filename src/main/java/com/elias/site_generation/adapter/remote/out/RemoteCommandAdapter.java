@@ -2,7 +2,6 @@ package com.elias.site_generation.adapter.remote.out;
 
 import com.elias.site_generation.adapter.remote.out.config.SshRemoteClient;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
-import com.elias.site_generation.shared.props.FilePathProps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.client.channel.ChannelExec;
@@ -23,14 +22,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 class RemoteCommandAdapter implements RemoteCommandPort {
 
-    private final FilePathProps props;
     private final SshRemoteClient client;
 
     @Override
     public void upload(String localPath, String remotePath) {
-        var file = Path.of(props.getBase() + localPath);
         try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(client.connect())) {
-            sftp.put(file, remotePath);
+            sftp.put(Path.of(localPath), remotePath);
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file: " + localPath, e);
         }
