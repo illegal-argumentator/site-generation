@@ -58,13 +58,15 @@ public class Site {
     }
 
     public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
-        long inProgressCount = sites.stream().filter(site ->
+        return getInProgressCount(sites) >= max;
+    }
+
+    public static long getInProgressCount(List<Site> sites) {
+        return sites.stream().filter(site ->
                 site.getActiveStatus() == ActiveStatus.IN_PROGRESS ||
                         site.getDeployStatus() == DeployStatus.IN_PROGRESS ||
                         site.getCreationStatus() == CreationStatus.IN_PROGRESS
         ).count();
-
-        return inProgressCount >= max;
     }
 
     public static Set<Long> collectIds(List<Site> sites) {
