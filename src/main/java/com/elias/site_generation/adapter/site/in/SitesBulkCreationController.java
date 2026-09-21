@@ -19,7 +19,7 @@ public class SitesBulkCreationController {
 
     private final SitesBulkCreationUseCase useCase;
 
-    @PostMapping("/bulk")
+    @PostMapping
     public void createBulk(@Valid @RequestBody CreateSitesRequest request) {
         useCase.createBulk(mapper.toSites(request));
     }
