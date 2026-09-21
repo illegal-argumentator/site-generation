@@ -36,7 +36,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
             log.info("Theme generated.");
             return processed;
         } catch (Exception e) {
-            log.error("Exception occurred: {}.", e.getMessage());
+            log.error("Exception occurred: {}.", e.getMessage(), e);
             throw new SiteGenerationException(site.getId(), "Unable to generate theme for site: %s.".formatted(site.getId()));
         }
     }

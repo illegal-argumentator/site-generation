@@ -3,6 +3,8 @@ package com.elias.site_generation.shared.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.function.Function;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FuncUtils {
 
@@ -11,6 +13,14 @@ public final class FuncUtils {
             action.run();
         } catch (Exception e) {
             throw ex;
+        }
+    }
+
+    public static void runOrThrow(Runnable action, Function<Exception, RuntimeException> toEx) {
+        try {
+            action.run();
+        } catch (Exception e) {
+            throw toEx.apply(e);
         }
     }
 }

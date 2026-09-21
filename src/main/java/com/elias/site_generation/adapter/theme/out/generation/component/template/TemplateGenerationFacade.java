@@ -33,8 +33,7 @@ public final class TemplateGenerationFacade {
             ElementPayload value = entry.getValue(); String key = entry.getKey();
 
             if (!StringUtils.isEmpty(firstGeneratedCss)) {
-                ElementPayload newPayload = value.withPrompt(CasinoThemePromptPolicy.buildCasinoStylesWithCreated(value.prompt()));
-                entry.setValue(newPayload);
+                value = value.withPrompt(CasinoThemePromptPolicy.buildCasinoStylesWithCreated(firstGeneratedCss));
             }
 
             PageComponent generatePage = generatePage(key, value, request);
