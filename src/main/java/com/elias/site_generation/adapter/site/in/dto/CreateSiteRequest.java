@@ -11,9 +11,11 @@ public record CreateSiteRequest(
         String hostname
 ) {
 
+    private static final String ENGLISH_LANG = "English";
+
     public CreateSiteRequest(String language, String content, String hostname) {
         if (!StringUtils.hasText(language)) {
-            this.language = "English";
+            this.language = ENGLISH_LANG;
         } else {
             this.language = language;
         }
