@@ -6,67 +6,56 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
-import com.elias.site_generation.port.site.usecase.SiteCreationUseCase;
+import com.elias.site_generation.port.site.usecase.SitesBulkCreationUseCase;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-class SiteCreationService implements SiteCreationUseCase {
+class SitesBulkCreationService implements SitesBulkCreationUseCase {
 
     @Value("${sites.parallel-limit}")
     private int parallelLimit;
 
     private final AuthUserPort authUserPort;
+
     private final SiteQueryPort siteQueryPort;
+    private final SiteValidationService siteValidationService;
     private final SiteCreationAsyncProcessor asyncProcessor;
-    private final SiteValidationService validationService;
 
     @Override
-    public void create(TemplateType type, Site site) {
+    public void createBulk(Map<TemplateType, Site> sites) {
         User owner = authUserPort.getAuthUser();
-        throwIfCreationLimitReached(owner);
 
-        validationService.validateSiteCreation(type, site);
-        asyncProcessor.createAsync(type, owner, site);
+        throwIfCreationLimitReached(sites.size(), owner);
+        validateSitesCreation(sites);
+
+        processAsyncSitesCreation(owner, sites);
     }
 
-    @Override
-    public void redeploy(long siteId) {
-        User authUser = authUserPort.getAuthUser();
-        validationService.validateSiteOwner(siteId, authUser);
-
-        Site site = siteQueryPort.findById(siteId);
-        site.validateReadyForRedeploy();
-
-        asyncProcessor.publishDeployAsync(site);
+    private void validateSitesCreation(Map<TemplateType, Site> sites) {
+        sites.forEach(siteValidationService::validateSiteCreation);
     }
 
-    @Override
-    public void activate(long siteId) {
-        User authUser = authUserPort.getAuthUser();
-        validationService.validateSiteOwner(siteId, authUser);
-
-        Site site = siteQueryPort.findById(siteId);
-        site.validateReadyForActivation();
-
-        asyncProcessor.publishActivationAsync(site);
+    private void processAsyncSitesCreation(User owner, Map<TemplateType, Site> sites) {
+        sites.forEach((type, site) -> asyncProcessor.createAsync(type, owner, site));
     }
 
-    private void throwIfCreationLimitReached(User user) {
+    private void throwIfCreationLimitReached(int sitesToCreate, User user) {
         List<Site> entities = siteQueryPort.findAllById(Site.collectIds(user.getSites()));
         if (CollectionUtils.isEmpty(entities)) {
             return;
         }
 
-        if (Site.hasMoreOrEqualInProgressThanLimit(parallelLimit, entities)) {
+        long inProgressCount = Site.getInProgressCount(entities);
+        if (parallelLimit - inProgressCount < sitesToCreate) {
             throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
         }
     }
+
 }
