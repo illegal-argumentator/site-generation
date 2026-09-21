@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SitesBulkCreationController {
 
     private final DtoSiteMapper mapper;
-
     private final SitesBulkCreationUseCase useCase;
 
     @PostMapping
     public void createBulk(@Valid @RequestBody CreateSitesRequest request) {
-        useCase.createBulk(mapper.toSites(request));
+        useCase.createBulk(mapper.toSites(request.requests()));
     }
 
 }

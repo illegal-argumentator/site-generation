@@ -23,6 +23,11 @@ class SiteValidationService {
         throwIfDomainAlreadyExists(site.getHostname());
     }
 
+    void validateSiteCreation(Site site) {
+        throwIfTemplateNotExists(site.getType());
+        throwIfDomainAlreadyExists(site.getHostname());
+    }
+
     void validateSiteOwner(long siteId, User owner) {
         if (!owner.containsSiteId(siteId)) {
             throw new NotSiteOwnerException("You're not site owner.");

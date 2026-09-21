@@ -2,7 +2,6 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.exception.SiteParallelCreationLimitReachedException;
-import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
     private final SiteCreationAsyncProcessor asyncProcessor;
 
     @Override
-    public void createBulk(Map<TemplateType, Site> sites) {
+    public void createBulk(List<Site> sites) {
         User owner = authUserPort.getAuthUser();
 
         throwIfCreationLimitReached(sites.size(), owner);
@@ -38,12 +36,12 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
         processAsyncSitesCreation(owner, sites);
     }
 
-    private void validateSitesCreation(Map<TemplateType, Site> sites) {
+    private void validateSitesCreation(List<Site> sites) {
         sites.forEach(siteValidationService::validateSiteCreation);
     }
 
-    private void processAsyncSitesCreation(User owner, Map<TemplateType, Site> sites) {
-        sites.forEach((type, site) -> asyncProcessor.createAsync(type, owner, site));
+    private void processAsyncSitesCreation(User owner, List<Site> sites) {
+        sites.forEach((site) -> asyncProcessor.createAsync(site.getType(), owner, site));
     }
 
     private void throwIfCreationLimitReached(int sitesToCreate, User user) {
