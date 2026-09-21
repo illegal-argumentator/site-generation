@@ -5,6 +5,7 @@ import com.elias.site_generation.adapter.file.out.exception.FileWriteException;
 import com.elias.site_generation.adapter.site.out.FileManagerPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
+import com.elias.site_generation.shared.utils.AppUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ class FileManagerAdapter implements FileManagerPort {
     @Override
     public void write(FilePath filePath, byte[] file) {
         try {
-            Path path = FileUtils.getPath(filePath.filename(), filePath.directory());
+            Path path = FileUtils.getPath(filePath.filename(), AppUtils.getFilePrefixByOs() + filePath.directory());
             Files.createDirectories(path.getParent());
             Files.write(path, file);
         } catch (IOException e) {
@@ -31,7 +32,7 @@ class FileManagerAdapter implements FileManagerPort {
     @Override
     public byte[] read(FilePath filePath) {
         try {
-            return Files.readAllBytes(FileUtils.getPath(filePath.filename(), filePath.directory()));
+            return Files.readAllBytes(FileUtils.getPath(filePath.filename(), AppUtils.getFilePrefixByOs() + filePath.directory()));
         } catch (IOException e) {
             log.error("Unable to read file: {}.", e.getMessage());
             throw new FileReadException("Unable to read file.");
@@ -40,6 +41,6 @@ class FileManagerAdapter implements FileManagerPort {
 
     @Override
     public boolean exists(FilePath filePath) {
-        return Files.exists(FileUtils.getPath(filePath.filename(), filePath.directory()));
+        return Files.exists(FileUtils.getPath(filePath.filename(), AppUtils.getFilePrefixByOs() + filePath.directory()));
     }
 }

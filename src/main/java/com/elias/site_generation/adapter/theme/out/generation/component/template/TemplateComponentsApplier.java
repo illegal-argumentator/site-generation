@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -21,10 +22,10 @@ final class TemplateComponentsApplier {
     private final TemplateProps props;
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";
 
-    public byte[] applyIndex(TemplateType type, IndexComponent component, Set<String> images) {
-        Document html = Jsoup.parse(new String(component.index));
+    public byte[] applyIndex(TemplateType type, PageComponent component, Set<String> images) {
+        Document html = Jsoup.parse(new String(component.index()));
 
-        applyGeneratedStyles(html, new String(component.css));
+        applyGeneratedStyles(html, new String(component.css()));
         applyImagePaths(type, html, images);
 
         return html.outerHtml().getBytes();
@@ -43,17 +44,11 @@ final class TemplateComponentsApplier {
 
     private void applyImagePaths(TemplateType type, Document html, Set<String> images) {
         Elements imageEls = html.select(props.getImagesClass());
-        if (imageEls.size() < images.size()) throw new IllegalStateException("Not enough images for the page.");
+        if (CollectionUtils.isEmpty(images) || (imageEls.size() < images.size())) return;;
 
         Iterator<String> iterator = images.iterator();
         for (Element imageEl : imageEls) {
             imageEl.attr(SOURCE_ELEMENT, props.getThemesPathTemplate().formatted(type.getName()) + iterator.next());
-        }
-    }
-
-    public record IndexComponent(byte[] index, byte[] css) {
-        public static IndexComponent from(byte[] index, byte[] css) {
-            return new IndexComponent(index, css);
         }
     }
 

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class TemplateProps {
 
     private String indexFile;
+    private String cookiesFile;
+    private String faqFile;
     private String imagesClass;
     private String assetsPath;
     private String themesPathTemplate;

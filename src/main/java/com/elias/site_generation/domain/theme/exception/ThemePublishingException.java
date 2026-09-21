@@ -14,4 +14,10 @@ public class ThemePublishingException extends RuntimeException {
         this.deployStatus = deployStatus;
         super(message);
     }
+
+    public ThemePublishingException(long siteId, String message, DeployStatus deployStatus, Exception e) {
+        this.siteId = siteId;
+        this.deployStatus = deployStatus;
+        super(message, e);
+    }
 }
