@@ -125,8 +125,8 @@ public final class CasinoThemePromptPolicy {
             %s
             """;
 
-    public static String buildCasinoStylesWithCreated(String createdCss) {
-        return CASINO_STYLES_TEMPLATE_WITH_CREATED.formatted(CASINO_STYLES_TEMPLATE, createdCss);
+    public static String buildCasinoStylesWithCreated(String prompt, String createdCss) {
+        return CASINO_STYLES_TEMPLATE_WITH_CREATED.formatted(prompt, createdCss);
     }
 
     public static final String LUCKY_CASINO_HOME_PAGE_STYLES_SAMPLE = """
