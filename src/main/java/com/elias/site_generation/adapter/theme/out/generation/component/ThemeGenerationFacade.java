@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation.component.template;
+package com.elias.site_generation.adapter.theme.out.generation.component;
 
 import com.elias.site_generation.adapter.theme.out.generation.strategy.ElementPayload;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public final class TemplateGenerationFacade {
+public final class ThemeGenerationFacade {
 
     private final TemplateProps templateProps;
     private final ZipFilePort zipFilePort;
 
-    private final TemplateGenerator templateGenerator;
-    private final TemplateComponentsApplier componentsApplier;
+    private final ThemeGenerator themeGenerator;
+    private final ThemeComponentsApplier componentsApplier;
 
     public byte[] generate(TemplateType type, Map<String, ElementPayload> elements, ThemeGenerationRequest request) {
+        String firstGeneratedCss = "";
         Map<String, byte[]> pages = new HashMap<>();
 
-        String firstGeneratedCss = "";
         for (Map.Entry<String, ElementPayload> entry : elements.entrySet()) {
             ElementPayload value = entry.getValue(); String key = entry.getKey();
 
@@ -37,24 +37,21 @@ public final class TemplateGenerationFacade {
             }
 
             PageComponent generatePage = generatePage(key, value, request);
-            if (StringUtils.isEmpty(firstGeneratedCss)) {
-                firstGeneratedCss = new String(generatePage.css());
-            }
+            if (StringUtils.isEmpty(firstGeneratedCss)) firstGeneratedCss = new String(generatePage.css());
 
             byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
-
             pages.put(key, appliedIndex);
+
             log.info("Generated file: {}.", key);
         }
-
 
         return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
     }
 
     public PageComponent generatePage(String filename, ElementPayload payload, ThemeGenerationRequest request) {
         byte[] zipComponent = zipFilePort.extract(filename, request.template());
-        byte[] css = templateGenerator.generateCss(request.content(), payload.prompt());
-        byte[] html = templateGenerator.generateHtml(zipComponent, payload.tags(), request);
+        byte[] css = themeGenerator.generateCss(request.content(), payload.prompt());
+        byte[] html = themeGenerator.generateHtml(zipComponent, payload.tags(), request);
 
         return PageComponent.from(html, css);
     }
@@ -72,8 +69,7 @@ public final class TemplateGenerationFacade {
         return images.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> templateProps.getAssetsOriginPathTemplate().formatted(type.getName())  + entry.getKey(),
-                        Map.Entry::getValue)
-                );
+                        Map.Entry::getValue
+                ));
     }
-
 }

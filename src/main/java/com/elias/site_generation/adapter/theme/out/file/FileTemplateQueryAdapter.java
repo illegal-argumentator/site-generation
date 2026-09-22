@@ -1,8 +1,7 @@
-package com.elias.site_generation.adapter.theme.out;
+package com.elias.site_generation.adapter.theme.out.file;
 
-import com.elias.site_generation.adapter.site.out.FileManagerPort;
 import com.elias.site_generation.domain.theme.TemplateType;
-import com.elias.site_generation.port.theme.TemplateQueryPort;
+import com.elias.site_generation.port.template.TemplateQueryPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;

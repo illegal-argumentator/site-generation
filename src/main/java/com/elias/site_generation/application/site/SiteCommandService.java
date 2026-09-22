@@ -1,8 +1,8 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
-import com.elias.site_generation.domain.site.exception.NotSiteOwnerException;
+import com.elias.site_generation.domain.site.exception.DomainExistsException;
+import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.host.HostingPort;
@@ -21,33 +21,41 @@ public class SiteCommandService implements SiteCommandUseCase {
     private final AuthUserPort authUserPort;
 
     private final HostingPort hostingPort;
+    private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     private final SiteQueryPort siteQueryPort;
-    private final SiteDeployAsyncProcessor asyncProcessor;
-
-    private final WebsiteThemeQueryPort websiteThemeQueryPort;
+    private final SiteDeployAsyncProcessor deployAsyncProcessor;
+    private final SiteEditAsyncProcessor editAsyncProcessor;
+    private final SiteValidationService validationService;
 
     @Override
     public void changeDomain(long siteId, String domain) {
         User authUser = authUserPort.getAuthUser();
         Site existence = siteQueryPort.findById(siteId);
 
-        validateSiteOwner(siteId, authUser);
+        validationService.validateSiteOwner(siteId, authUser);
         validateDomainExistence(domain);
 
         cleanUpDomain(existence);
-        asyncProcessor.publishAsync(domain, existence);
+        deployAsyncProcessor.publishAsync(domain, existence);
+    }
+
+    @Override
+    public void edit(long siteId, String content, TemplateComponent component) {
+        User authUser = authUserPort.getAuthUser();
+        validationService.validateSiteOwner(siteId, authUser);
+
+        Site existence = siteQueryPort.findById(siteId);
+
+        existence.validateHasComponent(component);
+        existence.validateReadyForEdit();
+
+        editAsyncProcessor.editAsync(content, component, existence);
     }
 
     private void validateDomainExistence(String hostname) {
         if (websiteThemeQueryPort.exists(hostname)) {
-            throw new DomainAlreadyExistsException("Domain %s already exists.".formatted(hostname));
-        }
-    }
-
-    private void validateSiteOwner(long siteId, User owner) {
-        if (!owner.containsSiteId(siteId)) {
-            throw new NotSiteOwnerException("You're not site owner.");
+            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
         }
     }
 

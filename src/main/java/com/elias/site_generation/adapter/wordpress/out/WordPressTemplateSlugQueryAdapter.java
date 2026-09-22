@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.wordpress.out;
 
-import com.elias.site_generation.adapter.site.out.FileManagerPort;
+import com.elias.site_generation.adapter.theme.out.file.FileManagerPort;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.port.website.WebsiteTemplateSlugQueryPort;
 import com.elias.site_generation.shared.file.FilePath;
@@ -14,13 +14,14 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.elias.site_generation.shared.utils.Delimiters.SLASH_DELIMITER;
+
 @Component
 @RequiredArgsConstructor
 class WordPressTemplateSlugQueryAdapter implements WebsiteTemplateSlugQueryPort {
 
     private final FilePathProps props;
     private final FileManagerPort fileManagerPort;
-    private static final String SLASH_DELIMITER = "/";
 
     @Override
     public String getSlug(TemplateType type) {

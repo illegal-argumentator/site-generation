@@ -1,7 +1,7 @@
-package com.elias.site_generation.adapter.theme.in;
+package com.elias.site_generation.adapter.theme.in.listener;
 
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
-import com.elias.site_generation.port.theme.ThemePublishUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemePublishUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

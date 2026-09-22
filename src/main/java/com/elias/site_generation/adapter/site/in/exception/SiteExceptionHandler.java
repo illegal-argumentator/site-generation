@@ -19,8 +19,8 @@ public class SiteExceptionHandler {
 
     private final SiteExceptionService exceptionService;
 
-    @ExceptionHandler(NotSiteOwnerException.class)
-    public ResponseEntity<ExceptionResponse> handleNotSiteOwnerException(NotSiteOwnerException e, HttpServletRequest request) {
+    @ExceptionHandler(SiteOwnerException.class)
+    public ResponseEntity<ExceptionResponse> handleNotSiteOwnerException(SiteOwnerException e, HttpServletRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .message(e.getMessage())
                 .path(request.getRequestURI())
@@ -30,8 +30,19 @@ public class SiteExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(exceptionResponse);
     }
 
-    @ExceptionHandler(SiteParallelCreationLimitReachedException.class)
-    public ResponseEntity<ExceptionResponse> handleSiteParallelCreationLimitReachedException(SiteParallelCreationLimitReachedException e, HttpServletRequest request) {
+    @ExceptionHandler(SiteEditException.class)
+    public ResponseEntity<ExceptionResponse> handleSiteHasNoSuchComponentException(SiteEditException e, HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .code(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(SiteLimitReachedException.class)
+    public ResponseEntity<ExceptionResponse> handleSiteParallelCreationLimitReachedException(SiteLimitReachedException e, HttpServletRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .message(e.getMessage())
                 .path(request.getRequestURI())
@@ -41,8 +52,8 @@ public class SiteExceptionHandler {
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
-    @ExceptionHandler(DomainAlreadyExistsException.class)
-    public ResponseEntity<ExceptionResponse> handleDomainAlreadyExistsException(DomainAlreadyExistsException e, HttpServletRequest request) {
+    @ExceptionHandler(DomainExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleDomainAlreadyExistsException(DomainExistsException e, HttpServletRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .message(e.getMessage())
                 .path(request.getRequestURI())
@@ -63,8 +74,8 @@ public class SiteExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(exceptionResponse);
     }
 
-    @ExceptionHandler(SiteHasNotCreatedException.class)
-    public ResponseEntity<ExceptionResponse> handleSiteHasNotCreatedException(SiteHasNotCreatedException e, HttpServletRequest request) {
+    @ExceptionHandler(SiteCreationException.class)
+    public ResponseEntity<ExceptionResponse> handleSiteHasNotCreatedException(SiteCreationException e, HttpServletRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .message(e.getMessage())
                 .path(request.getRequestURI())

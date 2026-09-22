@@ -6,7 +6,7 @@ import com.elias.site_generation.domain.theme.exception.ThemePublishingException
 import com.elias.site_generation.port.host.HostingPort;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
-import com.elias.site_generation.port.theme.ThemePublishUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemePublishUseCase;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;

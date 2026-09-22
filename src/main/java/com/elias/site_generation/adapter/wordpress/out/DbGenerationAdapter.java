@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.site.out;
+package com.elias.site_generation.adapter.wordpress.out;
 
 import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.port.site.DbGenerationPort;

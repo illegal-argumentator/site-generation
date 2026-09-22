@@ -1,4 +1,4 @@
-package com.elias.site_generation.port.theme;
+package com.elias.site_generation.port.title;
 
 public interface TitleGenerationPort {
 

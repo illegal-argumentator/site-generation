@@ -4,7 +4,7 @@ import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.theme.exception.ThemeActivationException;
 import com.elias.site_generation.port.site.SiteCommandPort;
-import com.elias.site_generation.port.theme.ThemeActivationUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemeActivationUseCase;
 import com.elias.site_generation.port.website.WebsiteTemplateSlugQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.utils.FuncUtils;
@@ -19,6 +19,7 @@ public class ThemeActivationService implements ThemeActivationUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
+    // TODO think about how to save this value into the entity instead of using this interface
     private final WebsiteTemplateSlugQueryPort websiteTemplateSlugQueryPort;
 
     @Override

@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation.component.template;
+package com.elias.site_generation.adapter.theme.out.generation.component;
 
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-final class TemplateComponentsApplier {
+final class ThemeComponentsApplier {
 
     private final TemplateProps props;
     private static final String STYLE_ELEMENT = "style", SOURCE_ELEMENT = "src";

@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation.component.template;
+package com.elias.site_generation.adapter.theme.out.generation.component;
 
 import com.elias.site_generation.adapter.ai.out.AiService;
 import com.elias.site_generation.adapter.ai.out.dto.AiRequest;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-final class TemplateGenerator {
+final class ThemeGenerator {
 
     private final AiService aiService;
     private final ExecutorService executor;

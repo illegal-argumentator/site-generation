@@ -1,12 +1,14 @@
-package com.elias.site_generation.adapter.site.out;
+package com.elias.site_generation.adapter.theme.out.generation;
 
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
-import com.elias.site_generation.adapter.theme.out.generation.TemplateGenerationPort;
+import com.elias.site_generation.adapter.theme.out.file.FileManagerPort;
+import com.elias.site_generation.adapter.theme.out.generation.factory.ThemeGenerationFactory;
+import com.elias.site_generation.adapter.theme.out.generation.strategy.ThemeGenerationStrategy;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.exception.SiteGenerationException;
-import com.elias.site_generation.port.theme.ImageGenerationPort;
+import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
-import com.elias.site_generation.port.theme.TitleGenerationPort;
+import com.elias.site_generation.port.title.TitleGenerationPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
@@ -24,8 +26,8 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
     private final FilePathProps props;
     private final FileManagerPort fileManagerPort;
     private final TitleGenerationPort titleGenerationPort;
-    private final ImageGenerationPort imageGenerationPort;
-    private final TemplateGenerationPort templateGenerationPort;
+    private final ThemeImageGenerationPort themeImageGenerationPort;
+    private final ThemeGenerationFactory generationFactory;
 
     @Override
     public String generate(String themeId, Site site) {
@@ -46,12 +48,16 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         byte[] templateZip = fileManagerPort.read(FilePath.from(originalFilename, props.getTemplates()));
 
         String title = titleGenerationPort.generate(site.getContent());
-        Map<String, byte[]> images = imageGenerationPort.generate(site.getContent(), templateZip);
+        Map<String, byte[]> images = themeImageGenerationPort.generate(site.getContent(), templateZip);
         ThemeGenerationRequest request = new ThemeGenerationRequest(title, images, site.getContent(), site.getLanguage(), templateZip);
-        byte[] generated = templateGenerationPort.generate(site.getType(), request);
 
-        saveTheme(templateId, generated);
+        saveTheme(templateId, processStrategy(site.getType(), request));
         return title;
+    }
+
+    private byte[] processStrategy(TemplateType type, ThemeGenerationRequest request) {
+        ThemeGenerationStrategy strategy = generationFactory.getStrategy(type);
+        return strategy.generate(request);
     }
 
     private void saveTheme(String templateId, byte[] theme) {

@@ -35,7 +35,7 @@ class SiteCreationAsyncProcessor {
 
     @Async
     public void createAsync(TemplateType type, User user, Site site) {
-        Site savedPending = saveInit(type, site);
+        Site savedPending = saveCreationInProgress(type, site);
         saveUserSite(user, savedPending);
 
         String themeId = themeCommandPort.save();
@@ -58,7 +58,7 @@ class SiteCreationAsyncProcessor {
         publishDeploy(site);
     }
 
-    private Site saveInit(TemplateType type, Site site) {
+    private Site saveCreationInProgress(TemplateType type, Site site) {
         site.setCreationStatus(CreationStatus.IN_PROGRESS);
         site.setActiveStatus(ActiveStatus.PENDING);
         site.setDeployStatus(DeployStatus.PENDING);

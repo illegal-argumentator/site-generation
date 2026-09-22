@@ -3,7 +3,7 @@ package com.elias.site_generation.adapter.theme.out.generation.component.image;
 import com.elias.site_generation.adapter.ai.out.AiImageService;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoImagePromptPolicy;
-import com.elias.site_generation.port.theme.ImageGenerationPort;
+import com.elias.site_generation.adapter.theme.out.generation.ThemeImageGenerationPort;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.TemplateProps;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-final class ImageGenerationService implements ImageGenerationPort {
+final class ThemeImageGenerationService implements ThemeImageGenerationPort {
 
     private final TemplateProps templateProps;
     private final AiImageService aiImageService;

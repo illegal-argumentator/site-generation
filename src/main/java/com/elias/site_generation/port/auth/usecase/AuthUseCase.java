@@ -1,4 +1,4 @@
-package com.elias.site_generation.port.auth;
+package com.elias.site_generation.port.auth.usecase;
 
 import com.elias.site_generation.application.auth.command.AuthRequestCommand;
 import com.elias.site_generation.application.auth.command.AuthResponseCommand;
