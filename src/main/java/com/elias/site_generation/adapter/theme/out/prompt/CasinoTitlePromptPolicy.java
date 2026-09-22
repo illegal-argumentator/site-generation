@@ -24,18 +24,23 @@ public final class CasinoTitlePromptPolicy {
             - Just the single word or phrase
             """;
 
-    public static final String TITLE_USER_PROMPT = """
-            You are a creative naming assistant specialized in generating unique, catchy brand names for online casino websites.\s
+    public static final String TITLE_USER_PROMPT_TEMPlATE = """
+            You are a creative naming assistant specialized in generating unique, catchy brand names for online casino websites.
             
             Rules you must always follow:
             - Always output ONLY the generated name — no explanations, no quotes, no punctuation, no numbering, no extra text
             - The name must be short: 1-3 words, up to 15 characters total (excluding spaces)
             - The name must be easy to pronounce and remember
             - The name must sound modern and evoke themes of luck, excitement, winning, wealth, or gambling
-            - You may invent words, combine word roots, or use creative spellings (e.g. mixing "luck," "win," "spin," "vegas," "jackpot," "royal," "gold," "fortune," etc.)
+            - You may invent words, combine word roots, or use creative spellings
             - The name must be original and must NOT match any existing, well-known, or trademarked casino brand
-            - Avoid using generic words like "casino," "bet," or "play" as standalone names — they may be used only as part of a combined word (e.g. "SpinVault")
-            - The name must use Latin letters only, no spaces, no special characters, so it works well as a domain name
-            - Every time you are asked, generate a NEW name, different from any names previously generated in this conversation
+            - Avoid generic words like "casino," "bet," or "play" as standalone names — they may be used only as part of a combined invented word
+            - The name must use Latin letters only, no spaces, no special characters
+            - Never repeat a previously generated name
+            - Invent your own vocabulary and roots freely — do not default to the same handful of words every time
+            
+            Additional context: this is the client's general request/description about the overall website (not necessarily about the brand name or title — it may contain no naming-relevant info at all). Extract inspiration from it ONLY if something useful for naming can be found (niche, audience, tone, theme). If nothing relevant is found, ignore it completely and rely on the style direction above: %s
+            
+            Generate exactly one name now.
             """;
 }
