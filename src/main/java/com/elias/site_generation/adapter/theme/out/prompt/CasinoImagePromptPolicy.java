@@ -6,59 +6,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CasinoImagePromptPolicy {
 
-    public static final String CASINO_IMAGE_PROMPT = """
-            Generate a completely new and unique promotional thumbnail for an online casino game.
+    public static final String CASINO_IMAGE_PROMPT_TEMPLATE = """
+            Generate original promotional artwork for an online casino slot game thumbnail.
             
-            Create original artwork specifically for this game. Every generation must produce a visually unique image. Do not reuse, replicate, or closely imitate previously generated artwork, compositions, characters, scenes, color arrangements, or visual layouts.
+            Randomly invent a unique game concept and theme for this image — choose ONE fresh direction each time from categories like: classic fruit/lucky-sevens slot, luxury diamonds/gold, mystical fantasy, space/cosmic, ancient adventure/treasure, jackpot/celebration, ocean/pirate, mythology, or another equally fitting casino theme. Do not repeat the same theme, composition, color palette or layout as previous generations — invent a genuinely new combination of theme + colors + focal object + background every time.
             
-            The image must look like the official promotional artwork / cover thumbnail of a professionally produced online casino slot game displayed in a casino lobby.
+            Visual style: premium 3D-rendered / high-end illustrated game-art, cinematic lighting, glowing particles, layered depth, vibrant sophisticated colors, strong contrast. Strong central focal point with recognizable elements matching the chosen theme, detailed background.
             
-            Create a rich, exciting and visually memorable game scene with:
+            Composition: 16:9 landscape, optimized to stay visually clear and striking at small thumbnail size. Fully original composition each time.
             
-            * a strong central focal point
-            * recognizable game-specific elements
-            * a detailed background
-            * cinematic lighting
-            * glowing effects and atmospheric particles where appropriate
-            * layered depth
-            * premium 3D-rendered or high-end illustrated game-art aesthetic
-            * vibrant and sophisticated colors
-            * strong contrast
-            * visually rich composition that remains recognizable at small thumbnail size
+            Strict rules: no text, no titles, no logos, no watermarks, no UI elements, no buttons/menus, no screenshots, not a photo of a real casino, don't copy or imitate existing slot game artwork.
             
-            The artwork must clearly match the game's title and type.
-            
-            For example:
-            
-            * Diamond / luxury games → diamonds, gemstones, gold, luxury, glowing blue/purple atmosphere
-            * Classic slots → reels, cherries, bells, coins, lucky sevens, golden casino elements
-            * Fantasy games → magical creatures, treasure, mystical environments
-            * Space games → planets, stars, cosmic environments, futuristic neon elements
-            * Adventure games → temples, treasure, gold coins, ancient artifacts
-            * Jackpot games → gold, diamonds, coins, celebratory lighting and an exciting jackpot atmosphere
-            
-            Important:
-            
-            * Generate original artwork every time.
-            * Do not reuse previous compositions.
-            * Do not create a generic casino photograph.
-            * Do not create a casino website screenshot.
-            * Do not include UI elements.
-            * Do not include buttons or menus.
-            * Do not include the game title.
-            * Do not include any text.
-            * Do not include logos or brands.
-            * Do not include watermarks.
-            * Do not copy existing casino game artwork.
-            * Do not imitate a specific existing casino game's artwork.
-            
-            Image requirements:
-            
-            * 16:9 landscape composition
-            * optimized as a game-card thumbnail
-            * premium commercial game-art quality
-            * visually engaging even when displayed at a small size
-            * original and unique visual composition
+            Optional additional context about the site/brand (use only if relevant to visual style, colors or mood — ignore if it's technical, business, or unrelated to visuals): %s
             """;
 
 }

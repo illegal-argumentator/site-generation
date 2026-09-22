@@ -31,7 +31,7 @@ final class ImageGenerationService implements ImageGenerationPort {
     private final ZipFilePort zipFilePort;
 
     @Override
-    public Map<String, byte[]> generate(byte[] source) {
+    public Map<String, byte[]> generate(String prompt, byte[] source) {
         byte[] html = zipFilePort.extract(templateProps.getIndexFile(), source);
         List<CompletableFuture<byte[]>> images = new ArrayList<>();
         Document parsedHtml = Jsoup.parse(new String(html));
@@ -39,7 +39,7 @@ final class ImageGenerationService implements ImageGenerationPort {
         Elements imageElements = parsedHtml.select(templateProps.getImagesClass());
         if (imageElements.isEmpty()) return Map.of();
 
-        imageElements.forEach(_ -> images.add(generateAsync()));
+        imageElements.forEach(_ -> images.add(generateAsync(prompt)));
 
         CompletableFuture.allOf(images.toArray(CompletableFuture[]::new)).join();
         List<byte[]> files = images.stream().map(CompletableFuture::join).toList();
@@ -48,8 +48,8 @@ final class ImageGenerationService implements ImageGenerationPort {
         return files.stream().collect(Collectors.toMap(_ -> generateOriginalImageName(), Function.identity()));
     }
 
-    private CompletableFuture<byte[]> generateAsync() {
-        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT));
+    private CompletableFuture<byte[]> generateAsync(String prompt) {
+        return CompletableFuture.supplyAsync(() -> aiImageService.generate(CasinoImagePromptPolicy.CASINO_IMAGE_PROMPT_TEMPLATE.formatted(prompt)));
     }
 
     private String generateOriginalImageName() {
