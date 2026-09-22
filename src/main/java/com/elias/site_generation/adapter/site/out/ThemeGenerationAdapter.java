@@ -46,7 +46,7 @@ class ThemeGenerationAdapter implements ThemeGenerationPort {
         byte[] templateZip = fileManagerPort.read(FilePath.from(originalFilename, props.getTemplates()));
 
         String title = titleGenerationPort.generate();
-        Map<String, byte[]> images = imageGenerationPort.generate(templateZip);
+        Map<String, byte[]> images = imageGenerationPort.generate(site.getContent(), templateZip);
         ThemeGenerationRequest request = new ThemeGenerationRequest(title, images, site.getContent(), site.getLanguage(), templateZip);
         byte[] generated = templateGenerationPort.generate(site.getType(), request);
 
