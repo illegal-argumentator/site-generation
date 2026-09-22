@@ -960,7 +960,7 @@ public final class CasinoThemePromptPolicy {
                 font-family: var(--font-body); font-weight:800; text-transform:none; letter-spacing:normal;
                 font-size:21px; color: var(--gold); margin-bottom:14px; scroll-margin-top:100px;
               }
-              .policy-block p{ font-size:15px; line-height:1.75; color: var(--text-muted); }
+              .policy-block p{ font-size:15px; line-height:1.75; color: var(--text-muted);
             }
             """;
 

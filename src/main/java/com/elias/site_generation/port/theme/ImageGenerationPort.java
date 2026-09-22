@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface ImageGenerationPort {
 
-    Map<String, byte[]> generate(byte[] source);
+    Map<String, byte[]> generate(String prompt, byte[] source);
 
 }

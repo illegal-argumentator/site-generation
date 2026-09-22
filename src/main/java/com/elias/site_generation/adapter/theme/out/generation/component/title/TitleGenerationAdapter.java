@@ -17,8 +17,8 @@ final class TitleGenerationAdapter implements TitleGenerationPort {
     private final AiService aiService;
 
     @Override
-    public String generate() {
-        AiRequest request = new AiRequest(TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT);
+    public String generate(String prompt) {
+        AiRequest request = new AiRequest(TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT_TEMPlATE.formatted(prompt));
         String title = aiService.generate(request);
         log.info("Title successfully generated: {}.", title);
         return title;
