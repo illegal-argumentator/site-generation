@@ -2,8 +2,8 @@ package com.elias.site_generation.port.theme.usecase;
 
 import com.elias.site_generation.domain.site.Site;
 
-public interface ThemePublishUseCase {
+public interface ThemeDeployUseCase {
 
-    void publish(Site site);
+    void deploy(Site site);
 
 }

@@ -4,35 +4,26 @@ import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
-import com.elias.site_generation.port.remote.RemoteCommandPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
-import com.elias.site_generation.port.theme.usecase.ThemePublishUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemeDeployUseCase;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
-import com.elias.site_generation.shared.file.FileUtils;
-import com.elias.site_generation.shared.props.FilePathProps;
 import com.elias.site_generation.shared.utils.FuncUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class ThemePublishService implements ThemePublishUseCase {
+class ThemeDeployService implements ThemeDeployUseCase {
 
-    @Value("${file.path.temp}")
-    private String fileTemp;
-
-    private final FilePathProps pathProps;
-
+    private final ThemeDeployActions deployActions;
     private final HostingPort hostingPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
-    private final RemoteCommandPort remoteCommandPort;
     private final SiteCommandPort siteCommandPort;
 
     @Override
-    public void publish(Site site) {
+    public void deploy(Site site) {
         process(site);
         updatePublished(site);
     }
@@ -87,22 +78,8 @@ class ThemePublishService implements ThemePublishUseCase {
     }
 
     private void installTheme(Site site) {
-        FuncUtils.runOrThrow(() -> installTheme(site.getHostname(), site.getTheme().id()), (e) -> new ThemePublishingException(site.getId(), "Failed to install theme.", DeployStatus.THEME_INSTALLATION_FAILED, e));
+        FuncUtils.runOrThrow(() -> deployActions.installTheme(site.getHostname(), site.getTheme().id()), (e) -> new ThemePublishingException(site.getId(), "Failed to install theme.", DeployStatus.THEME_INSTALLATION_FAILED, e));
         log.info("Installed theme for site: {}.", site.getId());
-    }
-
-    private void installTheme(String hostname, String themeId) {
-        String localFilepath = FileUtils.getFilePath(themeId, pathProps.getThemes());
-        String tempPath = getDomainTempThemePath(themeId);
-
-        remoteCommandPort.upload(localFilepath, tempPath);
-        websiteThemeCommandPort.installTheme(tempPath, hostname);
-        remoteCommandPort.delete(tempPath);
-    }
-
-    private String getDomainTempThemePath(String themeId) {
-        String originalFilename = FileUtils.buildOriginalFilename(themeId, FileUtils.ZIP_FORMAT);
-        return FileUtils.getTempPath(fileTemp, originalFilename);
     }
 
     private void updatePublished(Site site) {

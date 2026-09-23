@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ThemeActivationService implements ThemeActivationUseCase {
+class ThemeActivationService implements ThemeActivationUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;

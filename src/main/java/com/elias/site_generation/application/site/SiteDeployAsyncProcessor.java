@@ -3,7 +3,7 @@ package com.elias.site_generation.application.site;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
-import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
+import com.elias.site_generation.domain.theme.event.ThemeDeployEvent;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +30,7 @@ class SiteDeployAsyncProcessor {
     }
 
     private void publishDeploy(Site site) {
-        publisher.publishEvent(new ThemePublishEvent(site));
+        publisher.publishEvent(new ThemeDeployEvent(site));
     }
 
 }

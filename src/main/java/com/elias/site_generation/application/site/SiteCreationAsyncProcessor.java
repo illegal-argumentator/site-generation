@@ -7,7 +7,7 @@ import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
-import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
+import com.elias.site_generation.domain.theme.event.ThemeDeployEvent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
@@ -79,7 +79,7 @@ class SiteCreationAsyncProcessor {
 
     private void publishDeploy(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
-        publisher.publishEvent(new ThemePublishEvent(site));
+        publisher.publishEvent(new ThemeDeployEvent(site));
     }
 
 }
