@@ -23,7 +23,7 @@ public class SiteCreationController {
 
     @PostMapping("/recreate")
     public void recreate(@RequestParam long siteId) {
-
+        useCase.recreate(siteId);
     }
 
     @PostMapping("/redeploy")
