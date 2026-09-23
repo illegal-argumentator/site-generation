@@ -8,6 +8,7 @@ public interface SiteCreationUseCase {
     void create(TemplateType type, Site site);
 
     void redeploy(long siteId);
+    void recreate(long siteId);
 
     void activate(long siteId);
 

@@ -72,6 +72,13 @@ public class Site {
         // TODO what if site was activated and we updated it? should we activate it once again?
     }
 
+    public void validateReadyForRecreation() {
+        throwIfAtLeastOneStatusInProgress(new SiteCreationException("Site is still in progress."));
+        throwIfCreationStatusNotCreated();
+        throwIfDeployStatusNotPublished();
+        throwIfActiveStatusActivated();
+    }
+
     public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
         return getInProgressCount(sites) >= max;
     }
