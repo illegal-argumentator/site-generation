@@ -12,11 +12,13 @@ import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 class ThemeEditAdapter implements ThemeEditPort {

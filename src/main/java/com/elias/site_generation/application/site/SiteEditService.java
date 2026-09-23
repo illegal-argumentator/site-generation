@@ -1,6 +1,7 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
@@ -37,12 +38,12 @@ public class SiteEditService implements SiteEditUseCase {
         websiteThemeCommandPort.removeTheme(slug, site.getHostname());
         log.info("Removed old theme from WordPress.");
 
-        saveDeployInProgress(site.getId());
-        publishDeploy(site);
+        Site updated = saveDeployInProgress(site.getId());
+        publishDeploy(updated);
     }
 
-    private void saveDeployInProgress(long siteId) {
-        siteCommandPort.update(siteId, Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
+    private Site saveDeployInProgress(long siteId) {
+        return siteCommandPort.update(siteId, Site.builder().creationStatus(CreationStatus.CREATED).deployStatus(DeployStatus.IN_PROGRESS).build());
     }
 
     private void publishDeploy(Site site) {
