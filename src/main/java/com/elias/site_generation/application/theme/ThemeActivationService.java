@@ -4,7 +4,7 @@ import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.theme.exception.ThemeActivationException;
 import com.elias.site_generation.port.site.SiteCommandPort;
-import com.elias.site_generation.port.theme.ThemeActivationUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemeActivationUseCase;
 import com.elias.site_generation.port.website.WebsiteTemplateSlugQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.utils.FuncUtils;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ThemeActivationService implements ThemeActivationUseCase {
+class ThemeActivationService implements ThemeActivationUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
@@ -27,8 +27,6 @@ public class ThemeActivationService implements ThemeActivationUseCase {
 
         process(slug, site);
         updateActivated(site);
-
-        log.info("Theme activated.");
     }
 
     private void process(String slug, Site site) {

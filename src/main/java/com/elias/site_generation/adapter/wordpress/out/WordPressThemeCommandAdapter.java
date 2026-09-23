@@ -48,6 +48,19 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
     }
 
     @Override
+    public void removeTheme(String themeSlug, String hostname) {
+        String command = buildCommand(
+                hostname,
+                "theme",
+                "delete",
+                themeSlug,
+                "--force"
+        );
+
+        remote.execute(command);
+    }
+
+    @Override
     public void createConfig(Db db, String hostname) {
         String command = buildCommand(
                 hostname,

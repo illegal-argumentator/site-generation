@@ -1,7 +1,7 @@
 package com.elias.site_generation.adapter.site.in.listener;
 
 import com.elias.site_generation.domain.site.event.SiteActivationEvent;
-import com.elias.site_generation.port.theme.ThemeActivationUseCase;
+import com.elias.site_generation.port.theme.usecase.ThemeActivationUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

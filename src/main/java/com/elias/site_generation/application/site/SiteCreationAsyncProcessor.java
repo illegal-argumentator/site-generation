@@ -7,7 +7,8 @@ import com.elias.site_generation.domain.site.type.CreationStatus;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
-import com.elias.site_generation.domain.theme.event.ThemePublishEvent;
+import com.elias.site_generation.domain.theme.event.ThemeDeployEvent;
+import com.elias.site_generation.domain.theme.event.ThemePostDeployEvent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
@@ -35,7 +36,7 @@ class SiteCreationAsyncProcessor {
 
     @Async
     public void createAsync(TemplateType type, User user, Site site) {
-        Site savedPending = saveInit(type, site);
+        Site savedPending = saveCreationInProgress(type, site);
         saveUserSite(user, savedPending);
 
         String themeId = themeCommandPort.save();
@@ -58,7 +59,7 @@ class SiteCreationAsyncProcessor {
         publishDeploy(site);
     }
 
-    private Site saveInit(TemplateType type, Site site) {
+    private Site saveCreationInProgress(TemplateType type, Site site) {
         site.setCreationStatus(CreationStatus.IN_PROGRESS);
         site.setActiveStatus(ActiveStatus.PENDING);
         site.setDeployStatus(DeployStatus.PENDING);
@@ -79,7 +80,7 @@ class SiteCreationAsyncProcessor {
 
     private void publishDeploy(Site site) {
         siteCommandPort.update(site.getId(), Site.builder().deployStatus(DeployStatus.IN_PROGRESS).build());
-        publisher.publishEvent(new ThemePublishEvent(site));
+        publisher.publishEvent(site.getDeployStatus() == DeployStatus.THEME_REMOVE_FAILED ? new ThemePostDeployEvent(site) : new ThemeDeployEvent(site));
     }
 
 }

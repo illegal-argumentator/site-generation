@@ -1,6 +1,6 @@
 package com.elias.site_generation.shared.utils;
 
-import static com.elias.site_generation.shared.utils.Delimiters.SLASH_PREFIX;
+import static com.elias.site_generation.shared.utils.Delimiters.SLASH_DELIMITER;
 import static com.elias.site_generation.shared.utils.StringUtils.EMPTY_STRING;
 
 public class AppUtils {
@@ -15,7 +15,7 @@ public class AppUtils {
     }
 
     public static String getFilePrefixByOs() {
-        return isWindows() ? EMPTY_STRING : SLASH_PREFIX;
+        return isWindows() ? EMPTY_STRING : SLASH_DELIMITER;
     }
 
     public static String toSafeFileName(String input) {

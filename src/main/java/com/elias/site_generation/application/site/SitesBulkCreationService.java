@@ -1,7 +1,7 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.exception.SiteParallelCreationLimitReachedException;
+import com.elias.site_generation.domain.site.exception.SiteLimitReachedException;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
@@ -52,7 +52,7 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
 
         long inProgressCount = Site.getInProgressCount(entities);
         if (parallelLimit - inProgressCount < sitesToCreate) {
-            throw new SiteParallelCreationLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
+            throw new SiteLimitReachedException("Maximum %d sites can be created in parallel.".formatted(parallelLimit));
         }
     }
 

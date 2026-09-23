@@ -1,19 +1,19 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.exception.DomainAlreadyExistsException;
-import com.elias.site_generation.domain.site.exception.NotSiteOwnerException;
+import com.elias.site_generation.domain.site.exception.DomainExistsException;
+import com.elias.site_generation.domain.site.exception.SiteOwnerException;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
 import com.elias.site_generation.domain.user.User;
-import com.elias.site_generation.port.theme.TemplateQueryPort;
+import com.elias.site_generation.port.template.TemplateQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-class SiteValidationService {
+final class SiteValidationService {
 
     private final TemplateQueryPort templateQueryPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
@@ -30,7 +30,7 @@ class SiteValidationService {
 
     void validateSiteOwner(long siteId, User owner) {
         if (!owner.containsSiteId(siteId)) {
-            throw new NotSiteOwnerException("You're not site owner.");
+            throw new SiteOwnerException("You're not site owner.");
         }
     }
 
@@ -42,7 +42,7 @@ class SiteValidationService {
 
     private void throwIfDomainAlreadyExists(String hostname) {
         if (websiteThemeQueryPort.exists(hostname)) {
-            throw new DomainAlreadyExistsException("Domain %s already exists.".formatted(hostname));
+            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
         }
     }
 

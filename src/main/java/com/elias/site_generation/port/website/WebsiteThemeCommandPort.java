@@ -7,6 +7,7 @@ public interface WebsiteThemeCommandPort {
     void downloadWebsite(String hostname);
     void installWebsite(String title, String hostname);
     void installTheme(String themePath, String hostname);
+    void removeTheme(String slug, String hostname);
     void createConfig(Db db, String hostname);
 
     void activateTheme(String slug, String hostname);

@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.theme.out.generation.factory;
 
-import com.elias.site_generation.adapter.theme.out.generation.strategy.TemplateGenerationStrategy;
+import com.elias.site_generation.adapter.theme.out.generation.strategy.ThemeGenerationStrategy;
 import com.elias.site_generation.domain.theme.TemplateType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,9 +11,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ThemeGenerationFactory {
 
-    private final List<TemplateGenerationStrategy> strategies;
+    private final List<ThemeGenerationStrategy> strategies;
 
-    public TemplateGenerationStrategy getStrategy(TemplateType type) {
+    public ThemeGenerationStrategy getStrategy(TemplateType type) {
         return strategies.stream()
                 .filter(strategy -> strategy.getType() == type)
                 .findFirst()
