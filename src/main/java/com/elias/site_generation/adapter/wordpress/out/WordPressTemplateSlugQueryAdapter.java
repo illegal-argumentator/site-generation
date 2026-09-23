@@ -40,8 +40,6 @@ class WordPressTemplateSlugQueryAdapter implements WebsiteTemplateSlugQueryPort 
                 int slashIndex = name.indexOf(SLASH_DELIMITER);
 
                 if (slashIndex > 0) {
-                    System.out.println("Slug name: " + name);
-                    System.out.println("Slug: " + name.substring(0, slashIndex));
                     return name.substring(0, slashIndex);
                 }
             }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-class SiteValidationService {
+final class SiteValidationService {
 
     private final TemplateQueryPort templateQueryPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;

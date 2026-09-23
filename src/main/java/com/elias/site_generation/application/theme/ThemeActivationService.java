@@ -19,7 +19,6 @@ class ThemeActivationService implements ThemeActivationUseCase {
 
     private final SiteCommandPort siteCommandPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
-    // TODO think about how to save this value into the entity instead of using this interface
     private final WebsiteTemplateSlugQueryPort websiteTemplateSlugQueryPort;
 
     @Override
@@ -28,8 +27,6 @@ class ThemeActivationService implements ThemeActivationUseCase {
 
         process(slug, site);
         updateActivated(site);
-
-        log.info("Theme activated.");
     }
 
     private void process(String slug, Site site) {
