@@ -58,7 +58,7 @@ class SiteCreationService implements SiteCreationUseCase {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRecreation();
 
-        asyncProcessor.createAsync(site.getType(), authUser, site);
+        asyncProcessor.recreateAsync(authUser, site);
     }
 
     @Override

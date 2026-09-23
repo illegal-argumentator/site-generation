@@ -37,6 +37,16 @@ class SiteCreationAsyncProcessor {
     @Async
     public void createAsync(TemplateType type, User user, Site site) {
         Site savedPending = saveCreationInProgress(type, site);
+        processCreationAsync(user, savedPending);
+    }
+
+    @Async
+    public void recreateAsync(User user, Site site) {
+        Site savedPending = saveRecreationInProgress(site);
+        processCreationAsync(user, savedPending);
+    }
+
+    private void processCreationAsync(User user, Site savedPending) {
         saveUserSite(user, savedPending);
 
         String themeId = themeCommandPort.save();
@@ -66,6 +76,13 @@ class SiteCreationAsyncProcessor {
         site.setType(type);
         site.setDb(dbGenerationPort.generate());
 
+        return siteCommandPort.save(site);
+    }
+
+    private Site saveRecreationInProgress(Site site) {
+        site.setCreationStatus(CreationStatus.IN_PROGRESS);
+        site.setActiveStatus(ActiveStatus.PENDING);
+        site.setDeployStatus(DeployStatus.PENDING);
         return siteCommandPort.save(site);
     }
 
