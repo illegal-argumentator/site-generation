@@ -74,8 +74,8 @@ public class Site {
 
     public void validateReadyForRecreation() {
         throwIfAtLeastOneStatusInProgress(new SiteCreationException("Site is still in progress."));
-        throwIfCreationStatusNotCreated();
-        throwIfDeployStatusNotPublished();
+        throwIfCreationStatusCreated();
+        throwIfDeployStatusPublished();
         throwIfActiveStatusActivated();
     }
 
@@ -110,6 +110,12 @@ public class Site {
     private void throwIfActiveStatusActivated() {
         if (activeStatus == ActiveStatus.ACTIVATED) {
             throw new SiteActivationException("Site already activated.");
+        }
+    }
+
+    private void throwIfCreationStatusCreated() {
+        if (creationStatus == CreationStatus.CREATED) {
+            throw new SiteCreationException("Site has already created.");
         }
     }
 
