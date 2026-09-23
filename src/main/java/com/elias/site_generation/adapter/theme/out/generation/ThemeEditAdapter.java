@@ -30,17 +30,17 @@ class ThemeEditAdapter implements ThemeEditPort {
 
     @Override
     public void process(String content, TemplateComponent component, Site site) {
-        byte[] oldTheme = getTheme(site.getId());
-        removeOldTheme(site.getId());
+        byte[] oldTheme = getTheme(site.getTheme().id());
+        removeOldTheme(site.getTheme().id());
 
         String editedComponent = editComponent(content, component, oldTheme);
 
         byte[] updatedTheme = zipFilePort.update(oldTheme, Map.of(component.getName(), editedComponent.getBytes(StandardCharsets.UTF_8)));
-        saveTheme(site.getId(), updatedTheme);
+        saveTheme(site.getTheme().id(), updatedTheme);
     }
 
-    private void removeOldTheme(long siteId) {
-        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(siteId), FileUtils.ZIP_FORMAT);
+    private void removeOldTheme(String themeId) {
+        String originalFilename = FileUtils.buildOriginalFilename(themeId, FileUtils.ZIP_FORMAT);
         fileManagerPort.remove(FilePath.from(originalFilename, props.getThemes()));
     }
 
@@ -49,8 +49,8 @@ class ThemeEditAdapter implements ThemeEditPort {
         return aiService.generate(aiRequest);
     }
 
-    private byte[] getTheme(long siteId) {
-        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(siteId), FileUtils.ZIP_FORMAT);
+    private byte[] getTheme(String themeId) {
+        String originalFilename = FileUtils.buildOriginalFilename(themeId, FileUtils.ZIP_FORMAT);
         return fileManagerPort.read(FilePath.from(originalFilename, props.getThemes()));
     }
 
@@ -59,10 +59,8 @@ class ThemeEditAdapter implements ThemeEditPort {
         return new String(themeComp);
     }
 
-    private void saveTheme(long themeId, byte[] theme) {
-        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(themeId), FileUtils.ZIP_FORMAT);
+    private void saveTheme(String themeId, byte[] theme) {
+        String originalFilename = FileUtils.buildOriginalFilename(themeId, FileUtils.ZIP_FORMAT);
         fileManagerPort.write(FilePath.from(originalFilename, props.getThemes()), theme);
     }
-
-
 }
