@@ -7,7 +7,7 @@ import com.elias.site_generation.application.auth.command.TokenPayloadCommand;
 import com.elias.site_generation.domain.user.Role;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.domain.user.exception.IncorrectPasswordException;
-import com.elias.site_generation.port.auth.AuthUseCase;
+import com.elias.site_generation.port.auth.usecase.AuthUseCase;
 import com.elias.site_generation.port.security.PasswordHashingPort;
 import com.elias.site_generation.port.security.TokenGenerationPort;
 import com.elias.site_generation.port.security.TokenIdentityPort;

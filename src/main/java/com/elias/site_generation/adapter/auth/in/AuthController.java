@@ -5,7 +5,7 @@ import com.elias.site_generation.adapter.auth.in.dto.AuthResponse;
 import com.elias.site_generation.adapter.auth.in.dto.RefreshRequest;
 import com.elias.site_generation.adapter.auth.out.mapper.AuthMapper;
 import com.elias.site_generation.application.auth.command.AuthResponseCommand;
-import com.elias.site_generation.port.auth.AuthUseCase;
+import com.elias.site_generation.port.auth.usecase.AuthUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

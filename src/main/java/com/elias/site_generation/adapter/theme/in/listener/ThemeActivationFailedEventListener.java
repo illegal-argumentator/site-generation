@@ -2,7 +2,6 @@ package com.elias.site_generation.adapter.theme.in.listener;
 
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.theme.event.ThemeActivationFailedEvent;
-import com.elias.site_generation.domain.theme.event.ThemePublishFailedEvent;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

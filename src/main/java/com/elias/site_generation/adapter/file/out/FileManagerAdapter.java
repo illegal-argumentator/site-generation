@@ -2,7 +2,7 @@ package com.elias.site_generation.adapter.file.out;
 
 import com.elias.site_generation.adapter.file.out.exception.FileReadException;
 import com.elias.site_generation.adapter.file.out.exception.FileWriteException;
-import com.elias.site_generation.adapter.site.out.FileManagerPort;
+import com.elias.site_generation.adapter.theme.out.file.FileManagerPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.utils.AppUtils;
@@ -42,5 +42,18 @@ class FileManagerAdapter implements FileManagerPort {
     @Override
     public boolean exists(FilePath filePath) {
         return Files.exists(FileUtils.getPath(filePath.filename(), AppUtils.getFilePrefixByOs() + filePath.directory()));
+    }
+
+    @Override
+    public void remove(FilePath filePath) {
+        if (!exists(filePath)) return;
+
+        try {
+            Path path = FileUtils.getPath(filePath.filename(), AppUtils.getFilePrefixByOs() + filePath.directory());
+            Files.delete(path);
+        } catch (IOException e) {
+            log.error("Unable to remove file: {}.", e.getMessage());
+            throw new FileWriteException("Unable to remove file.");
+        }
     }
 }
