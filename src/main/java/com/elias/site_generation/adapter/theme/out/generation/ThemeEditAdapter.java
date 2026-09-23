@@ -8,8 +8,6 @@ import com.elias.site_generation.adapter.theme.out.prompt.ThemePromptPolicyBuild
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.port.theme.ThemeEditPort;
-import com.elias.site_generation.port.website.WebsiteTemplateSlugQueryPort;
-import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
@@ -31,13 +29,24 @@ class ThemeEditAdapter implements ThemeEditPort {
     private final ZipFilePort zipFilePort;
 
     @Override
-    public byte[] edit(String content, TemplateComponent component, Site site) {
-        byte[] theme = getTheme(site.getId());
+    public void process(String content, TemplateComponent component, Site site) {
+        byte[] oldTheme = getTheme(site.getId());
+        removeOldTheme(site.getId());
 
-        AiRequest aiRequest = new AiRequest(ThemePromptPolicyBuilder.buildCustomEditPrompt(content, getThemeComponent(component, theme)), content);
-        String editedComponent = aiService.generate(aiRequest);
+        String editedComponent = editComponent(content, component, oldTheme);
 
-        return zipFilePort.update(theme, Map.of(component.getName(), editedComponent.getBytes(StandardCharsets.UTF_8)));
+        byte[] updatedTheme = zipFilePort.update(oldTheme, Map.of(component.getName(), editedComponent.getBytes(StandardCharsets.UTF_8)));
+        saveTheme(site.getId(), updatedTheme);
+    }
+
+    private void removeOldTheme(long siteId) {
+        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(siteId), FileUtils.ZIP_FORMAT);
+        fileManagerPort.remove(FilePath.from(originalFilename, props.getThemes()));
+    }
+
+    private String editComponent(String content, TemplateComponent component, byte[] oldTheme) {
+        AiRequest aiRequest = new AiRequest(ThemePromptPolicyBuilder.buildCustomEditPrompt(content, getThemeComponent(component, oldTheme)), content);
+        return aiService.generate(aiRequest);
     }
 
     private byte[] getTheme(long siteId) {
@@ -48,6 +57,11 @@ class ThemeEditAdapter implements ThemeEditPort {
     private String getThemeComponent(TemplateComponent component, byte[] theme) {
         byte[] themeComp = zipFilePort.extract(component.getName(), theme);
         return new String(themeComp);
+    }
+
+    private void saveTheme(long themeId, byte[] theme) {
+        String originalFilename = FileUtils.buildOriginalFilename(String.valueOf(themeId), FileUtils.ZIP_FORMAT);
+        fileManagerPort.write(FilePath.from(originalFilename, props.getThemes()), theme);
     }
 
 

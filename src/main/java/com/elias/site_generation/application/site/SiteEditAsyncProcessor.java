@@ -2,7 +2,9 @@ package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.event.SiteEditEvent;
+import com.elias.site_generation.domain.site.type.ActiveStatus;
 import com.elias.site_generation.domain.site.type.CreationStatus;
+import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ class SiteEditAsyncProcessor {
     }
 
     private void saveEditInProgress(long siteId) {
-        siteCommandPort.update(siteId, Site.builder().creationStatus(CreationStatus.IN_PROGRESS).build());
+        siteCommandPort.update(siteId, Site.builder().creationStatus(CreationStatus.IN_PROGRESS).deployStatus(DeployStatus.PENDING).activeStatus(ActiveStatus.PENDING).build());
     }
 
     private void publishEdit(String content, TemplateComponent component, Site site) {

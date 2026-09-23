@@ -5,6 +5,6 @@ import com.elias.site_generation.domain.theme.TemplateComponent;
 
 public interface ThemeEditPort {
 
-    byte[] edit(String content, TemplateComponent component, Site site);
+    void process(String content, TemplateComponent component, Site site);
 
 }
