@@ -32,7 +32,7 @@ public class User {
                 .collect(Collectors.toSet());
     }
 
-    public List<Site> collectSites(Site site) {
+    public static List<Site> collectSites(Site site, List<Site> sites) {
         if (CollectionUtils.isEmpty(sites)) {
             sites = new ArrayList<>(List.of(site));
         } else {

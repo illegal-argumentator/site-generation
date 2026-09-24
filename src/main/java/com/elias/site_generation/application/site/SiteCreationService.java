@@ -1,5 +1,6 @@
 package com.elias.site_generation.application.site;
 
+import com.elias.site_generation.application.site.command.UserDataCommand;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.exception.SiteLimitReachedException;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -24,12 +25,9 @@ class SiteCreationService implements SiteCreationUseCase {
     private int parallelLimit;
 
     private final AuthUserPort authUserPort;
-
     private final SiteQueryPort siteQueryPort;
     private final SiteCreationAsyncProcessor asyncProcessor;
     private final SiteValidationService validationService;
-
-    private final SitePersistenceUtils persistenceUtils;
 
     @Override
     public void create(TemplateType type, Site site) {
@@ -37,11 +35,7 @@ class SiteCreationService implements SiteCreationUseCase {
         throwIfCreationLimitReached(owner);
 
         validationService.validateSiteCreation(type, site);
-
-        Site pending = persistenceUtils.saveCreationInProgress(site.getId(), type);
-        persistenceUtils.saveUserSite(owner, pending);
-
-        asyncProcessor.createAsync(pending);
+        asyncProcessor.createAsync(site.getId(), type, UserDataCommand.from(owner.getId(), owner.getSites()));
     }
 
     @Override
@@ -65,10 +59,7 @@ class SiteCreationService implements SiteCreationUseCase {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRecreation();
 
-        Site pending = persistenceUtils.saveRecreationInProgress(siteId);
-        persistenceUtils.saveUserSite(authUser, pending);
-
-        asyncProcessor.createAsync(pending);
+        asyncProcessor.recreateAsync(siteId, UserDataCommand.from(authUser.getId(), authUser.getSites()));
     }
 
     @Override
@@ -81,7 +72,6 @@ class SiteCreationService implements SiteCreationUseCase {
 
         asyncProcessor.publishActivationAsync(site);
     }
-
 
     private void throwIfCreationLimitReached(User user) {
         List<Site> entities = siteQueryPort.findAllById(Site.collectIds(user.getSites()));
