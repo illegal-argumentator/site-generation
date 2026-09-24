@@ -11,8 +11,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +51,16 @@ public class PostgresUser implements UserDetails {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toSet());
+    }
+
+    public List<PostgresSite> collectSites(PostgresSite site) {
+        if (CollectionUtils.isEmpty(sites)) {
+            sites = new ArrayList<>(List.of(site));
+        } else {
+            sites.add(site);
+        }
+
+        return sites;
     }
 
     @Override

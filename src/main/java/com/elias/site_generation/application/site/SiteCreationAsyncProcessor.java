@@ -1,6 +1,5 @@
 package com.elias.site_generation.application.site;
 
-import com.elias.site_generation.application.site.command.UserDataCommand;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.event.SiteActivationEvent;
 import com.elias.site_generation.domain.site.type.ActiveStatus;
@@ -10,7 +9,6 @@ import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemeDeployEvent;
 import com.elias.site_generation.domain.theme.event.ThemePostDeployEvent;
-import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
@@ -20,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -38,19 +34,19 @@ class SiteCreationAsyncProcessor {
     private final ApplicationEventPublisher publisher;
 
     @Async
-    public void createAsync(long siteId, TemplateType type, UserDataCommand userData) {
+    public void createAsync(long siteId, TemplateType type, String userId) {
         Site savedPending = saveCreationInProgress(siteId, type);
-        processCreationAsync(savedPending, userData);
+        processCreationAsync(userId, savedPending);
     }
 
     @Async
-    public void recreateAsync(long siteId, UserDataCommand userData) {
+    public void recreateAsync(long siteId, String userId) {
         Site savedPending = saveRecreationInProgress(siteId);
-        processCreationAsync(savedPending, userData);
+        processCreationAsync(userId, savedPending);
     }
 
-    private void processCreationAsync(Site savedPending, UserDataCommand userData) {
-        saveUserSite(userData.userId(), User.collectSites(savedPending, userData.sites()));
+    private void processCreationAsync(String userId, Site savedPending) {
+        saveUserSite(userId, savedPending.getId());
 
         String themeId = themeCommandPort.save();
         String title = themeGenerationPort.generate(themeId, savedPending);
@@ -73,24 +69,20 @@ class SiteCreationAsyncProcessor {
     }
 
     private Site saveCreationInProgress(long siteId, TemplateType type) {
-        Site update = Site.builder()
-                .creationStatus(CreationStatus.IN_PROGRESS)
-                .activeStatus(ActiveStatus.PENDING)
-                .deployStatus(DeployStatus.PENDING)
-                .type(type)
-                .db(dbGenerationPort.generate())
-                .build();
+        Site update = Site.builder().creationStatus(CreationStatus.IN_PROGRESS).activeStatus(ActiveStatus.PENDING)
+                .deployStatus(DeployStatus.PENDING).type(type).db(dbGenerationPort.generate()).build();
 
         return siteCommandPort.update(siteId, update);
     }
 
     private Site saveRecreationInProgress(long siteId) {
-        Site update = Site.builder().creationStatus(CreationStatus.IN_PROGRESS).activeStatus(ActiveStatus.PENDING).deployStatus(DeployStatus.PENDING).build();
+        Site update = Site.builder().creationStatus(CreationStatus.IN_PROGRESS).activeStatus(ActiveStatus.PENDING)
+                .deployStatus(DeployStatus.PENDING).build();
         return siteCommandPort.update(siteId, update);
     }
 
-    private void saveUserSite(String userId, List<Site> sites) {
-        userCommandPort.update(userId, User.builder().sites(sites).build());
+    private void saveUserSite(String userId, long siteId) {
+        userCommandPort.addSite(userId, siteId);
     }
 
     private Site saveCreated(long siteId, Theme theme) {

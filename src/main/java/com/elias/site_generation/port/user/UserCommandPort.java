@@ -8,5 +8,7 @@ public interface UserCommandPort {
 
     void update(String id, User user);
 
+    void addSite(String userId, long siteId);
+
 
 }

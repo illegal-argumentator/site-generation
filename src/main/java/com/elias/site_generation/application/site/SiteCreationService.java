@@ -1,6 +1,5 @@
 package com.elias.site_generation.application.site;
 
-import com.elias.site_generation.application.site.command.UserDataCommand;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.exception.SiteLimitReachedException;
 import com.elias.site_generation.domain.theme.TemplateType;
@@ -35,7 +34,7 @@ class SiteCreationService implements SiteCreationUseCase {
         throwIfCreationLimitReached(owner);
 
         validationService.validateSiteCreation(type, site);
-        asyncProcessor.createAsync(site.getId(), type, UserDataCommand.from(owner.getId(), owner.getSites()));
+        asyncProcessor.createAsync(site.getId(), type, owner.getId());
     }
 
     @Override
@@ -59,7 +58,7 @@ class SiteCreationService implements SiteCreationUseCase {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRecreation();
 
-        asyncProcessor.recreateAsync(siteId, UserDataCommand.from(authUser.getId(), authUser.getSites()));
+        asyncProcessor.recreateAsync(siteId, authUser.getId());
     }
 
     @Override

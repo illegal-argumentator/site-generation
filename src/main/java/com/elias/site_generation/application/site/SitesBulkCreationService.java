@@ -1,6 +1,5 @@
 package com.elias.site_generation.application.site;
 
-import com.elias.site_generation.application.site.command.UserDataCommand;
 import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.exception.SiteLimitReachedException;
 import com.elias.site_generation.domain.user.User;
@@ -42,8 +41,7 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
     }
 
     private void processAsyncSitesCreation(User owner, List<Site> sites) {
-        UserDataCommand userData = UserDataCommand.from(owner.getId(), owner.getSites());
-        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType(), userData));
+        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType(), owner.getId()));
     }
 
     private void throwIfCreationLimitReached(int sitesToCreate, User user) {
