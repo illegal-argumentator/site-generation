@@ -24,9 +24,12 @@ class SiteCreationService implements SiteCreationUseCase {
     private int parallelLimit;
 
     private final AuthUserPort authUserPort;
+
     private final SiteQueryPort siteQueryPort;
     private final SiteCreationAsyncProcessor asyncProcessor;
     private final SiteValidationService validationService;
+
+    private final SitePersistenceUtils persistenceUtils;
 
     @Override
     public void create(TemplateType type, Site site) {
@@ -34,7 +37,11 @@ class SiteCreationService implements SiteCreationUseCase {
         throwIfCreationLimitReached(owner);
 
         validationService.validateSiteCreation(type, site);
-        asyncProcessor.createAsync(site.getId(), type);
+
+        Site pending = persistenceUtils.saveCreationInProgress(site.getId(), type);
+        persistenceUtils.saveUserSite(owner, pending);
+
+        asyncProcessor.createAsync(pending);
     }
 
     @Override
@@ -58,7 +65,10 @@ class SiteCreationService implements SiteCreationUseCase {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRecreation();
 
-        asyncProcessor.recreateAsync(siteId);
+        Site pending = persistenceUtils.saveRecreationInProgress(siteId);
+        persistenceUtils.saveUserSite(authUser, pending);
+
+        asyncProcessor.createAsync(pending);
     }
 
     @Override
@@ -71,6 +81,7 @@ class SiteCreationService implements SiteCreationUseCase {
 
         asyncProcessor.publishActivationAsync(site);
     }
+
 
     private void throwIfCreationLimitReached(User user) {
         List<Site> entities = siteQueryPort.findAllById(Site.collectIds(user.getSites()));

@@ -25,6 +25,7 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
     private final SiteQueryPort siteQueryPort;
     private final SiteValidationService siteValidationService;
     private final SiteCreationAsyncProcessor asyncProcessor;
+    private final SitePersistenceUtils persistenceUtils;
 
     @Override
     public void createBulk(List<Site> sites) {
@@ -33,15 +34,19 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
         throwIfCreationLimitReached(sites.size(), owner);
         validateSitesCreation(sites);
 
-        processAsyncSitesCreation(sites);
+        processAsyncSitesCreation(owner, sites);
     }
 
     private void validateSitesCreation(List<Site> sites) {
         sites.forEach(siteValidationService::validateSiteCreation);
     }
 
-    private void processAsyncSitesCreation(List<Site> sites) {
-        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType()));
+    private void processAsyncSitesCreation(User user, List<Site> sites) {
+        for (Site site : sites) {
+            Site pending = persistenceUtils.saveCreationInProgress(site.getId(), site.getType());
+            persistenceUtils.saveUserSite(user, pending);
+            asyncProcessor.createAsync(pending);
+        }
     }
 
     private void throwIfCreationLimitReached(int sitesToCreate, User user) {
