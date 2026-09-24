@@ -35,14 +35,14 @@ class SiteCreationAsyncProcessor {
     private final ApplicationEventPublisher publisher;
 
     @Async
-    public void createAsync(TemplateType type, User user, Site site) {
-        Site savedPending = saveCreationInProgress(type, site);
+    public void createAsync(long siteId, TemplateType type, User user) {
+        Site savedPending = saveCreationInProgress(siteId, type);
         processCreationAsync(user, savedPending);
     }
 
     @Async
-    public void recreateAsync(User user, Site site) {
-        Site savedPending = saveRecreationInProgress(site);
+    public void recreateAsync(long siteId, User user) {
+        Site savedPending = saveRecreationInProgress(siteId);
         processCreationAsync(user, savedPending);
     }
 
@@ -69,21 +69,21 @@ class SiteCreationAsyncProcessor {
         publishDeploy(site);
     }
 
-    private Site saveCreationInProgress(TemplateType type, Site site) {
-        site.setCreationStatus(CreationStatus.IN_PROGRESS);
-        site.setActiveStatus(ActiveStatus.PENDING);
-        site.setDeployStatus(DeployStatus.PENDING);
-        site.setType(type);
-        site.setDb(dbGenerationPort.generate());
+    private Site saveCreationInProgress(long siteId, TemplateType type) {
+        Site update = Site.builder()
+                .creationStatus(CreationStatus.IN_PROGRESS)
+                .activeStatus(ActiveStatus.PENDING)
+                .deployStatus(DeployStatus.PENDING)
+                .type(type)
+                .db(dbGenerationPort.generate())
+                .build();
 
-        return siteCommandPort.save(site);
+        return siteCommandPort.update(siteId, update);
     }
 
-    private Site saveRecreationInProgress(Site site) {
-        site.setCreationStatus(CreationStatus.IN_PROGRESS);
-        site.setActiveStatus(ActiveStatus.PENDING);
-        site.setDeployStatus(DeployStatus.PENDING);
-        return siteCommandPort.save(site);
+    private Site saveRecreationInProgress(long siteId) {
+        Site update = Site.builder().creationStatus(CreationStatus.IN_PROGRESS).activeStatus(ActiveStatus.PENDING).deployStatus(DeployStatus.PENDING).build();
+        return siteCommandPort.update(siteId, update);
     }
 
     private void saveUserSite(User user, Site site) {

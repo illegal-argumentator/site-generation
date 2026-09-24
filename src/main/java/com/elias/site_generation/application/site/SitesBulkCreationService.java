@@ -41,7 +41,7 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
     }
 
     private void processAsyncSitesCreation(User owner, List<Site> sites) {
-        sites.forEach((site) -> asyncProcessor.createAsync(site.getType(), owner, site));
+        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType(), owner));
     }
 
     private void throwIfCreationLimitReached(int sitesToCreate, User user) {
