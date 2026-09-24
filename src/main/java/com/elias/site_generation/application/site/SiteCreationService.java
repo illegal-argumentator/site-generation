@@ -34,7 +34,7 @@ class SiteCreationService implements SiteCreationUseCase {
         throwIfCreationLimitReached(owner);
 
         validationService.validateSiteCreation(type, site);
-        asyncProcessor.createAsync(site.getId(), type, owner);
+        asyncProcessor.createAsync(site.getId(), type);
     }
 
     @Override
@@ -58,7 +58,7 @@ class SiteCreationService implements SiteCreationUseCase {
         Site site = siteQueryPort.findById(siteId);
         site.validateReadyForRecreation();
 
-        asyncProcessor.recreateAsync(siteId, authUser);
+        asyncProcessor.recreateAsync(siteId);
     }
 
     @Override

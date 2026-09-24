@@ -33,15 +33,15 @@ class SitesBulkCreationService implements SitesBulkCreationUseCase {
         throwIfCreationLimitReached(sites.size(), owner);
         validateSitesCreation(sites);
 
-        processAsyncSitesCreation(owner, sites);
+        processAsyncSitesCreation(sites);
     }
 
     private void validateSitesCreation(List<Site> sites) {
         sites.forEach(siteValidationService::validateSiteCreation);
     }
 
-    private void processAsyncSitesCreation(User owner, List<Site> sites) {
-        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType(), owner));
+    private void processAsyncSitesCreation(List<Site> sites) {
+        sites.forEach((site) -> asyncProcessor.createAsync(site.getId(), site.getType()));
     }
 
     private void throwIfCreationLimitReached(int sitesToCreate, User user) {
