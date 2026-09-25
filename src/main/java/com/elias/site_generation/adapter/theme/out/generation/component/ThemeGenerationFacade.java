@@ -1,6 +1,6 @@
 package com.elias.site_generation.adapter.theme.out.generation.component;
 
-import com.elias.site_generation.adapter.theme.out.generation.strategy.ElementPayload;
+import com.elias.site_generation.adapter.theme.out.generation.dto.ElementPayload;
 import com.elias.site_generation.adapter.theme.out.generation.zip.ZipFilePort;
 import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
@@ -25,11 +25,11 @@ public final class ThemeGenerationFacade {
     private final ThemeGenerator themeGenerator;
     private final ThemeComponentsApplier componentsApplier;
 
-    public byte[] generate(TemplateType type, Map<String, ElementPayload> elements, ThemeGenerationRequest request) {
+    public byte[] generate(ThemePayload payload, ThemeGenerationRequest request) {
         String firstGeneratedCss = "";
         Map<String, byte[]> pages = new HashMap<>();
 
-        for (Map.Entry<String, ElementPayload> entry : elements.entrySet()) {
+        for (Map.Entry<String, ElementPayload> entry : payload.elements().entrySet()) {
             ElementPayload value = entry.getValue(); String key = entry.getKey();
 
             if (!StringUtils.isEmpty(firstGeneratedCss)) {
@@ -39,13 +39,13 @@ public final class ThemeGenerationFacade {
             PageComponent generatePage = generatePage(key, value, request);
             if (StringUtils.isEmpty(firstGeneratedCss)) firstGeneratedCss = new String(generatePage.css());
 
-            byte[] appliedIndex = componentsApplier.applyIndex(type, generatePage, request.images().keySet());
+            byte[] appliedIndex = componentsApplier.applyIndex(payload.type(), generatePage, request.images().keySet());
             pages.put(key, appliedIndex);
 
             log.info("Generated file: {}.", key);
         }
 
-        return updateZip(request.template(), pages, mapImagesAbsolutPath(type, request.images()));
+        return updateZip(request.template(), pages, mapImagesAbsolutPath(payload.type(), request.images()));
     }
 
     public PageComponent generatePage(String filename, ElementPayload payload, ThemeGenerationRequest request) {

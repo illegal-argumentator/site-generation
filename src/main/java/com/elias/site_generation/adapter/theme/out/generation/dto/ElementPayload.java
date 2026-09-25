@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.theme.out.generation.strategy;
+package com.elias.site_generation.adapter.theme.out.generation.dto;
 
 import lombok.With;
 
