@@ -27,19 +27,18 @@ class ThemeDeployService implements ThemeDeployUseCase {
 
     @Override
     public void deploy(Site site) {
-        Db db = dbGenerationPort.generate();
-        process(site, db);
-        updatePublished(site, db);
+        process(site);
+        updatePublished(site);
     }
 
-    private void process(Site site, Db db) {
+    private void process(Site site) {
         switch (site.getDeployStatus()) {
             case PENDING, IN_PROGRESS, DOMAIN_CREATION_FAILED:
                 createDomain(site);
             case SSL_ENABLE_FAILED:
                 enableSsl(site);
             case DB_CREATION_FAILED:
-                createDb(site, db);
+                createDb(site);
             case WEBSITE_DOWNLOAD_FAILED:
                 downloadWebsite(site);
             case WEBSITE_CONFIGURATION_FAILED:
@@ -61,8 +60,12 @@ class ThemeDeployService implements ThemeDeployUseCase {
         log.info("Enabled ssl for domain: {}.", site.getHostname());
     }
 
-    private void createDb(Site site, Db db) {
+    private void createDb(Site site) {
+        Db db = dbGenerationPort.generate();
         FuncUtils.runOrThrow(() -> hostingPort.createDb(db), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
+
+        Site update = Site.builder().db(db).build();
+        siteCommandPort.update(site.getId(), update);
         log.info("Initialized db for site: {}.", site.getId());
     }
 
@@ -86,8 +89,8 @@ class ThemeDeployService implements ThemeDeployUseCase {
         log.info("Installed theme for site: {}.", site.getId());
     }
 
-    private void updatePublished(Site site, Db db) {
-        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).db(db).build();
+    private void updatePublished(Site site) {
+        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).build();
         siteCommandPort.update(site.getId(), update);
     }
 }
