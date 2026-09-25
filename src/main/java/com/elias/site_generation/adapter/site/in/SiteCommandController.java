@@ -18,6 +18,11 @@ public class SiteCommandController {
         useCase.changeDomain(siteId, domain);
     }
 
+    @DeleteMapping("/{siteId}")
+    public void delete(@PathVariable long siteId) {
+        useCase.delete(siteId);
+    }
+
     @PostMapping("/{siteId}/edit")
     public void edit(@PathVariable long siteId, @Valid SiteEditRequest request) {
         useCase.edit(siteId, request.content(), request.component());

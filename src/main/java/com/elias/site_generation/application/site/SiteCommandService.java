@@ -6,8 +6,10 @@ import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
 import com.elias.site_generation.port.host.HostingPort;
+import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.site.SiteQueryPort;
 import com.elias.site_generation.port.site.usecase.SiteCommandUseCase;
+import com.elias.site_generation.port.theme.ThemeDeletionPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,12 @@ public class SiteCommandService implements SiteCommandUseCase {
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     private final SiteQueryPort siteQueryPort;
+    private final SiteCommandPort siteCommandPort;
     private final SiteDeployAsyncProcessor deployAsyncProcessor;
     private final SiteEditAsyncProcessor editAsyncProcessor;
     private final SiteValidationService validationService;
+
+    private final ThemeDeletionPort themeDeletionPort;
 
     @Override
     public void changeDomain(long siteId, String domain) {
@@ -38,6 +43,17 @@ public class SiteCommandService implements SiteCommandUseCase {
 
         cleanUpDomain(existence);
         deployAsyncProcessor.publishAsync(domain, existence);
+    }
+
+    @Override
+    public void delete(long siteId) {
+        User authUser = authUserPort.getAuthUser();
+        Site existence = siteQueryPort.findById(siteId);
+
+        validationService.validateSiteOwner(siteId, authUser);
+
+        cleanUpDomain(existence);
+        cleanUpSite(existence);
     }
 
     @Override
@@ -60,9 +76,13 @@ public class SiteCommandService implements SiteCommandUseCase {
     }
 
     private void cleanUpDomain(Site site) {
-        // TODO if delete db failed or returned exception of already deleted should be handled
         hostingPort.deleteDb(site.getDb().name());
         hostingPort.deleteDomain(site.getHostname());
+    }
+
+    private void cleanUpSite(Site site) {
+        themeDeletionPort.delete(site.getTheme().id());
+        siteCommandPort.delete(site.getId());
     }
 
 }
