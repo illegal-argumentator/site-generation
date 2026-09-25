@@ -1,9 +1,11 @@
 package com.elias.site_generation.application.theme;
 
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
+import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.usecase.ThemeDeployUseCase;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ThemeDeployService implements ThemeDeployUseCase {
 
+    private final DbGenerationPort dbGenerationPort;
     private final ThemeDeployActions deployActions;
     private final HostingPort hostingPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
@@ -58,7 +61,11 @@ class ThemeDeployService implements ThemeDeployUseCase {
     }
 
     private void createDb(Site site) {
-        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDb()), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
+        Db db = dbGenerationPort.generate();
+        FuncUtils.runOrThrow(() -> hostingPort.createDb(db), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
+
+        Site update = Site.builder().db(db).build();
+        siteCommandPort.update(site.getId(), update);
         log.info("Initialized db for site: {}.", site.getId());
     }
 
