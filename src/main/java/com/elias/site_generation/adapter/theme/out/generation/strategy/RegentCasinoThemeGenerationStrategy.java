@@ -54,7 +54,7 @@ public class RegentCasinoThemeGenerationStrategy implements ThemeGenerationStrat
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        return generationService.generate(ThemePayload.from(TemplateType.LUCKY_CASINO, buildPages(request)), request);
+        return generationService.generate(ThemePayload.from(TemplateType.REGENT_CASINO, buildPages(request)), request);
     }
 
     private Map<String, ElementPayload> buildPages(ThemeGenerationRequest request) {
