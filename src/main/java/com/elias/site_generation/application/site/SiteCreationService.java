@@ -38,6 +38,19 @@ class SiteCreationService implements SiteCreationUseCase {
     }
 
     @Override
+    public void recreate(long siteId) {
+        User authUser = authUserPort.getAuthUser();
+
+        validationService.validateSiteOwner(siteId, authUser);
+        throwIfCreationLimitReached(authUser);
+
+        Site site = siteQueryPort.findById(siteId);
+        site.validateReadyForRecreation();
+
+        asyncProcessor.recreateAsync(siteId);
+    }
+
+    @Override
     public void redeploy(long siteId) {
         User authUser = authUserPort.getAuthUser();
         validationService.validateSiteOwner(siteId, authUser);

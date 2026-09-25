@@ -21,6 +21,11 @@ public class SiteCreationController {
         useCase.create(type, mapper.toSite(request));
     }
 
+    @PostMapping("/recreate")
+    public void recreate(@RequestParam long siteId) {
+        useCase.recreate(siteId);
+    }
+
     @PostMapping("/redeploy")
     public void redeploy(@RequestParam long siteId) {
         useCase.redeploy(siteId);
