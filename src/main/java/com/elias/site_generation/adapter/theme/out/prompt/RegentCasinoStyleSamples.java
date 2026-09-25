@@ -35,7 +35,7 @@ public final class RegentCasinoStyleSamples {
               }
 
               @media (prefers-reduced-motion: reduce){
-                *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+                *,*::before,*::after{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
               }
 
               /* =========================================================
@@ -59,6 +59,9 @@ public final class RegentCasinoStyleSamples {
               p{ margin:0; }
               button{ font-family: inherit; cursor:pointer; }
               :focus-visible{ outline: 2px solid var(--brass-light); outline-offset: 3px; }
+
+              /* anchors land below the 80px sticky header */
+              section[id], .faq-category{ scroll-margin-top: 96px; }
 
               .container{ width:100%; max-width: var(--container); margin:0 auto; padding: 0 24px; }
               .section{ padding: 100px 0; }
@@ -232,6 +235,7 @@ public final class RegentCasinoStyleSamples {
               }
               .win-pill .amt{ color: var(--brass-light); font-weight:700; }
               .win-pill .pulse-dot{ width:7px; height:7px; border-radius:50%; background: var(--success); box-shadow: 0 0 10px var(--success); }
+              @media (max-width: 400px){ .wheel-stage{ transform: scale(.84); margin: -26px 0; } }
 
               /* =========================================================
                  5. STATS
@@ -311,7 +315,7 @@ public final class RegentCasinoStyleSamples {
                  9. JACKPOT BANNER
               ========================================================= */
               #jackpot{
-                margin: 0 24px; max-width: calc(var(--container) - 0px); margin-left:auto; margin-right:auto;
+                width: calc(100% - 48px); max-width: calc(var(--container) - 48px); margin: 0 auto;
                 border-radius: var(--radius-lg);
                 background: linear-gradient(120deg, #142a1f, #1d3826 45%, #142a1f);
                 border: 1px solid rgba(205,164,63,.35);
@@ -336,6 +340,11 @@ public final class RegentCasinoStyleSamples {
               }
               .countdown .box strong{ display:block; font-family: var(--font-display); font-size:26px; color:#fff; }
               .countdown .box span{ font-size:11px; color: var(--text-muted); }
+              @media (max-width: 600px){
+                #jackpot{ padding: 36px 24px; }
+                .countdown{ gap:8px; }
+                .countdown .box{ width:64px; }
+              }
 
               /* =========================================================
                  10. FAQ (index preview + full page)
@@ -441,7 +450,7 @@ public final class RegentCasinoStyleSamples {
               }
 
               @media (prefers-reduced-motion: reduce){
-                *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+                *,*::before,*::after{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
               }
 
               /* =========================================================
@@ -465,6 +474,9 @@ public final class RegentCasinoStyleSamples {
               p{ margin:0; }
               button{ font-family: inherit; cursor:pointer; }
               :focus-visible{ outline: 2px solid var(--brass-light); outline-offset: 3px; }
+
+              /* anchors land below the 80px sticky header */
+              section[id], .faq-category{ scroll-margin-top: 96px; }
 
               .container{ width:100%; max-width: var(--container); margin:0 auto; padding: 0 24px; }
               .section{ padding: 100px 0; }
@@ -560,6 +572,7 @@ public final class RegentCasinoStyleSamples {
                 .nav-actions .btn-ghost{ display:none; }
               }
 
+              /* page hero */
               #page-hero{
                 padding: 70px 0 56px; border-bottom:1px solid var(--border);
                 background: radial-gradient(600px 320px at 80% 0%, rgba(47,143,99,.16), transparent 65%), var(--bg);
@@ -616,6 +629,7 @@ public final class RegentCasinoStyleSamples {
               .legal-table th, .legal-table td{ text-align:left; padding: 12px 14px; border-bottom:1px solid var(--border); color: var(--text-muted); }
               .legal-table th{ color: var(--text); font-weight:600; }
               .legal-updated{ font-size:13px; color: var(--text-muted); margin-bottom:36px; }
+              @media (max-width: 600px){ .legal-table{ display:block; overflow-x:auto; white-space:nowrap; } }
             """;
 
     public static final String REGENT_CLUB_FAQ_STYLES = """
@@ -651,7 +665,7 @@ public final class RegentCasinoStyleSamples {
               }
 
               @media (prefers-reduced-motion: reduce){
-                *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+                *,*::before,*::after{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
               }
 
               /* =========================================================
@@ -675,6 +689,9 @@ public final class RegentCasinoStyleSamples {
               p{ margin:0; }
               button{ font-family: inherit; cursor:pointer; }
               :focus-visible{ outline: 2px solid var(--brass-light); outline-offset: 3px; }
+
+              /* anchors land below the 80px sticky header */
+              section[id], .faq-category{ scroll-margin-top: 96px; }
 
               .container{ width:100%; max-width: var(--container); margin:0 auto; padding: 0 24px; }
               .section{ padding: 100px 0; }
@@ -786,6 +803,8 @@ public final class RegentCasinoStyleSamples {
               .faq-item[open] summary::after{ transform: rotate(45deg); }
               .faq-item .faq-a{ padding: 0 24px 20px; color: var(--text-muted); font-size:14.5px; }
 
+
+              /* page hero + full FAQ page */
               #page-hero{
                 padding: 70px 0 56px; border-bottom:1px solid var(--border);
                 background: radial-gradient(600px 320px at 80% 0%, rgba(47,143,99,.16), transparent 65%), var(--bg);
@@ -793,12 +812,12 @@ public final class RegentCasinoStyleSamples {
               .page-hero-inner{ max-width:640px; }
               .page-hero-inner h1{ font-size: clamp(32px,4.6vw,46px); margin-top:14px; }
               .page-hero-inner p{ margin-top:16px; color: var(--text-muted); font-size:16px; }
-
               .faq-search{
                 margin-top:28px; display:flex; align-items:center; gap:10px;
                 background: var(--surface); border:1px solid var(--border); border-radius: 999px;
                 padding: 13px 20px; max-width:420px; color: var(--text-muted);
               }
+              .faq-search:focus-within{ border-color: var(--brass); }
               .faq-search svg{ flex-shrink:0; }
               .faq-search input{
                 border:none; background:transparent; outline:none; color: var(--text);
@@ -806,7 +825,7 @@ public final class RegentCasinoStyleSamples {
               }
 
               .faq-grid{ display:grid; grid-template-columns: 220px 1fr; gap:48px; align-items:start; }
-              @media (max-width: 820px){ .faq-grid{ grid-template-columns: 1fr; } }
+              @media (max-width: 820px){ .faq-grid{ grid-template-columns: 1fr; } .faq-toc{ position:static; } }
               .faq-toc{ position:sticky; top:100px; }
               .faq-toc h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-bottom:16px; }
               .faq-toc ul{ display:flex; flex-direction:column; gap:4px; }
