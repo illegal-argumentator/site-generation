@@ -62,17 +62,22 @@ class WordPressThemeCommandAdapter implements WebsiteThemeCommandPort {
 
     @Override
     public void createConfig(Db db, String hostname) {
-        String command = buildCommand(
-                hostname,
-                "config",
-                "create",
-                "--dbname=" + addUserUnderscorePrefix(db.name()),
-                "--dbuser=" + addUserUnderscorePrefix(db.username()),
-                "--dbpass=" + db.password(),
-                "--dbhost=localhost"
-        );
+        try {
+            String command = buildCommand(
+                    hostname,
+                    "config",
+                    "create",
+                    "--dbname=" + addUserUnderscorePrefix(db.name()),
+                    "--dbuser=" + addUserUnderscorePrefix(db.username()),
+                    "--dbpass=" + db.password(),
+                    "--dbhost=localhost"
+            );
 
-        remote.execute(command);
+            remote.execute(command);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
