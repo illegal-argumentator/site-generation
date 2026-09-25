@@ -72,6 +72,13 @@ public class Site {
         // TODO what if site was activated and we updated it? should we activate it once again?
     }
 
+    public void validateReadyForRecreation() {
+        throwIfAtLeastOneStatusInProgress(new SiteCreationException("Site is still in progress."));
+        throwIfCreationStatusCreated();
+        throwIfDeployStatusPublished();
+        throwIfActiveStatusActivated();
+    }
+
     public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
         return getInProgressCount(sites) >= max;
     }
@@ -103,6 +110,12 @@ public class Site {
     private void throwIfActiveStatusActivated() {
         if (activeStatus == ActiveStatus.ACTIVATED) {
             throw new SiteActivationException("Site already activated.");
+        }
+    }
+
+    private void throwIfCreationStatusCreated() {
+        if (creationStatus == CreationStatus.CREATED) {
+            throw new SiteCreationException("Site has already created.");
         }
     }
 

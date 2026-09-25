@@ -8,7 +8,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,7 @@ public class User {
                 .collect(Collectors.toSet());
     }
 
-    public List<Site> collectSites(Site site) {
+    public static List<Site> collectSites(Site site, List<Site> sites) {
         if (CollectionUtils.isEmpty(sites)) {
             sites = new ArrayList<>(List.of(site));
         } else {

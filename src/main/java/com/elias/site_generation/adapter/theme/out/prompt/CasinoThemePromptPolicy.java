@@ -25,6 +25,7 @@ public final class CasinoThemePromptPolicy {
             
             Do NOT:
             
+            - change text in header (even language)
             - add new selectors
             - remove selectors
             - rename selectors
