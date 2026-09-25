@@ -39,7 +39,7 @@ public class SiteCommandService implements SiteCommandUseCase {
         Site existence = siteQueryPort.findById(siteId);
 
         validationService.validateSiteOwner(siteId, authUser);
-        validateDomainExistence(domain);
+        validationService.throwIfDomainAlreadyExists(domain);
 
         cleanUpDomain(existence);
         deployAsyncProcessor.publishAsync(domain, existence);
@@ -69,15 +69,9 @@ public class SiteCommandService implements SiteCommandUseCase {
         editAsyncProcessor.editAsync(content, component, existence);
     }
 
-    private void validateDomainExistence(String hostname) {
-        if (websiteThemeQueryPort.exists(hostname)) {
-            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
-        }
-    }
-
     private void cleanUpDomain(Site site) {
         if (site.hasDb()) hostingPort.deleteDb(site.getDb().name());
-        hostingPort.deleteDomain(site.getHostname());
+        if (websiteThemeQueryPort.exists(site.getHostname())) hostingPort.deleteDomain(site.getHostname());
     }
 
     private void cleanUpSite(Site site) {
