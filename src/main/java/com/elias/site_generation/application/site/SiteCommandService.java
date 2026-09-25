@@ -76,7 +76,7 @@ public class SiteCommandService implements SiteCommandUseCase {
     }
 
     private void cleanUpDomain(Site site) {
-        hostingPort.deleteDb(site.getDb().name());
+        if (site.hasDb()) hostingPort.deleteDb(site.getDb().name());
         hostingPort.deleteDomain(site.getHostname());
     }
 

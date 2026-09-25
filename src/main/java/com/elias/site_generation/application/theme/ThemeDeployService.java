@@ -1,9 +1,11 @@
 package com.elias.site_generation.application.theme;
 
 import com.elias.site_generation.domain.site.Site;
+import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
+import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.usecase.ThemeDeployUseCase;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ThemeDeployService implements ThemeDeployUseCase {
 
+    private final DbGenerationPort dbGenerationPort;
     private final ThemeDeployActions deployActions;
     private final HostingPort hostingPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
@@ -24,18 +27,19 @@ class ThemeDeployService implements ThemeDeployUseCase {
 
     @Override
     public void deploy(Site site) {
-        process(site);
-        updatePublished(site);
+        Db db = dbGenerationPort.generate();
+        process(site, db);
+        updatePublished(site, db);
     }
 
-    private void process(Site site) {
+    private void process(Site site, Db db) {
         switch (site.getDeployStatus()) {
             case PENDING, IN_PROGRESS, DOMAIN_CREATION_FAILED:
                 createDomain(site);
             case SSL_ENABLE_FAILED:
                 enableSsl(site);
             case DB_CREATION_FAILED:
-                createDb(site);
+                createDb(site, db);
             case WEBSITE_DOWNLOAD_FAILED:
                 downloadWebsite(site);
             case WEBSITE_CONFIGURATION_FAILED:
@@ -57,8 +61,8 @@ class ThemeDeployService implements ThemeDeployUseCase {
         log.info("Enabled ssl for domain: {}.", site.getHostname());
     }
 
-    private void createDb(Site site) {
-        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDb()), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
+    private void createDb(Site site, Db db) {
+        FuncUtils.runOrThrow(() -> hostingPort.createDb(db), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", site.getId());
     }
 
@@ -82,8 +86,8 @@ class ThemeDeployService implements ThemeDeployUseCase {
         log.info("Installed theme for site: {}.", site.getId());
     }
 
-    private void updatePublished(Site site) {
-        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).build();
+    private void updatePublished(Site site, Db db) {
+        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).db(db).build();
         siteCommandPort.update(site.getId(), update);
     }
 }
