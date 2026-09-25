@@ -30,6 +30,11 @@ public class PostgresSiteCommandAdapter implements SiteCommandPort {
         return mapper.toSite(updated);
     }
 
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
     private PostgresSite getOrThrow(Long id) {
         return repository.findById(id).orElseThrow(() -> new SiteNotFoundException("Site not found."));
     }
