@@ -1,7 +1,6 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.exception.DomainExistsException;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
