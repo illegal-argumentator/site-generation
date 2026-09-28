@@ -6,7 +6,7 @@ import com.elias.site_generation.domain.site.exception.SiteOwnerException;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.domain.theme.exception.TemplateNotFoundException;
 import com.elias.site_generation.domain.user.User;
-import com.elias.site_generation.port.template.TemplateQueryPort;
+import com.elias.site_generation.port.template.TemplateFileQueryPort;
 import com.elias.site_generation.port.website.WebsiteThemeQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 final class SiteValidationService {
 
-    private final TemplateQueryPort templateQueryPort;
+    private final TemplateFileQueryPort templateFileQueryPort;
     private final WebsiteThemeQueryPort websiteThemeQueryPort;
 
     void validateSiteCreation(TemplateType type, Site site) {
@@ -41,7 +41,7 @@ final class SiteValidationService {
     }
 
     private void throwIfTemplateNotExists(TemplateType type) {
-        if (!templateQueryPort.exists(type)) {
+        if (!templateFileQueryPort.exists(type)) {
             throw new TemplateNotFoundException("Template not found by type: %s.".formatted(type));
         }
     }
