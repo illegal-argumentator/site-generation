@@ -1,7 +1,7 @@
 package com.elias.site_generation.adapter.theme.out.file;
 
 import com.elias.site_generation.domain.theme.TemplateType;
-import com.elias.site_generation.port.template.TemplateQueryPort;
+import com.elias.site_generation.port.template.TemplateFileQueryPort;
 import com.elias.site_generation.shared.file.FilePath;
 import com.elias.site_generation.shared.file.FileUtils;
 import com.elias.site_generation.shared.props.FilePathProps;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FileTemplateQueryAdapter implements TemplateQueryPort {
+public class TemplateFileQueryAdapter implements TemplateFileQueryPort {
 
     private final FilePathProps props;
     private final FileManagerPort fileManagerPort;

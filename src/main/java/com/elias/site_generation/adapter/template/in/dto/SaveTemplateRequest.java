@@ -1,4 +1,4 @@
-package com.elias.site_generation.adapter.template.in;
+package com.elias.site_generation.adapter.template.in.dto;
 
 import com.elias.site_generation.domain.theme.TemplateType;
 import jakarta.validation.constraints.NotBlank;
