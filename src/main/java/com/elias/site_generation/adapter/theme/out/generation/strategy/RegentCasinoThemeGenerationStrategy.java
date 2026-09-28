@@ -4,8 +4,8 @@ import com.elias.site_generation.adapter.theme.in.dto.ThemeGenerationRequest;
 import com.elias.site_generation.adapter.theme.out.generation.component.ThemeGenerationFacade;
 import com.elias.site_generation.adapter.theme.out.generation.component.ThemePayload;
 import com.elias.site_generation.adapter.theme.out.generation.dto.ElementPayload;
-import com.elias.site_generation.adapter.theme.out.prompt.LuckyCasinoStyleSamples;
 import com.elias.site_generation.adapter.theme.out.prompt.CasinoThemePromptPolicy;
+import com.elias.site_generation.adapter.theme.out.prompt.RegentCasinoStyleSamples;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.theme.TemplateType;
 import com.elias.site_generation.shared.props.TemplateProps;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-class LuckyCasinoThemeGenerationStrategy implements ThemeGenerationStrategy {
+public class RegentCasinoThemeGenerationStrategy implements ThemeGenerationStrategy {
 
     private final TemplateProps templateProps;
     private final ThemeGenerationFacade generationService;
@@ -54,7 +54,7 @@ class LuckyCasinoThemeGenerationStrategy implements ThemeGenerationStrategy {
 
     @Override
     public byte[] generate(ThemeGenerationRequest request) {
-        return generationService.generate(ThemePayload.from(TemplateType.LUCKY_CASINO, buildPages(request)), request);
+        return generationService.generate(ThemePayload.from(TemplateType.REGENT_CASINO, buildPages(request)), request);
     }
 
     private Map<String, ElementPayload> buildPages(ThemeGenerationRequest request) {
@@ -63,8 +63,8 @@ class LuckyCasinoThemeGenerationStrategy implements ThemeGenerationStrategy {
         for (TemplateComponent component : getType().getComponents()) {
             switch (component) {
                 case HOME -> payloadMap.put(templateProps.getIndexFile(), buildHomePayload(request.content()));
-                case FAQ -> payloadMap.put(templateProps.getCookiesFile(), buildCookiesPayload(request.content()));
-                case COOKIES -> payloadMap.put(templateProps.getFaqFile(), buildFaqPayload(request.content()));
+                case COOKIES -> payloadMap.put(templateProps.getCookiesFile(), buildCookiesPayload(request.content()));
+                case FAQ -> payloadMap.put(templateProps.getFaqFile(), buildFaqPayload(request.content()));
             }
         }
 
@@ -72,22 +72,22 @@ class LuckyCasinoThemeGenerationStrategy implements ThemeGenerationStrategy {
     }
 
     private ElementPayload buildHomePayload(String content) {
-        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, LuckyCasinoStyleSamples.LUCKY_CASINO_HOME_PAGE_STYLES);
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, RegentCasinoStyleSamples.REGENT_CLUB_HOME_PAGE_STYLES);
         return ElementPayload.from(prompt, HOME_ELEMENTS);
     }
 
     private ElementPayload buildCookiesPayload(String content) {
-        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, LuckyCasinoStyleSamples.LUCKY_CASINO_COOKIES_PAGE_STYLES);
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, RegentCasinoStyleSamples.REGENT_CLUB_COOKIES_PAGE_STYLES);
         return ElementPayload.from(prompt, COOKIES_ELEMENTS);
     }
 
     private ElementPayload buildFaqPayload(String content) {
-        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, LuckyCasinoStyleSamples.LUCKY_CASINO_FAQ_STYLES);
+        String prompt = CasinoThemePromptPolicy.CASINO_STYLES_TEMPLATE.formatted(content, RegentCasinoStyleSamples.REGENT_CLUB_FAQ_STYLES);
         return ElementPayload.from(prompt, FAQ_ELEMENTS);
     }
 
     @Override
     public TemplateType getType() {
-        return TemplateType.LUCKY_CASINO;
+        return TemplateType.REGENT_CASINO;
     }
 }

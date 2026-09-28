@@ -34,15 +34,15 @@ final class SiteValidationService {
         }
     }
 
-    private void throwIfTemplateNotExists(TemplateType type) {
-        if (!templateQueryPort.exists(type)) {
-            throw new TemplateNotFoundException("Template not found by type: %s.".formatted(type));
+    void throwIfDomainAlreadyExists(String hostname) {
+        if (websiteThemeQueryPort.exists(hostname)) {
+            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
         }
     }
 
-    private void throwIfDomainAlreadyExists(String hostname) {
-        if (websiteThemeQueryPort.exists(hostname)) {
-            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
+    private void throwIfTemplateNotExists(TemplateType type) {
+        if (!templateQueryPort.exists(type)) {
+            throw new TemplateNotFoundException("Template not found by type: %s.".formatted(type));
         }
     }
 

@@ -1,7 +1,6 @@
 package com.elias.site_generation.application.theme;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.nested.Db;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
@@ -27,6 +26,7 @@ class ThemeDeployService implements ThemeDeployUseCase {
 
     @Override
     public void deploy(Site site) {
+        site.setDb(dbGenerationPort.generate());
         process(site);
         updatePublished(site);
     }
@@ -61,11 +61,7 @@ class ThemeDeployService implements ThemeDeployUseCase {
     }
 
     private void createDb(Site site) {
-        Db db = dbGenerationPort.generate();
-        FuncUtils.runOrThrow(() -> hostingPort.createDb(db), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
-
-        Site update = Site.builder().db(db).build();
-        siteCommandPort.update(site.getId(), update);
+        FuncUtils.runOrThrow(() -> hostingPort.createDb(site.getDb()), new ThemePublishingException(site.getId(), "Failed to create db.", DeployStatus.DB_CREATION_FAILED));
         log.info("Initialized db for site: {}.", site.getId());
     }
 
@@ -90,7 +86,7 @@ class ThemeDeployService implements ThemeDeployUseCase {
     }
 
     private void updatePublished(Site site) {
-        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).build();
+        Site update = Site.builder().failReason("").db(site.getDb()).deployStatus(DeployStatus.PUBLISHED).build();
         siteCommandPort.update(site.getId(), update);
     }
 }

@@ -1,7 +1,6 @@
 package com.elias.site_generation.application.site;
 
 import com.elias.site_generation.domain.site.Site;
-import com.elias.site_generation.domain.site.exception.DomainExistsException;
 import com.elias.site_generation.domain.theme.TemplateComponent;
 import com.elias.site_generation.domain.user.User;
 import com.elias.site_generation.port.auth.AuthUserPort;
@@ -39,7 +38,7 @@ public class SiteCommandService implements SiteCommandUseCase {
         Site existence = siteQueryPort.findById(siteId);
 
         validationService.validateSiteOwner(siteId, authUser);
-        validateDomainExistence(domain);
+        validationService.throwIfDomainAlreadyExists(domain);
 
         cleanUpDomain(existence);
         deployAsyncProcessor.publishAsync(domain, existence);
@@ -69,15 +68,9 @@ public class SiteCommandService implements SiteCommandUseCase {
         editAsyncProcessor.editAsync(content, component, existence);
     }
 
-    private void validateDomainExistence(String hostname) {
-        if (websiteThemeQueryPort.exists(hostname)) {
-            throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
-        }
-    }
-
     private void cleanUpDomain(Site site) {
         if (site.hasDb()) hostingPort.deleteDb(site.getDb().name());
-        hostingPort.deleteDomain(site.getHostname());
+        if (websiteThemeQueryPort.exists(site.getHostname())) hostingPort.deleteDomain(site.getHostname());
     }
 
     private void cleanUpSite(Site site) {
