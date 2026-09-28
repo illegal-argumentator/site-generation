@@ -19,7 +19,7 @@ public class ImageController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void upload(@Valid @ImageFile @RequestParam MultipartFile file) {
+    public void upload(@Valid @ImageFile @RequestPart MultipartFile file) {
         Image image = ImageMapper.toImage(file);
         useCase.upload(image);
     }
