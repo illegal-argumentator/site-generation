@@ -5,11 +5,9 @@ import com.elias.site_generation.port.image.ImageUseCase;
 import com.elias.site_generation.shared.file.image.annotation.ImageFile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -20,8 +18,8 @@ public class ImageController {
     private final ImageUseCase useCase;
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/upload")
-    public void upload(@Valid @ImageFile @RequestPart MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void upload(@Valid @ImageFile @RequestParam MultipartFile file) {
         Image image = ImageMapper.toImage(file);
         useCase.upload(image);
     }
