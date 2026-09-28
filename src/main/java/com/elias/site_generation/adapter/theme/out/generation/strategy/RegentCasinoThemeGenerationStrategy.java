@@ -63,8 +63,8 @@ public class RegentCasinoThemeGenerationStrategy implements ThemeGenerationStrat
         for (TemplateComponent component : getType().getComponents()) {
             switch (component) {
                 case HOME -> payloadMap.put(templateProps.getIndexFile(), buildHomePayload(request.content()));
-                case FAQ -> payloadMap.put(templateProps.getCookiesFile(), buildCookiesPayload(request.content()));
-                case COOKIES -> payloadMap.put(templateProps.getFaqFile(), buildFaqPayload(request.content()));
+                case COOKIES -> payloadMap.put(templateProps.getCookiesFile(), buildCookiesPayload(request.content()));
+                case FAQ -> payloadMap.put(templateProps.getFaqFile(), buildFaqPayload(request.content()));
             }
         }
 
