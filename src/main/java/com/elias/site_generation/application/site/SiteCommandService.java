@@ -74,7 +74,7 @@ public class SiteCommandService implements SiteCommandUseCase {
     }
 
     private void cleanUpSite(Site site) {
-        themeDeletionPort.delete(site.getTheme().id());
+        if (site.hasTheme()) themeDeletionPort.delete(site.getTheme().id());
         siteCommandPort.delete(site.getId());
     }
 
