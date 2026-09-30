@@ -72,6 +72,14 @@ public class Site {
         // TODO what if site was activated and we updated it? should we activate it once again?
     }
 
+    public boolean hasTheme() {
+        return theme != null;
+    }
+
+    public boolean hasDb() {
+        return db != null;
+    }
+
     public static boolean hasMoreOrEqualInProgressThanLimit(int max, List<Site> sites) {
         return getInProgressCount(sites) >= max;
     }

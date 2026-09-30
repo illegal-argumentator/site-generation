@@ -1,9 +1,11 @@
 package com.elias.site_generation.port.template;
 
-import com.elias.site_generation.domain.theme.TemplateType;
+import com.elias.site_generation.domain.template.Template;
+
+import java.util.List;
 
 public interface TemplateQueryPort {
 
-    boolean exists(TemplateType type);
+    List<Template> findAll();
 
 }

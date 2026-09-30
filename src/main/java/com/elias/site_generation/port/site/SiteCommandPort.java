@@ -8,4 +8,6 @@ public interface SiteCommandPort {
 
     Site update(Long id, Site site);
 
+    void delete(Long id);
+
 }

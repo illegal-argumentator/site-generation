@@ -9,7 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 public enum TemplateType {
 
-    LUCKY_CASINO("lucky-casino", List.of(TemplateComponent.HOME, TemplateComponent.COOKIES, TemplateComponent.FAQ));
+    LUCKY_CASINO("lucky-casino", List.of(TemplateComponent.HOME, TemplateComponent.COOKIES, TemplateComponent.FAQ)),
+    REGENT_CASINO("regent-casino", List.of(TemplateComponent.HOME, TemplateComponent.COOKIES, TemplateComponent.FAQ));
 
     private final String name;
     private final List<TemplateComponent> components;

@@ -1,6 +1,7 @@
 package com.elias.site_generation.adapter.remote.out;
 
 import com.elias.site_generation.adapter.remote.out.config.SshRemoteClient;
+import com.elias.site_generation.adapter.remote.out.exception.RemoteExecutionFailedException;
 import com.elias.site_generation.port.remote.RemoteCommandPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ class RemoteCommandAdapter implements RemoteCommandPort {
             }
         } catch (IOException e) {
             log.error("Unexpected exception occurred while executing command: {}.", e.getMessage());
-            throw new RuntimeException(e);
+            throw new RemoteExecutionFailedException("Unable to execute remote command: %s. Reason: %s.".formatted(command, e.getMessage()));
         }
     }
 }

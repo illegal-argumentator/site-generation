@@ -4,6 +4,7 @@ import com.elias.site_generation.domain.site.Site;
 import com.elias.site_generation.domain.site.type.DeployStatus;
 import com.elias.site_generation.domain.theme.exception.ThemePublishingException;
 import com.elias.site_generation.port.host.HostingPort;
+import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.usecase.ThemeDeployUseCase;
 import com.elias.site_generation.port.website.WebsiteThemeCommandPort;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ThemeDeployService implements ThemeDeployUseCase {
 
+    private final DbGenerationPort dbGenerationPort;
     private final ThemeDeployActions deployActions;
     private final HostingPort hostingPort;
     private final WebsiteThemeCommandPort websiteThemeCommandPort;
@@ -24,6 +26,7 @@ class ThemeDeployService implements ThemeDeployUseCase {
 
     @Override
     public void deploy(Site site) {
+        site.setDb(dbGenerationPort.generate());
         process(site);
         updatePublished(site);
     }
@@ -83,7 +86,7 @@ class ThemeDeployService implements ThemeDeployUseCase {
     }
 
     private void updatePublished(Site site) {
-        Site update = Site.builder().failReason("").deployStatus(DeployStatus.PUBLISHED).build();
+        Site update = Site.builder().failReason("").db(site.getDb()).deployStatus(DeployStatus.PUBLISHED).build();
         siteCommandPort.update(site.getId(), update);
     }
 }

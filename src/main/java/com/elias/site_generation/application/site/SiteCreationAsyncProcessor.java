@@ -10,7 +10,6 @@ import com.elias.site_generation.domain.theme.Theme;
 import com.elias.site_generation.domain.theme.event.ThemeDeployEvent;
 import com.elias.site_generation.domain.theme.event.ThemePostDeployEvent;
 import com.elias.site_generation.domain.user.User;
-import com.elias.site_generation.port.site.DbGenerationPort;
 import com.elias.site_generation.port.site.SiteCommandPort;
 import com.elias.site_generation.port.theme.ThemeCommandPort;
 import com.elias.site_generation.port.theme.ThemeGenerationPort;
@@ -26,7 +25,6 @@ class SiteCreationAsyncProcessor {
 
     private final UserCommandPort userCommandPort;
 
-    private final DbGenerationPort dbGenerationPort;
     private final SiteCommandPort siteCommandPort;
 
     private final ThemeGenerationPort themeGenerationPort;
@@ -64,7 +62,6 @@ class SiteCreationAsyncProcessor {
         site.setActiveStatus(ActiveStatus.PENDING);
         site.setDeployStatus(DeployStatus.PENDING);
         site.setType(type);
-        site.setDb(dbGenerationPort.generate());
 
         return siteCommandPort.save(site);
     }

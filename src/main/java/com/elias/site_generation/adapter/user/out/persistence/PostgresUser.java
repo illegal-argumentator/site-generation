@@ -32,6 +32,7 @@ public class PostgresUser implements UserDetails {
     @JoinColumn(name = "owner_id")
     private List<PostgresSite> sites;
 
+    @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
     @Column(unique = true)
