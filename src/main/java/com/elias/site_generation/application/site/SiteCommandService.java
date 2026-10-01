@@ -69,12 +69,24 @@ public class SiteCommandService implements SiteCommandUseCase {
     }
 
     private void cleanUpDomain(Site site) {
-        if (site.hasDb()) hostingPort.deleteDb(site.getDb().name());
-        if (websiteThemeQueryPort.exists(site.getHostname())) hostingPort.deleteDomain(site.getHostname());
+        if (dbExists(site)) {
+            hostingPort.deleteDb(site.getDb().name());
+        }
+
+        if (websiteThemeQueryPort.existsDomain(site.getHostname())) {
+            hostingPort.deleteDomain(site.getHostname());
+        }
+    }
+
+    private boolean dbExists(Site site) {
+        return site.hasDb() && websiteThemeQueryPort.existsDb(site.getDb().name());
     }
 
     private void cleanUpSite(Site site) {
-        if (site.hasTheme()) themeDeletionPort.delete(site.getTheme().id());
+        if (site.hasTheme()) {
+            themeDeletionPort.delete(site.getTheme().id());
+        }
+
         siteCommandPort.delete(site.getId());
     }
 
