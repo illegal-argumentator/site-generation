@@ -16,14 +16,27 @@ public class WordPressThemeQueryAdapter implements WebsiteThemeQueryPort {
 
     private final RemoteCommandPort remoteService;
     private static final String DOMAIN_LIST_COMMAND_TEMPLATE = "sudo /usr/local/hestia/bin/v-list-web-domain %s %s";
+    private static final String DATABASE_LIST_COMMAND_TEMPLATE = "sudo /usr/local/hestia/bin/v-list-database %s %s";
 
     @Override
-    public boolean exists(String hostname) {
+    public boolean existsDomain(String hostname) {
         try {
             remoteService.execute(DOMAIN_LIST_COMMAND_TEMPLATE.formatted(hestiaProps.getUsername(), hostname));
             return true;
         } catch (Exception e) {
             log.error("Exception while verifying domain existence: {}.", e.getMessage());
+            return false;
+        }
+    }
+
+
+    @Override
+    public boolean existsDb(String dbName) {
+        try {
+            remoteService.execute(DATABASE_LIST_COMMAND_TEMPLATE.formatted(hestiaProps.getUsername(), dbName));
+            return true;
+        } catch (Exception e) {
+            log.error("Exception while verifying database existence: {}.", e.getMessage());
             return false;
         }
     }
