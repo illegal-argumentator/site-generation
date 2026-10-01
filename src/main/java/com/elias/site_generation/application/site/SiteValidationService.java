@@ -35,7 +35,7 @@ final class SiteValidationService {
     }
 
     void throwIfDomainAlreadyExists(String hostname) {
-        if (websiteThemeQueryPort.exists(hostname)) {
+        if (websiteThemeQueryPort.existsDomain(hostname)) {
             throw new DomainExistsException("Domain %s already exists.".formatted(hostname));
         }
     }
